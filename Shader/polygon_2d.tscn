@@ -1,0 +1,24 @@
+[gd_scene format=3 uid="uid://bkthomotf3bwi"]
+
+[ext_resource type="Shader" uid="uid://bvt6c0havdoh5" path="res://Shader/shaders/多边形波浪溶解.gdshader" id="1_dp86t"]
+[ext_resource type="Script" uid="uid://yovc2tttlqu" path="res://Shader/溶解多边形.gd" id="2_0t46m"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_dp86t"]
+shader = ExtResource("1_dp86t")
+shader_parameter/percentage = 0.0
+shader_parameter/direction = Vector2(1, 1)
+shader_parameter/min_proj = -421.4356
+shader_parameter/max_proj = 10160.581
+shader_parameter/wave_amplitude = 0.02999999932944
+shader_parameter/wave_frequency = 4.70000007003564
+shader_parameter/wave_speed = 2.0
+shader_parameter/edge_softness = 0.0999999977648
+shader_parameter/edge_color = Color(0, 0, 0, 1)
+
+[node name="Polygon2D" type="Polygon2D" unique_id=1548808755]
+material = SubResource("ShaderMaterial_dp86t")
+position = Vector2(445, 142)
+scale = Vector2(0.13, 0.13)
+polygon = PackedVector2Array(-818, 222, 397, -660, 14800.001, -430.76923, 5530.7695, 4715.385, -1684.6156, 5330.7695)
+uv = PackedVector2Array(-818, 222, 397, -660, 14800.001, -430.76923, 5530.7695, 4715.385, -1684.6156, 5330.7695)
+script = ExtResource("2_0t46m")

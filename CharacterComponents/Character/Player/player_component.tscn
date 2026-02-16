@@ -1,0 +1,112 @@
+[gd_scene format=3 uid="uid://b3a8aocxv2hur"]
+
+[ext_resource type="Script" uid="uid://c5f0wn6368p0o" path="res://CharacterComponents/Character/Player/player_component.gd" id="1_player"]
+[ext_resource type="Script" uid="uid://c5ihhqyp2phjg" path="res://CharacterComponents/Components/input_component.gd" id="2_input"]
+[ext_resource type="Script" uid="uid://e76g8vkqh5rg" path="res://CharacterComponents/Components/gravity_component.gd" id="3_gravity"]
+[ext_resource type="Script" uid="uid://d32gmvf13it" path="res://CharacterComponents/Components/move_component.gd" id="4_move"]
+[ext_resource type="Script" uid="uid://b5khd5vlgyjll" path="res://CharacterComponents/Components/jump_component.gd" id="5_jump"]
+[ext_resource type="Script" uid="uid://d0tnyb84483vk" path="res://CharacterComponents/Components/dash_component.gd" id="6_dash"]
+[ext_resource type="Script" uid="uid://cpy26wp0u0m6g" path="res://CharacterComponents/Components/wall_climb_component.gd" id="7_wall"]
+[ext_resource type="Script" uid="uid://oayhciuk0fc5" path="res://CharacterComponents/Components/animation_component.gd" id="8_anim"]
+[ext_resource type="PackedScene" uid="uid://d1ot4iwo3y46x" path="res://Combat/health_component.tscn" id="9_health"]
+[ext_resource type="PackedScene" uid="uid://xyuo71ffcdx5" path="res://Combat/hurtbox_component.tscn" id="10_hurtbox"]
+[ext_resource type="Script" uid="uid://sl05k6aoy1oa" path="res://CharacterComponents/Components/animation_config.gd" id="11_ilhos"]
+[ext_resource type="Script" uid="uid://ddup5xawg6y3m" path="res://VFX/CanYing/canying.gd" id="12_6a0bx"]
+[ext_resource type="Script" uid="uid://fg4a1kqlhyds" path="res://2dCharacterStateMachine/player_saveable.gd" id="12_vs43f"]
+
+[sub_resource type="Gradient" id="Gradient_player"]
+colors = PackedColorArray(0.2, 0.6, 1, 1, 0.2, 0.6, 1, 0)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_player"]
+gradient = SubResource("Gradient_player")
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_player"]
+size = Vector2(62, 62)
+
+[sub_resource type="Animation" id="Animation_idle"]
+resource_name = "idle"
+loop_mode = 1
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_player"]
+_data = {
+&"idle": SubResource("Animation_idle")
+}
+
+[sub_resource type="Resource" id="Resource_vs43f"]
+script = ExtResource("11_ilhos")
+metadata/_custom_type_script = "uid://sl05k6aoy1oa"
+
+[node name="PlayerComponent" type="CharacterBody2D" unique_id=289685672]
+collision_layer = 2
+script = ExtResource("1_player")
+time_immune = true
+
+[node name="Body" type="Node2D" parent="." unique_id=1075307601]
+unique_name_in_owner = true
+
+[node name="Sprite2D" type="Sprite2D" parent="Body" unique_id=309574445]
+texture = SubResource("GradientTexture2D_player")
+
+[node name="HealthComponent" parent="Body" unique_id=1155957669 instance=ExtResource("9_health")]
+unique_name_in_owner = true
+
+[node name="HurtboxComponent" parent="Body" unique_id=89713779 instance=ExtResource("10_hurtbox")]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=121669525]
+shape = SubResource("RectangleShape2D_player")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=1841707871]
+libraries/ = SubResource("AnimationLibrary_player")
+
+[node name="Components" type="Node" parent="." unique_id=1596149602]
+
+[node name="InputComponent" type="Node" parent="Components" unique_id=159369323]
+script = ExtResource("2_input")
+self_driven = false
+
+[node name="GravityComponent" type="Node" parent="Components" unique_id=72860171]
+script = ExtResource("3_gravity")
+gravity_force = 1960.0
+self_driven = false
+
+[node name="MoveComponent" type="Node" parent="Components" unique_id=339075345 node_paths=PackedStringArray("input_component")]
+script = ExtResource("4_move")
+input_component = NodePath("../InputComponent")
+self_driven = false
+
+[node name="JumpComponent" type="Node" parent="Components" unique_id=2066555024 node_paths=PackedStringArray("input_component", "gravity_component")]
+script = ExtResource("5_jump")
+input_component = NodePath("../InputComponent")
+gravity_component = NodePath("../GravityComponent")
+self_driven = false
+
+[node name="DashComponent" type="Node" parent="Components" unique_id=1070831270 node_paths=PackedStringArray("input_component", "move_component", "gravity_component")]
+script = ExtResource("6_dash")
+max_dash_count = 2
+cooldown_time = 0.1
+input_component = NodePath("../InputComponent")
+move_component = NodePath("../MoveComponent")
+gravity_component = NodePath("../GravityComponent")
+self_driven = false
+
+[node name="WallClimbComponent" type="Node" parent="Components" unique_id=1582188262 node_paths=PackedStringArray("input_component", "gravity_component", "move_component")]
+script = ExtResource("7_wall")
+input_component = NodePath("../InputComponent")
+gravity_component = NodePath("../GravityComponent")
+move_component = NodePath("../MoveComponent")
+self_driven = false
+
+[node name="AnimationComponent" type="Node" parent="Components" unique_id=1600044474 node_paths=PackedStringArray("animation_player")]
+script = ExtResource("8_anim")
+config = SubResource("Resource_vs43f")
+animation_player = NodePath("../../AnimationPlayer")
+self_driven = false
+
+[node name="CanyingComponent" type="Node2D" parent="Components" unique_id=312695105]
+unique_name_in_owner = true
+script = ExtResource("12_6a0bx")
+metadata/_custom_type_script = "uid://ddup5xawg6y3m"
+
+[node name="Saveable" type="Node" parent="." unique_id=53716990]
+script = ExtResource("12_vs43f")
+node_uuid = "player"

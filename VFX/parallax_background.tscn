@@ -1,0 +1,38 @@
+[gd_scene format=3 uid="uid://gogquu14j015"]
+
+[node name="ParallaxBackground" type="Node2D" unique_id=1553471915]
+
+[node name="SkyLayer" type="Parallax2D" parent="." unique_id=1593524615]
+scroll_scale = Vector2(0.1, 1)
+
+[node name="Sprite2D" type="Sprite2D" parent="SkyLayer" unique_id=1063660649]
+centered = false
+
+[node name="SunLayer" type="Parallax2D" parent="." unique_id=287725746]
+scroll_scale = Vector2(0.2, 1)
+
+[node name="Sprite2D" type="Sprite2D" parent="SunLayer" unique_id=2083560439]
+centered = false
+
+[node name="CloudsLayer" type="Parallax2D" parent="." unique_id=526838656]
+scroll_scale = Vector2(0.3, 1)
+
+[node name="Sprite2D" type="Sprite2D" parent="CloudsLayer" unique_id=599940685]
+centered = false
+
+[node name="TreesBackLayer" type="Parallax2D" parent="." unique_id=956610670]
+scroll_scale = Vector2(0.6, 1)
+
+[node name="Sprite2D" type="Sprite2D" parent="TreesBackLayer" unique_id=484229850]
+centered = false
+
+[node name="TreesFrontLayer" type="Parallax2D" parent="." unique_id=137279814]
+scroll_scale = Vector2(0.8, 1)
+
+[node name="Sprite2D" type="Sprite2D" parent="TreesFrontLayer" unique_id=1159113895]
+centered = false
+
+[node name="GroundLayer" type="Parallax2D" parent="." unique_id=330237116]
+
+[node name="Sprite2D" type="Sprite2D" parent="GroundLayer" unique_id=1006662471]
+centered = false

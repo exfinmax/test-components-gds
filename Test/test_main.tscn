@@ -1,0 +1,185 @@
+[gd_scene format=3 uid="uid://cs6hy7jrf3oqk"]
+
+[ext_resource type="Shader" uid="uid://coq6w0gftoncc" path="res://Shader/shaders/scrolling_bg.gdshader" id="1_saih3"]
+[ext_resource type="Texture2D" uid="uid://b0xng8j0pvsgi" path="res://icon.svg" id="2_soafa"]
+[ext_resource type="PackedScene" uid="uid://bqm7n8xvxh3y0" path="res://Systems/Debug/debug_console_window.tscn" id="2_tcanr"]
+[ext_resource type="PackedScene" uid="uid://byjvqg7fapplr" path="res://Test/test_ui.tscn" id="3_2n3av"]
+[ext_resource type="Shader" uid="uid://dq80v4tgigxur" path="res://Shader/shaders/map_to_gradient.gdshader" id="7_soafa"]
+[ext_resource type="Shader" uid="uid://627gjef4iua5" path="res://Shader/shaders/screen_reader.gdshader" id="8_c60bn"]
+[ext_resource type="Shader" uid="uid://c0c1ed0pd02hs" path="res://Shader/shaders/dissolve.gdshader" id="9_nedis"]
+[ext_resource type="Shader" uid="uid://de0os3hbq0wnl" path="res://Shader/shaders/masking.gdshader" id="10_b8pac"]
+[ext_resource type="PackedScene" uid="uid://b30xogeuxf346" path="res://Shader/融球.tscn" id="11_4hafw"]
+[ext_resource type="Shader" uid="uid://uac0633g86jv" path="res://Shader/shaders/distortion.gdshader" id="11_b8pac"]
+[ext_resource type="Shader" uid="uid://hsm12ab75sic" path="res://Shader/shaders/波浪溶解.gdshader" id="11_tf41q"]
+[ext_resource type="PackedScene" uid="uid://b3a8aocxv2hur" path="res://CharacterComponents/Character/Player/player_component.tscn" id="13_fub5t"]
+[ext_resource type="PackedScene" uid="uid://d3r023r7l8eym" path="res://CharacterComponents/Character/ReplayEnemy/enemy_component.tscn" id="14_80qgb"]
+[ext_resource type="PackedScene" uid="uid://bkthomotf3bwi" path="res://Shader/polygon_2d.tscn" id="14_57666"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_c60bn"]
+shader = ExtResource("1_saih3")
+shader_parameter/tiling = Vector2(20, 12)
+shader_parameter/offset = Vector2(0.4, 1)
+
+[sub_resource type="WorldBoundaryShape2D" id="WorldBoundaryShape2D_b6ro0"]
+
+[sub_resource type="Gradient" id="Gradient_c60bn"]
+offsets = PackedFloat32Array(0, 0.23163842, 0.5084746, 0.76836157, 1)
+colors = PackedColorArray(1, 0, 0, 1, 0.54509807, 0.42745098, 0, 1, 0.6156863, 0, 0, 1, 1, 1, 0, 1, 0.36862746, 0.54901963, 0, 1)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_xbli7"]
+gradient = SubResource("Gradient_c60bn")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_nedis"]
+shader = ExtResource("7_soafa")
+shader_parameter/gradient_texture = SubResource("GradientTexture2D_xbli7")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_4hafw"]
+shader = ExtResource("8_c60bn")
+
+[sub_resource type="Gradient" id="Gradient_b8pac"]
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_4hafw"]
+gradient = SubResource("Gradient_b8pac")
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_tf41q"]
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_57666"]
+noise = SubResource("FastNoiseLite_tf41q")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_xbli7"]
+shader = ExtResource("9_nedis")
+shader_parameter/noise_texture = SubResource("NoiseTexture2D_57666")
+shader_parameter/percent = 0.41999999061216
+
+[sub_resource type="Gradient" id="Gradient_vbr4w"]
+offsets = PackedFloat32Array(0.0056497175, 0.5536723)
+colors = PackedColorArray(3.098221, 3.098221, 3.098221, 1, 0, 0, 0, 1)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_01yxl"]
+gradient = SubResource("Gradient_vbr4w")
+use_hdr = true
+fill = 1
+fill_from = Vector2(0.52380955, 0.50183153)
+fill_to = Vector2(1, 1)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_npiar"]
+shader = ExtResource("10_b8pac")
+shader_parameter/mask_texture = SubResource("GradientTexture2D_01yxl")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_57666"]
+shader = ExtResource("11_tf41q")
+shader_parameter/percentage = 0.0
+shader_parameter/direction = Vector2(0, 1)
+shader_parameter/wave_amplitude = 0.0499999988824
+shader_parameter/wave_frequency = 10.0
+shader_parameter/wave_speed = 2.0
+shader_parameter/edge_softness = 0.02
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_b8pac"]
+frequency = 0.016
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_4hafw"]
+noise = SubResource("FastNoiseLite_b8pac")
+seamless = true
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_57666"]
+seed = 2
+frequency = 0.0054
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_vbr4w"]
+noise = SubResource("FastNoiseLite_57666")
+seamless = true
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_tf41q"]
+shader = ExtResource("11_b8pac")
+shader_parameter/distortion_strength = 0.01
+shader_parameter/offset1 = Vector2(0.1, 0.1)
+shader_parameter/offset2 = Vector2(0.2, 0.2)
+shader_parameter/noise_tex1 = SubResource("NoiseTexture2D_4hafw")
+shader_parameter/noise_tex2 = SubResource("NoiseTexture2D_vbr4w")
+
+[node name="TestMain" type="Node2D" unique_id=459473334]
+
+[node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=1712228342]
+layer = -1
+
+[node name="ScrollingBg" type="TextureRect" parent="CanvasLayer" unique_id=1261737830]
+texture_repeat = 2
+material = SubResource("ShaderMaterial_c60bn")
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("2_soafa")
+
+[node name="TestUI" parent="CanvasLayer" unique_id=234171249 instance=ExtResource("3_2n3av")]
+offset_top = -190.0
+offset_bottom = -190.0
+
+[node name="StaticBody2D" type="StaticBody2D" parent="." unique_id=1415100804]
+position = Vector2(-1, 544)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="StaticBody2D" unique_id=323998377]
+shape = SubResource("WorldBoundaryShape2D_b6ro0")
+
+[node name="ColorRect" type="ColorRect" parent="StaticBody2D" unique_id=1842446796]
+offset_left = -1739.0
+offset_right = 2167.0
+offset_bottom = 445.21548
+color = Color(0.33163944, 0.33163944, 0.3316394, 1)
+
+[node name="DebugConsoleWindow" parent="." unique_id=567176045 instance=ExtResource("2_tcanr")]
+initial_position = 0
+position = Vector2i(1118, 506)
+
+[node name="Gradient" type="Sprite2D" parent="." unique_id=1086917500]
+material = SubResource("ShaderMaterial_nedis")
+position = Vector2(182, 177)
+texture = ExtResource("2_soafa")
+
+[node name="ScreenReading" type="Sprite2D" parent="." unique_id=1598968182]
+material = SubResource("ShaderMaterial_4hafw")
+position = Vector2(262.00006, 260)
+scale = Vector2(10.6171875, 4.9156246)
+texture = SubResource("GradientTexture2D_4hafw")
+
+[node name="Dissolve" type="Sprite2D" parent="." unique_id=1626097848]
+material = SubResource("ShaderMaterial_xbli7")
+position = Vector2(805.00006, -422)
+scale = Vector2(3.3, 3.3)
+texture = ExtResource("2_soafa")
+
+[node name="Masking" type="Sprite2D" parent="." unique_id=268426561]
+material = SubResource("ShaderMaterial_npiar")
+position = Vector2(1280, -243)
+scale = Vector2(3.3, 3.3)
+texture = ExtResource("2_soafa")
+
+[node name="波浪溶解" type="Sprite2D" parent="." unique_id=849653391]
+material = SubResource("ShaderMaterial_57666")
+position = Vector2(2218, -197.00002)
+scale = Vector2(3.3, 3.3)
+texture = ExtResource("2_soafa")
+
+[node name="融球" parent="." unique_id=1503485000 instance=ExtResource("11_4hafw")]
+offset_left = -1612.0
+offset_top = -2245.0
+offset_right = -1012.0
+offset_bottom = -1645.0
+
+[node name="Distortion" type="Sprite2D" parent="." unique_id=59986426]
+material = SubResource("ShaderMaterial_tf41q")
+position = Vector2(1020, 271)
+scale = Vector2(13.5, 4.6250005)
+texture = ExtResource("2_soafa")
+
+[node name="Polygon2D" parent="." unique_id=1548808755 instance=ExtResource("14_57666")]
+position = Vector2(1969, -778)
+polygon = PackedVector2Array(-1546, -86, 908, 237, 605, 781)
+
+[node name="PlayerComponent" parent="." unique_id=289685672 instance=ExtResource("13_fub5t")]
+
+[node name="EnemyComponent" parent="." unique_id=2002685114 node_paths=PackedStringArray("player_target") instance=ExtResource("14_80qgb")]
+player_target = NodePath("../PlayerComponent")
+auto_start = true
