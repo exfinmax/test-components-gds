@@ -116,3 +116,13 @@
 - 机关逻辑增强（预警、交互、状态门）
 
 下一步可做“接口对齐版”：按你 C# 新版的字段和信号，生成一套同名 GDS/C# 双实现模板。
+
+## 5) 本轮新增（机关向）
+
+- `EchoTriggerPlateComponent`
+  - 文件：`Modules/Gameplay/Time/Components/echo_trigger_plate_component.gd`
+  - 作用：回声/玩家可选触发压板，输出激活状态。
+
+- `TimedDoorComponent`
+  - 文件：`Modules/Gameplay/Common/Components/timed_door_component.gd`
+  - 作用：输入持续激活达到阈值后开门，可自动关闭。
