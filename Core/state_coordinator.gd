@@ -76,7 +76,13 @@ func add_rule(state_name: StringName, target_components: Array[StringName], acti
 	if not _rules.has(state_name):
 		_rules[state_name] = []
 	for target in target_components:
-		_rules[state_name].append(StateRule.new(target, action, priority))
+		var exists := false
+		for rule: StateRule in _rules[state_name]:
+			if rule.target_component_name == target and rule.action == action and rule.priority == priority:
+				exists = true
+				break
+		if not exists:
+			_rules[state_name].append(StateRule.new(target, action, priority))
 
 ## 移除某状态的所有规则
 func remove_rules(state_name: StringName) -> void:
@@ -184,19 +190,33 @@ func _auto_connect() -> void:
 	var dash := get_component(&"DashComponent")
 	if dash and dash is DashComponent:
 		var dc := dash as DashComponent
-		if dc.dash_started.get_connections().size() == 0 or true:
-			dc.dash_started.connect(func(_dir): activate_state(&"dash"))
-			dc.dash_ended.connect(func(): deactivate_state(&"dash"))
-			# 默认规则：冲刺时禁用移动，低重力
-			add_rule(&"dash", [&"MoveComponent"], StateAction.DISABLE)
-			add_rule(&"dash", [&"GravityComponent"], StateAction.LOW_GRAVITY)
+		if not dc.dash_started.is_connected(_on_dash_started):
+			dc.dash_started.connect(_on_dash_started)
+		if not dc.dash_ended.is_connected(_on_dash_ended):
+			dc.dash_ended.connect(_on_dash_ended)
+		add_rule(&"dash", [&"MoveComponent"], StateAction.DISABLE)
+		add_rule(&"dash", [&"GravityComponent"], StateAction.LOW_GRAVITY)
 	
 	# WallClimb 组件
 	var wall := get_component(&"WallClimbComponent")
 	if wall and wall is WallClimbComponent:
 		var wc := wall as WallClimbComponent
-		wc.wall_slide_started.connect(func(): activate_state(&"wall_slide"))
-		wc.wall_slide_ended.connect(func(): deactivate_state(&"wall_slide"))
+		if not wc.wall_slide_started.is_connected(_on_wall_slide_started):
+			wc.wall_slide_started.connect(_on_wall_slide_started)
+		if not wc.wall_slide_ended.is_connected(_on_wall_slide_ended):
+			wc.wall_slide_ended.connect(_on_wall_slide_ended)
+
+func _on_dash_started(_dir: Vector2) -> void:
+	activate_state(&"dash")
+
+func _on_dash_ended() -> void:
+	deactivate_state(&"dash")
+
+func _on_wall_slide_started() -> void:
+	activate_state(&"wall_slide")
+
+func _on_wall_slide_ended() -> void:
+	deactivate_state(&"wall_slide")
 
 #endregion
 

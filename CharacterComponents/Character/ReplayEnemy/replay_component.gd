@@ -92,8 +92,9 @@ func _ready() -> void:
 		character.visible = false
 
 func _on_disable() -> void:
-	# 禁用时暂停回放
-	is_replaying = false
+	if gravity_component:
+		gravity_component.enabled = true
+	_finish_replay()
 
 func _physics_process(delta: float) -> void:
 	if not enabled or not record_component: return
@@ -102,7 +103,11 @@ func _physics_process(delta: float) -> void:
 
 	# 检查是否有成熟的帧可以消费
 	var frame := _try_consume_frame()
-	if not frame: return
+	if not frame:
+		# 录制停止且缓冲耗尽时，视为回放结束
+		if is_replaying and (not record_component.is_recording) and record_component.get_buffer_size() <= 0:
+			_finish_replay()
+		return
 
 	if not is_replaying:
 		is_replaying = true
@@ -216,6 +221,14 @@ func _replay_path(frame: ReplayFrame, delta: float) -> void:
 	# PATH 模式下禁用重力组件（由录制速度包含重力效果）
 	if gravity_component:
 		gravity_component.enabled = false
+
+func _finish_replay() -> void:
+	if not is_replaying:
+		return
+	is_replaying = false
+	if gravity_component:
+		gravity_component.enabled = true
+	replay_ended.emit()
 
 #endregion
 

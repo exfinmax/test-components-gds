@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://bjbdbqiluuq7r"]
+
+[ext_resource type="Script" uid="uid://cnom5xwaaj2nc" path="res://Templates/VFX/telegraph_ring.gd" id="1"]
+
+[node name="TelegraphRing" type="Node2D" unique_id=960892726]
+script = ExtResource("1")

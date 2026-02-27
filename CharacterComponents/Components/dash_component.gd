@@ -28,6 +28,8 @@ signal dash_ready
 @export var input_component: InputComponent
 @export var move_component: MoveComponent
 @export var gravity_component: GravityComponent
+@export var state_coordinator: StateCoordinator
+@export var use_state_coordinator: bool = false
 
 ## 状态
 var is_dashing: bool = false
@@ -45,6 +47,8 @@ func _component_ready() -> void:
 		move_component = find_component(MoveComponent) as MoveComponent
 	if not gravity_component:
 		gravity_component = find_component(GravityComponent) as GravityComponent
+	if not state_coordinator and character:
+		state_coordinator = character.get_node_or_null("StateCoordinator") as StateCoordinator
 
 	
 	
@@ -113,8 +117,11 @@ func start_dash(override_direction: Vector2 = Vector2.ZERO) -> void:
 	dash_count_changed.emit(current_dash_count, max_dash_count)
 
 	# 禁用移动和重力
-	if move_component: move_component.enabled = false
-	if gravity_component: gravity_component.set_mode(GravityComponent.GravityMode.LOW)
+	if use_state_coordinator and state_coordinator:
+		state_coordinator.activate_state(&"dash")
+	else:
+		if move_component: move_component.enabled = false
+		if gravity_component: gravity_component.set_mode(GravityComponent.GravityMode.LOW)
 
 	character.velocity = _dash_direction * dash_speed
 	dash_started.emit(_dash_direction)
@@ -123,8 +130,11 @@ func _end_dash() -> void:
 	is_dashing = false
 
 	# 恢复移动和重力
-	if move_component: move_component.enabled = true
-	if gravity_component: gravity_component.set_mode(GravityComponent.GravityMode.NORMAL)
+	if use_state_coordinator and state_coordinator:
+		state_coordinator.deactivate_state(&"dash")
+	else:
+		if move_component: move_component.enabled = true
+		if gravity_component: gravity_component.set_mode(GravityComponent.GravityMode.NORMAL)
 	# 减少向上冲刺后的滞空
 	if character.velocity.y < 0:
 		character.velocity.y *= 0.6

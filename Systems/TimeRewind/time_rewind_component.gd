@@ -73,7 +73,7 @@ var _record_timer: float = 0.0
 
 ## 倒流状态
 var is_rewinding: bool = false
-var _rewind_index: int = 0  # 当前回放到哪一帧
+var _rewind_index: float = 0.0  # 当前回放到哪一帧（支持小数步进）
 
 ## 能量（0-1）
 var energy: float = 1.0

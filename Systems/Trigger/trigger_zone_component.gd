@@ -147,7 +147,7 @@ func _execute_trigger(body: Node2D) -> void:
 		data["body"] = body
 		data["trigger"] = self
 		data["trigger_count"] = trigger_count
-		EventBus.emit_event(event_name, data)
+		#EventBus.emit_event(event_name, data)
 	
 	# 检查是否达到最大次数
 	if max_triggers > 0 and trigger_count >= max_triggers:

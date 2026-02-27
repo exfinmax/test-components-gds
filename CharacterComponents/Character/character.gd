@@ -1,51 +1,70 @@
-extends CharacterBody2D
+﻿extends CharacterBody2D
 class_name CharacterComponent
-## 角色基类 - 轻量级组件容器
-##
-## 使用方式：
-##   角色只负责物理（move_and_slide）和朝向管理
-##   所有能力由子节点的组件提供（MoveComponent、JumpComponent 等）
-##   通过 get_component() 获取组件引用
-##
-## 驱动模式（self_driven）：
-##   组件 self_driven=true  → 组件自行运行 _process/_physics_process（默认，适合独立测试）
-##   组件 self_driven=false → Character 统一调用 physics_tick(delta)/tick(delta)
-##                            子类可重写 _get_physics_delta/_get_process_delta 传入补偿 delta
-##
-## 最小可运行场景：
-##   CharacterBody2D (character.gd)
-##     └─ CollisionShape2D
-##   即使没有任何组件也不会报错
+## 角色基类（组件容器）
+## 职责：
+## 1) 统一驱动子组件 tick/physics_tick
+## 2) 执行 move_and_slide
+## 3) 维护朝向与时间免疫
 
 signal heading_changed(new_heading: Vector2)
 
 @onready var body: Node2D = get_node_or_null("%Body")
 @onready var components: Node = get_node_or_null("Components")
 
-## 是否免疫全局时间缩放
 @export var time_immune: bool = false:
 	set(v):
-		if time_immune == v: return
+		if time_immune == v:
+			return
 		time_immune = v
 		_sync_time_immune_registration()
 
-## 角色朝向（只有 LEFT 和 RIGHT）
 var heading: Vector2 = Vector2.RIGHT:
 	set(v):
-		if heading == v: return
+		if heading == v:
+			return
 		heading = v
 		heading_changed.emit(heading)
 		_update_body_scale()
 
-## 是否暂停（禁用所有组件）
 var is_paused: bool = false
 
-#region 组件快捷访问（按需缓存）
-
+#region 组件缓存
 var _component_cache: Dictionary = {}
+var _components_cache_dirty: bool = true
+var _components_list_cache: Array[CharacterComponentBase] = []
 
-## 获取指定类型的组件（缓存结果）
+func _ready() -> void:
+	_setup_component_watchers()
+	_refresh_components_cache()
+
+func _setup_component_watchers() -> void:
+	if not components:
+		return
+	if not components.child_entered_tree.is_connected(_on_components_changed):
+		components.child_entered_tree.connect(_on_components_changed)
+	if not components.child_exiting_tree.is_connected(_on_components_changed):
+		components.child_exiting_tree.connect(_on_components_changed)
+
+func _on_components_changed(_node: Node) -> void:
+	_components_cache_dirty = true
+	_component_cache.clear()
+
+func _refresh_components_cache() -> void:
+	_components_list_cache.clear()
+	if not components:
+		_components_cache_dirty = false
+		return
+	for child in components.get_children():
+		if child is CharacterComponentBase:
+			_components_list_cache.append(child)
+	_components_cache_dirty = false
+
 func get_component(type: GDScript) -> CharacterComponentBase:
+	if not components:
+		return null
+	if _components_cache_dirty:
+		_refresh_components_cache()
+
 	var type_name := str(type)
 	if _component_cache.has(type_name):
 		var cached = _component_cache[type_name]
@@ -53,31 +72,34 @@ func get_component(type: GDScript) -> CharacterComponentBase:
 			return cached
 		_component_cache.erase(type_name)
 
-	for child in components.get_children():
+	for child in _components_list_cache:
 		if is_instance_of(child, type):
 			_component_cache[type_name] = child
 			return child as CharacterComponentBase
 	return null
 
-## 获取所有组件
 func get_all_components(parent: Node) -> Array[CharacterComponentBase]:
+	if parent == components:
+		if _components_cache_dirty:
+			_refresh_components_cache()
+		return _components_list_cache
+
 	var result: Array[CharacterComponentBase] = []
+	if not parent:
+		return result
 	for child in parent.get_children():
 		if child is CharacterComponentBase:
 			result.append(child)
 	return result
 
-## 获取所有组件的自省数据
 func get_all_component_data() -> Dictionary:
 	var data := {}
 	for comp in get_all_components(components):
 		data[comp.name] = comp.get_component_data()
 	return data
-
 #endregion
 
-#region 物理
-
+#region 驱动
 func _process(delta: float) -> void:
 	var drive_delta := _get_process_delta(delta)
 	for comp in get_all_components(components):
@@ -99,14 +121,11 @@ func _physics_process(delta: float) -> void:
 		move_and_slide()
 	_auto_update_heading()
 
-## 子类重写此方法来提供补偿后的 physics delta
-## 例如玩家免疫时间缩放时返回 TimeController.get_real_delta(delta)
 func _get_physics_delta(delta: float) -> float:
 	if time_immune and _has_time_controller():
 		return TimeController.get_real_delta(delta)
 	return delta
 
-## 子类重写此方法来提供补偿后的 process delta
 func _get_process_delta(delta: float) -> float:
 	if time_immune and _has_time_controller():
 		return TimeController.get_real_delta(delta)
@@ -117,12 +136,15 @@ func _auto_update_heading() -> void:
 		heading = Vector2.RIGHT if velocity.x > 0 else Vector2.LEFT
 
 func _update_body_scale() -> void:
-	if not body: return
+	if not body:
+		return
 	if heading == Vector2.LEFT:
 		body.scale.x = -absf(body.scale.x)
 	else:
 		body.scale.x = absf(body.scale.x)
+#endregion
 
+#region 时间免疫
 func _enter_tree() -> void:
 	_sync_time_immune_registration()
 
@@ -143,11 +165,9 @@ func _should_apply_time_compensation() -> bool:
 
 func _has_time_controller() -> bool:
 	return Engine.has_singleton("TimeController") or get_node_or_null("/root/TimeController") != null
-
 #endregion
 
-#region 暂停控制
-
+#region 暂停
 func set_paused(paused: bool) -> void:
 	is_paused = paused
 	for comp in get_all_components(components):
@@ -156,5 +176,4 @@ func set_paused(paused: bool) -> void:
 func freeze() -> void:
 	velocity = Vector2.ZERO
 	set_paused(true)
-
 #endregion

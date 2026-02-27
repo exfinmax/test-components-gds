@@ -73,6 +73,11 @@ func get_compensation_factor() -> float:
 
 #endregion
 
+func frame_freeze(time_scale: float, duration: float) -> void :
+	engine_time_scale = time_scale
+	await get_tree().create_timer(duration, true, false, true).timeout
+	engine_time_scale = 1
+
 #region 音频补偿（内部）
 
 func _compensate_excluded_audio() -> void:

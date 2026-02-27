@@ -190,12 +190,12 @@ Area2D / Node2D 组件（无法继承 ComponentBase，手动实现同一模式�
 signal enabled_changed(is_enabled: bool)
 
 var enabled: bool = true:
-    set(v):
-        if enabled == v: return
-        enabled = v
-        enabled_changed.emit(enabled)
-        # ComponentBase 子类自动调用 _on_enable/_on_disable
-        # Area2D 子类额外同步 monitoring/monitorable
+	set(v):
+		if enabled == v: return
+		enabled = v
+		enabled_changed.emit(enabled)
+		# ComponentBase 子类自动调用 _on_enable/_on_disable
+		# Area2D 子类额外同步 monitoring/monitorable
 
 # 禁用组件：
 health_component.enabled = false   # 不再受伤
@@ -223,17 +223,17 @@ dash_component.enabled = false     # 中断冲刺并恢复依赖组件
 
 # Character 基类逻辑：
 func _physics_process(delta: float) -> void:
-    var drive_delta := _get_physics_delta(delta)  # 子类可重写
-    for comp in get_all_components():
-        if not comp.self_driven:
-            comp.physics_tick(drive_delta)
-    move_and_slide()
+	var drive_delta := _get_physics_delta(delta)  # 子类可重写
+	for comp in get_all_components():
+		if not comp.self_driven:
+			comp.physics_tick(drive_delta)
+	move_and_slide()
 
 # PlayerComponent 重写：
 func _get_physics_delta(delta: float) -> float:
-    if time_immune:
-        return TimeController.get_real_delta(delta)  # 补偿后的真实 delta
-    return delta
+	if time_immune:
+		return TimeController.get_real_delta(delta)  # 补偿后的真实 delta
+	return delta
 ```
 
 ### 效果对比
@@ -325,7 +325,7 @@ CharacterBody2D (character.gd)
   ├── JumpComponent
   ├── DashComponent
   └── AnimationComponent            ← 自动发现上面所有组件 + AnimationPlayer
-      └── config: AnimationConfig   ← 拖入 .tres 资源
+	  └── config: AnimationConfig   ← 拖入 .tres 资源
 ```
 
 ### 优先级系统
@@ -395,7 +395,7 @@ TimeController.exclude(player)
 
 # 被排除节点中使用补偿 delta
 func _process(delta: float) -> void:
-    var real_delta = TimeController.get_real_delta(delta)
+	var real_delta = TimeController.get_real_delta(delta)
 
 # 恢复受影响
 TimeController.include(player)
@@ -481,11 +481,11 @@ replay_comp.start_replay()
 class_name PlayerSaveable extends SaveableComponent
 
 func get_save_data() -> Dictionary:
-    return {"hp": owner.hp, "position": owner.global_position}
+	return {"hp": owner.hp, "position": owner.global_position}
 
 func apply_save_data(data: Dictionary) -> void:
-    owner.hp = data.get("hp", 100)
-    owner.global_position = data.get("position", Vector2.ZERO)
+	owner.hp = data.get("hp", 100)
+	owner.global_position = data.get("position", Vector2.ZERO)
 
 # 2. 存档/读档
 SaveManager.save_game()
@@ -498,16 +498,16 @@ SaveManager.load_game()
 // 1. 实现 ISaveable 接口（无需继承特定基类）
 public partial class PlayerData : Node, ISaveable
 {
-    public string NodeUuid { get; set; } = "player_main";
-    public bool IsStatic => false;
+	public string NodeUuid { get; set; } = "player_main";
+	public bool IsStatic => false;
 
-    public Dictionary<string, Variant> GetSaveData() => new()
-    {
-        ["hp"] = GetParent<Player>().Hp,
-        ["pos_x"] = GetParent<Player>().GlobalPosition.X,
-    };
+	public Dictionary<string, Variant> GetSaveData() => new()
+	{
+		["hp"] = GetParent<Player>().Hp,
+		["pos_x"] = GetParent<Player>().GlobalPosition.X,
+	};
 
-    public void ApplySaveData(Dictionary<string, Variant> data) { ... }
+	public void ApplySaveData(Dictionary<string, Variant> data) { ... }
 }
 
 // 2. 注册后存档

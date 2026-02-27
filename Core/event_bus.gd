@@ -42,13 +42,13 @@ func unsubscribe(event_name: StringName, callback: Callable) -> void:
 		_listeners.erase(event_name)
 
 ## 发送动态事件
-func emit_event(event_name: StringName, data:CustomData) -> void:
+func emit_event(event_name: StringName, ...arg:Array) -> void:
 	if not _listeners.has(event_name): return
 	# 复制列表防止迭代中修改
 	var list: Array = _listeners[event_name].duplicate()
 	for callback: Callable in list:
-		if callback.is_valid():
-			callback.call(data)
+		if callback.is_valid() && arg.is_empty() == false:
+			callback.callv(arg)
 
 ## 清除某个事件的所有监听
 func clear_event(event_name: StringName) -> void:
@@ -64,7 +64,7 @@ func clear_all() -> void:
 
 func subscribe_once(event_name: StringName, callback: Callable) -> void:
 	var wrapper: Callable
-	wrapper = func(data: Dictionary) -> void:
+	wrapper = func(data) -> void:
 		callback.call(data)
 		unsubscribe(event_name, wrapper)
 	subscribe(event_name, wrapper)

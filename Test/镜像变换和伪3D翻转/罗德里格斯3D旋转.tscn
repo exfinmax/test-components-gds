@@ -6,7 +6,7 @@
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_i7xix"]
 shader = ExtResource("1_i7xix")
 shader_parameter/u = Vector3(1, 0, 0)
-shader_parameter/theta = 15.785
+shader_parameter/theta = 18.025
 shader_parameter/tr_x = 0.0
 shader_parameter/tr_y = 0.0
 shader_parameter/tr_z = 1.0

@@ -58,3 +58,30 @@ func get_all_uuids() -> PackedStringArray:
 	for uuid in _data_map:
 		uuids.append(uuid)
 	return uuids
+
+## 导出为 Dictionary（用于 JSON 导出）
+func to_dict() -> Dictionary:
+	if _data_map.is_empty() and not saved_data_list.is_empty():
+		_rebuild_index()
+	var entries: Array[Dictionary] = []
+	for uuid in _data_map:
+		var sd: SaveData = _data_map[uuid]
+		entries.append({
+			"node_uuid": sd.node_uuid,
+			"data": sd.data,
+		})
+	return {
+		"version": 1,
+		"entries": entries,
+	}
+
+## 从 Dictionary 恢复（用于 JSON 导入）
+func from_dict(payload: Dictionary) -> void:
+	clear()
+	var entries: Array = payload.get("entries", [])
+	for item in entries:
+		if item is Dictionary:
+			var uuid: String = item.get("node_uuid", "")
+			var data: Dictionary = item.get("data", {})
+			if not uuid.is_empty():
+				set_data(uuid, data)
