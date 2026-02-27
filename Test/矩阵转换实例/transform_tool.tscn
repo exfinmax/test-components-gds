@@ -1,0 +1,54 @@
+[gd_scene format=3 uid="uid://cshscgbwcomng"]
+
+[ext_resource type="Script" uid="uid://dgohvq7s8jwrm" path="res://Test/矩阵转换实例/interactive_transform_tool.gd" id="1_px6jq"]
+
+[sub_resource type="Gradient" id="Gradient_eokvj"]
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_cbcto"]
+gradient = SubResource("Gradient_eokvj")
+width = 72
+height = 72
+
+[node name="TransformTool" type="Node2D" unique_id=1046185810]
+script = ExtResource("1_px6jq")
+
+[node name="TargetSprite" type="Sprite2D" parent="." unique_id=1636852980]
+texture = SubResource("GradientTexture2D_cbcto")
+centered = false
+
+[node name="CoordinateSystem" type="Node2D" parent="." unique_id=1798958716]
+position = Vector2(576, 324)
+
+[node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=1402320030]
+
+[node name="PanelContainer" type="PanelContainer" parent="CanvasLayer" unique_id=1458027736]
+anchors_preset = 10
+anchor_right = 1.0
+offset_left = -0.5
+offset_right = 1158.0
+offset_bottom = 175.0
+grow_horizontal = 2
+
+[node name="VBoxContainer" type="HBoxContainer" parent="CanvasLayer/PanelContainer" unique_id=840793050]
+layout_mode = 2
+
+[node name="MatrixDisplay" type="RichTextLabel" parent="CanvasLayer/PanelContainer/VBoxContainer" unique_id=605654790]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+bbcode_enabled = true
+
+[node name="CoordDisplay" type="RichTextLabel" parent="CanvasLayer/PanelContainer/VBoxContainer" unique_id=1166554170]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+bbcode_enabled = true
+
+[node name="Camera2D" type="Camera2D" parent="." unique_id=83680798]
+limit_enabled = false
+limit_left = 0
+limit_top = 0
+limit_right = 1152
+limit_bottom = 648

@@ -1,0 +1,17 @@
+[gd_scene format=3 uid="uid://du4xfxrxlm3v2"]
+
+[ext_resource type="Shader" uid="uid://daj5jfbrr0xqt" path="res://shaders/vhs/vhs.gdshader" id="1_bim1e"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_tl1vx"]
+shader = ExtResource("1_bim1e")
+shader_parameter/tape_wave_amount = 0.003
+shader_parameter/tape_noise_amount = 0.05
+shader_parameter/color_bleed_amount = 0.005
+
+[node name="Vhs" type="ColorRect" unique_id=1887897329]
+material = SubResource("ShaderMaterial_tl1vx")
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2

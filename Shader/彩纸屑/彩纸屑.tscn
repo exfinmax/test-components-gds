@@ -1,0 +1,29 @@
+[gd_scene format=3 uid="uid://bvkbuxakv8ghr"]
+
+[ext_resource type="Shader" uid="uid://b0sb11qk1f5bq" path="res://Shader/彩纸屑/彩纸屑.gdshader" id="1_havhb"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_axd7j"]
+shader = ExtResource("1_havhb")
+shader_parameter/speed = 120.0
+shader_parameter/sway_strength = 60.0
+shader_parameter/sway_speed = 1.4
+shader_parameter/spin_speed = 3.5
+shader_parameter/piece_size = 10.0
+shader_parameter/aspect_ratio = 2.0
+shader_parameter/resolution = Vector2(1152, 648)
+shader_parameter/col0 = Color(1, 0.2, 0.2, 1)
+shader_parameter/col1 = Color(1, 0.75, 0.1, 1)
+shader_parameter/col2 = Color(0.1, 0.8, 0.3, 1)
+shader_parameter/col3 = Color(0.15, 0.55, 1, 1)
+shader_parameter/col4 = Color(0.85, 0.2, 1, 1)
+shader_parameter/col5 = Color(1, 0.4, 0.7, 1)
+shader_parameter/col6 = Color(0.1, 0.9, 0.95, 1)
+shader_parameter/col7 = Color(1, 1, 1, 1)
+
+[node name="彩纸屑" type="ColorRect" unique_id=1175640593]
+material = SubResource("ShaderMaterial_axd7j")
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2

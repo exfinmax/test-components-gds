@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://bkthomotf3bwi"]
 
-[ext_resource type="Shader" uid="uid://bvt6c0havdoh5" path="res://Shader/shaders/多边形波浪溶解.gdshader" id="1_dp86t"]
-[ext_resource type="Script" uid="uid://yovc2tttlqu" path="res://Shader/溶解多边形.gd" id="2_0t46m"]
+[ext_resource type="Shader" uid="uid://bvt6c0havdoh5" path="res://Shader/溶解多边形/多边形波浪溶解.gdshader" id="1_dp86t"]
+[ext_resource type="Script" uid="uid://yovc2tttlqu" path="res://Shader/溶解多边形/溶解多边形.gd" id="2_0t46m"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_dp86t"]
 shader = ExtResource("1_dp86t")

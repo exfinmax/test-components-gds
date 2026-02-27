@@ -1,0 +1,23 @@
+[gd_scene format=3 uid="uid://bnw73i6brseb0"]
+
+[ext_resource type="Shader" uid="uid://b1me40wt6epsx" path="res://Shader/伪3D旋转/pseudo_3d_flip_simple.gdshader" id="1_i4rr4"]
+[ext_resource type="Texture2D" uid="uid://2ssgl822b682" path="res://Shader/伪3D旋转/旋转鸡块.png" id="2_dxema"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_2ued7"]
+shader = ExtResource("1_i4rr4")
+shader_parameter/fov = 90.0
+shader_parameter/cull_back = false
+shader_parameter/y_rot = 0.0
+shader_parameter/x_rot = 0.0
+shader_parameter/rotate_degree = 0.0
+shader_parameter/tr_x = 0.0
+shader_parameter/tr_y = 0.0
+shader_parameter/y_speed = 0.0
+shader_parameter/x_speed = 100.0
+shader_parameter/inset = 0.0
+
+[node name="伪3d旋转" type="Sprite2D" unique_id=1757671883]
+material = SubResource("ShaderMaterial_2ued7")
+position = Vector2(545.5, 299)
+scale = Vector2(0.796875, 1.125)
+texture = ExtResource("2_dxema")

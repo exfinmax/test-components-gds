@@ -1,5 +1,4 @@
 extends Node
-class_name ObjectPool
 ## 对象池 - 预创建对象并重复使用，避免频繁 instantiate/queue_free
 ##
 ## 为什么需要对象池？

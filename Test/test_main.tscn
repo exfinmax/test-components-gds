@@ -8,12 +8,18 @@
 [ext_resource type="Shader" uid="uid://627gjef4iua5" path="res://Shader/shaders/screen_reader.gdshader" id="8_c60bn"]
 [ext_resource type="Shader" uid="uid://c0c1ed0pd02hs" path="res://Shader/shaders/dissolve.gdshader" id="9_nedis"]
 [ext_resource type="Shader" uid="uid://de0os3hbq0wnl" path="res://Shader/shaders/masking.gdshader" id="10_b8pac"]
-[ext_resource type="PackedScene" uid="uid://b30xogeuxf346" path="res://Shader/融球.tscn" id="11_4hafw"]
+[ext_resource type="PackedScene" uid="uid://b30xogeuxf346" path="res://Shader/融球/融球.tscn" id="11_4hafw"]
 [ext_resource type="Shader" uid="uid://uac0633g86jv" path="res://Shader/shaders/distortion.gdshader" id="11_b8pac"]
 [ext_resource type="Shader" uid="uid://hsm12ab75sic" path="res://Shader/shaders/波浪溶解.gdshader" id="11_tf41q"]
 [ext_resource type="PackedScene" uid="uid://b3a8aocxv2hur" path="res://CharacterComponents/Character/Player/player_component.tscn" id="13_fub5t"]
 [ext_resource type="PackedScene" uid="uid://d3r023r7l8eym" path="res://CharacterComponents/Character/ReplayEnemy/enemy_component.tscn" id="14_80qgb"]
-[ext_resource type="PackedScene" uid="uid://bkthomotf3bwi" path="res://Shader/polygon_2d.tscn" id="14_57666"]
+[ext_resource type="PackedScene" uid="uid://bkthomotf3bwi" path="res://Shader/溶解多边形/polygon_2d.tscn" id="14_57666"]
+[ext_resource type="PackedScene" uid="uid://c0tjucbpcifgm" path="res://Shader/假色后处理/假色.tscn" id="15_80qgb"]
+[ext_resource type="PackedScene" uid="uid://dkw2vsof6pa0l" path="res://Shader/黑洞/黑洞.tscn" id="16_jm6yk"]
+[ext_resource type="Shader" uid="uid://bq2r7wp4l4r26" path="res://Shader/黑洞/黑洞.gdshader" id="17_gcoqu"]
+[ext_resource type="Shader" uid="uid://bjytv1rwpurqn" path="res://Shader/shaders/反色.gdshader" id="18_gcoqu"]
+[ext_resource type="PackedScene" uid="uid://0oop8n6pjqqs" path="res://Shader/高斯模糊/高斯模糊.tscn" id="19_5d7ce"]
+[ext_resource type="Shader" uid="uid://bogophcrywffs" path="res://Shader/高斯模糊/高斯模糊.gdshader" id="20_5itug"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_c60bn"]
 shader = ExtResource("1_saih3")
@@ -32,14 +38,6 @@ gradient = SubResource("Gradient_c60bn")
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_nedis"]
 shader = ExtResource("7_soafa")
 shader_parameter/gradient_texture = SubResource("GradientTexture2D_xbli7")
-
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_4hafw"]
-shader = ExtResource("8_c60bn")
-
-[sub_resource type="Gradient" id="Gradient_b8pac"]
-
-[sub_resource type="GradientTexture2D" id="GradientTexture2D_4hafw"]
-gradient = SubResource("Gradient_b8pac")
 
 [sub_resource type="FastNoiseLite" id="FastNoiseLite_tf41q"]
 
@@ -98,7 +96,35 @@ shader_parameter/offset2 = Vector2(0.2, 0.2)
 shader_parameter/noise_tex1 = SubResource("NoiseTexture2D_4hafw")
 shader_parameter/noise_tex2 = SubResource("NoiseTexture2D_vbr4w")
 
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_4hafw"]
+shader = ExtResource("8_c60bn")
+
+[sub_resource type="Gradient" id="Gradient_b8pac"]
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_4hafw"]
+gradient = SubResource("Gradient_b8pac")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_h4khl"]
+shader = ExtResource("17_gcoqu")
+shader_parameter/_ShowDebugColors = false
+shader_parameter/_DistortionStrenght = 0.9
+shader_parameter/_Attenuation = 10.0
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_5d7ce"]
+shader = ExtResource("18_gcoqu")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_y1wpr"]
+shader = ExtResource("20_5itug")
+shader_parameter/strength = 3.3
+shader_parameter/mix_percentage = 0.0
+
 [node name="TestMain" type="Node2D" unique_id=459473334]
+
+[node name="PlayerComponent" parent="." unique_id=289685672 instance=ExtResource("13_fub5t")]
+
+[node name="EnemyComponent" parent="." unique_id=2002685114 node_paths=PackedStringArray("player_target") instance=ExtResource("14_80qgb")]
+player_target = NodePath("../PlayerComponent")
+auto_start = true
 
 [node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=1712228342]
 layer = -1
@@ -131,18 +157,12 @@ color = Color(0.33163944, 0.33163944, 0.3316394, 1)
 
 [node name="DebugConsoleWindow" parent="." unique_id=567176045 instance=ExtResource("2_tcanr")]
 initial_position = 0
-position = Vector2i(1118, 506)
+position = Vector2i(1118, 365)
 
 [node name="Gradient" type="Sprite2D" parent="." unique_id=1086917500]
 material = SubResource("ShaderMaterial_nedis")
 position = Vector2(182, 177)
 texture = ExtResource("2_soafa")
-
-[node name="ScreenReading" type="Sprite2D" parent="." unique_id=1598968182]
-material = SubResource("ShaderMaterial_4hafw")
-position = Vector2(262.00006, 260)
-scale = Vector2(10.6171875, 4.9156246)
-texture = SubResource("GradientTexture2D_4hafw")
 
 [node name="Dissolve" type="Sprite2D" parent="." unique_id=1626097848]
 material = SubResource("ShaderMaterial_xbli7")
@@ -174,12 +194,39 @@ position = Vector2(1020, 271)
 scale = Vector2(13.5, 4.6250005)
 texture = ExtResource("2_soafa")
 
+[node name="ScreenReading" type="Sprite2D" parent="." unique_id=1598968182]
+material = SubResource("ShaderMaterial_4hafw")
+position = Vector2(92.000015, 255)
+scale = Vector2(10.6171875, 4.9156246)
+texture = SubResource("GradientTexture2D_4hafw")
+
 [node name="Polygon2D" parent="." unique_id=1548808755 instance=ExtResource("14_57666")]
 position = Vector2(1969, -778)
 polygon = PackedVector2Array(-1546, -86, 908, 237, 605, 781)
 
-[node name="PlayerComponent" parent="." unique_id=289685672 instance=ExtResource("13_fub5t")]
+[node name="假色" parent="." unique_id=2029849941 instance=ExtResource("15_80qgb")]
+offset_left = 107.0
+offset_top = -11.0
+offset_right = 666.0
+offset_bottom = 530.0
 
-[node name="EnemyComponent" parent="." unique_id=2002685114 node_paths=PackedStringArray("player_target") instance=ExtResource("14_80qgb")]
-player_target = NodePath("../PlayerComponent")
-auto_start = true
+[node name="黑洞" parent="." unique_id=771001890 instance=ExtResource("16_jm6yk")]
+material = SubResource("ShaderMaterial_h4khl")
+offset_left = 210.0
+offset_top = 125.0
+offset_right = 535.0
+offset_bottom = 370.0
+
+[node name="反色" type="ColorRect" parent="." unique_id=1102852462]
+material = SubResource("ShaderMaterial_5d7ce")
+offset_left = 16.0
+offset_top = -42.0
+offset_right = 255.0
+offset_bottom = 169.0
+
+[node name="高斯模糊" parent="." unique_id=1175640593 instance=ExtResource("19_5d7ce")]
+material = SubResource("ShaderMaterial_y1wpr")
+offset_left = -4.0
+offset_top = -30.0
+offset_right = 1147.92
+offset_bottom = 567.0

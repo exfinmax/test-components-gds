@@ -1,0 +1,31 @@
+[gd_scene format=3 uid="uid://boyv5mwjnwt7e"]
+
+[ext_resource type="Shader" uid="uid://dtlb83je8gmf6" path="res://Test/镜像变换和伪3D翻转/rodrigues_rotation.gdshader" id="1_i7xix"]
+[ext_resource type="Script" uid="uid://dy4tmulh8sdlf" path="res://Test/镜像变换和伪3D翻转/test_rodrigues.gd" id="1_mw6i2"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_i7xix"]
+shader = ExtResource("1_i7xix")
+shader_parameter/u = Vector3(1, 0, 0)
+shader_parameter/theta = 15.785
+shader_parameter/tr_x = 0.0
+shader_parameter/tr_y = 0.0
+shader_parameter/tr_z = 1.0
+shader_parameter/light_dir = Vector3(0, 0, 1)
+shader_parameter/ambient = 0.2
+shader_parameter/fov = 90.0
+shader_parameter/cull_back = false
+
+[sub_resource type="Gradient" id="Gradient_p8xmb"]
+offsets = PackedFloat32Array(0)
+colors = PackedColorArray(0, 0, 0.7411765, 1)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_sinmp"]
+gradient = SubResource("Gradient_p8xmb")
+width = 200
+height = 200
+
+[node name="罗德里格斯3d旋转" type="Sprite2D" unique_id=663596712]
+material = SubResource("ShaderMaterial_i7xix")
+position = Vector2(506.5, 282)
+texture = SubResource("GradientTexture2D_sinmp")
+script = ExtResource("1_mw6i2")

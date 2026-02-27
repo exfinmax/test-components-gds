@@ -1,0 +1,16 @@
+[gd_scene format=3 uid="uid://0oop8n6pjqqs"]
+
+[ext_resource type="Shader" uid="uid://bogophcrywffs" path="res://Shader/高斯模糊/高斯模糊.gdshader" id="1_p25ol"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_wljgx"]
+shader = ExtResource("1_p25ol")
+shader_parameter/strength = 3.3
+shader_parameter/mix_percentage = 0.0
+
+[node name="高斯模糊" type="ColorRect" unique_id=1175640593]
+material = SubResource("ShaderMaterial_wljgx")
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2

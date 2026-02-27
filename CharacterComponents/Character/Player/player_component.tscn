@@ -12,7 +12,6 @@
 [ext_resource type="PackedScene" uid="uid://xyuo71ffcdx5" path="res://Combat/hurtbox_component.tscn" id="10_hurtbox"]
 [ext_resource type="Script" uid="uid://sl05k6aoy1oa" path="res://CharacterComponents/Components/animation_config.gd" id="11_ilhos"]
 [ext_resource type="Script" uid="uid://ddup5xawg6y3m" path="res://VFX/CanYing/canying.gd" id="12_6a0bx"]
-[ext_resource type="Script" uid="uid://fg4a1kqlhyds" path="res://2dCharacterStateMachine/player_saveable.gd" id="12_vs43f"]
 
 [sub_resource type="Gradient" id="Gradient_player"]
 colors = PackedColorArray(0.2, 0.6, 1, 1, 0.2, 0.6, 1, 0)
@@ -106,7 +105,3 @@ self_driven = false
 unique_name_in_owner = true
 script = ExtResource("12_6a0bx")
 metadata/_custom_type_script = "uid://ddup5xawg6y3m"
-
-[node name="Saveable" type="Node" parent="." unique_id=53716990]
-script = ExtResource("12_vs43f")
-node_uuid = "player"

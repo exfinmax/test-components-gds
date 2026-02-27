@@ -124,8 +124,7 @@ func trigger_action(action_name: StringName, override_score: int = -1) -> void:
 		new_high_combo.emit(highest_combo)
 	
 	# 通知 EventBus
-	if EventBus:
-		EventBus.score_changed.emit(total_score)
+	EventBus.emit_event("score_changed",CustomData.new())
 
 #endregion
 

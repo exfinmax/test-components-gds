@@ -1,0 +1,17 @@
+[gd_scene format=3 uid="uid://dkw2vsof6pa0l"]
+
+[ext_resource type="Shader" uid="uid://bq2r7wp4l4r26" path="res://Shader/黑洞/黑洞.gdshader" id="1_7apcu"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_g5yc1"]
+shader = ExtResource("1_7apcu")
+shader_parameter/_ShowDebugColors = false
+shader_parameter/_DistortionStrenght = 0.9
+shader_parameter/_Attenuation = 10.0
+
+[node name="黑洞" type="ColorRect" unique_id=771001890]
+material = SubResource("ShaderMaterial_g5yc1")
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2

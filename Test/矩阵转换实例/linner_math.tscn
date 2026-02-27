@@ -1,0 +1,35 @@
+[gd_scene format=3 uid="uid://bftnnfw046s51"]
+
+[ext_resource type="Script" uid="uid://dt5i4iw1lat2g" path="res://Test/矩阵转换实例/manual_transform_2d.gd" id="1_4tmnh"]
+
+[sub_resource type="Gradient" id="Gradient_w1n4y"]
+offsets = PackedFloat32Array(0)
+colors = PackedColorArray(0, 0, 0, 1)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_4tmnh"]
+gradient = SubResource("Gradient_w1n4y")
+
+[sub_resource type="Gradient" id="Gradient_j2rqi"]
+offsets = PackedFloat32Array(1)
+colors = PackedColorArray(1, 1, 1, 1)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_v8ue4"]
+gradient = SubResource("Gradient_j2rqi")
+
+[node name="LinnerMath" type="Node2D" unique_id=1874939382]
+script = ExtResource("1_4tmnh")
+manual_scale = Vector2(1, 1)
+x_rotate_degree = 49
+
+[node name="SpriteEngine" type="Sprite2D" parent="." unique_id=716781893]
+position = Vector2(342, 287)
+texture = SubResource("GradientTexture2D_4tmnh")
+
+[node name="SpriteManual" type="Sprite2D" parent="." unique_id=934667718]
+position = Vector2(791, 299)
+rotation = -0.567232
+texture = SubResource("GradientTexture2D_v8ue4")
+
+[node name="LabelInfo" type="Label" parent="." unique_id=302014497]
+offset_right = 40.0
+offset_bottom = 23.0
