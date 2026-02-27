@@ -69,3 +69,21 @@
 2. 再接 `Gameplay/Common`。
 3. 项目是平台跳跃时再引入 `Gameplay/Platformer`。
 4. 项目有时间能力时再引入 `Gameplay/Time`。
+
+## 本轮新增（核心/通用补强）
+
+### Foundation
+- `DataBlackboardComponent`
+  - 文件：`Modules/Foundation/Components/data_blackboard_component.gd`
+  - 作用：提供跨组件共享上下文，降低硬引用。
+- `TickSchedulerComponent`
+  - 文件：`Modules/Foundation/Components/tick_scheduler_component.gd`
+  - 作用：任务分频调度，减少全局逐帧负载。
+
+### Gameplay/Common
+- `StateStackComponent`
+  - 文件：`Modules/Gameplay/Common/Components/state_stack_component.gd`
+  - 作用：可嵌套状态流管理（交互/过场/暂停等）。
+- `TriggerRouterComponent`
+  - 文件：`Modules/Gameplay/Common/Components/trigger_router_component.gd`
+  - 作用：统一触发事件路由，减少场景连线复杂度。
