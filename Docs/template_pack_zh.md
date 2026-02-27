@@ -2,73 +2,65 @@
 
 ## 目标
 
-这套模板不是“继承旧组件体系”，而是以 **可独立拼装** 为目标：
-- UI：直接拖进场景即可用；
-- VFX：脚本驱动，尽量少依赖你的游戏结构；
-- Demo：`Test/template_showcase.tscn` 提供一键体验。
+模板层追求“低耦合可复用”：
+- UI 模板偏展示，不耦合具体玩法状态机。
+- VFX 模板偏反馈，不绑定具体角色逻辑。
+- 通过公开方法进行最小接入。
 
 ## UI 模板
 
 1. `Templates/UI/time_ability_hud.tscn`
 - 脚本：`time_ability_hud.gd`
-- 能力：显示能量、回溯储能、提示文本。
-- 常用接口：
-  - `set_energy(current, max)`
-  - `set_rewind_charge(ratio)`
-  - `show_hint(text)`
+- 用途：显示能量、回溯储能、提示文本。
+- 接口：`set_energy`、`set_rewind_charge`、`show_hint`。
 
 2. `Templates/UI/toast_feed.tscn`
 - 脚本：`toast_feed.gd`
-- 能力：屏幕消息流提示。
-- 常用接口：
-  - `push_toast(text)`
+- 用途：消息流提示。
+- 接口：`push_toast`。
 
 3. `Templates/UI/cooldown_chip.tscn`
 - 脚本：`cooldown_chip.gd`
-- 能力：单个技能冷却状态条。
-- 常用接口：
-  - `set_ready()`
-  - `set_cooldown(remaining, duration)`
+- 用途：单技能冷却展示。
+- 接口：`set_ready`、`set_cooldown`。
+
+4. `Templates/UI/save_slot_panel.tscn`
+- 脚本：`save_slot_panel.gd`
+- 用途：多槽位存档管理面板。
+- 接口：`refresh_slots`、`save_slot`、`load_slot`、`delete_slot`。
+
+5. `Templates/UI/ability_wheel_hud.tscn`
+- 脚本：`ability_wheel_hud.gd`
+- 用途：能力轮盘 HUD（选中态 + 冷却展示）。
+- 接口：`set_selected`、`set_cooldown`、`set_hint`。
 
 ## VFX 模板
 
 1. `Templates/VFX/time_echo_visual.tscn`
 - 脚本：`time_echo_visual.gd`
-- 能力：残影拖尾（回声/回溯反馈）。
-- 常用接口：
-  - `set_active(true/false)`
+- 用途：回声残影反馈。
+- 接口：`set_active`。
 
 2. `Templates/VFX/telegraph_ring.tscn`
 - 脚本：`telegraph_ring.gd`
-- 能力：机关预警环动画。
-- 常用接口：
-  - `play(duration)`
+- 用途：机关预警圈。
+- 接口：`play`。
 
 3. `Templates/VFX/freeze_frame_effect.gd`
-- 能力：冻结帧（短暂停顿反馈）。
-- 常用接口：
-  - `play(duration)`
+- 用途：冻结帧反馈。
+- 接口：`play`。
 
 4. `Templates/VFX/camera_shake_template.gd`
-- 能力：轻量相机震动。
-- 常用接口：
-  - `shake(intensity, duration)`
+- 用途：相机震动反馈。
+- 接口：`shake`。
 
-## 演示场景
+5. `Templates/VFX/screen_flash_overlay.tscn`
+- 脚本：`screen_flash_overlay.gd`
+- 用途：全屏闪白/闪色反馈。
+- 接口：`flash`。
 
-- 文件：`Test/template_showcase.tscn`
-- 脚本：`Test/template_showcase.gd`
-- 按键：
-  - `R` 按住：模拟回溯 + 回声拖影
-  - `Q`：释放回声（带冷却）
-  - `T`：预警环
-  - `F`：冻结帧 + 震动
-  - `E`：消息提示
+## 建议用法
 
-## 接入建议
-
-1. 先把 HUD + Toast 接入主场景，统一反馈层。
-2. 回溯开始/结束时切换 `TimeEchoVisual`。
-3. 陷阱触发前统一调用 `TelegraphRing.play()`。
-4. 关键事件（回声释放、受击、开关成功）统一走 `FreezeFrameEffect + CameraShake`。
-\n\n## 存档模板\n\n- Templates/UI/save_slot_panel.tscn\n  - 脚本：save_slot_panel.gd\n  - 能力：列出多槽位、保存/读取/删除/刷新。\n  - 依赖：SaveManager 新增多槽位 API。\n
+1. 常驻 `HUD + Toast + AbilityWheel` 作为统一信息层。
+2. 把命中、机关、能力释放等事件统一转发到 VFX 模板层。
+3. 通过 `Gameplay` 层组件发信号，不在表现层反向驱动玩法逻辑。
