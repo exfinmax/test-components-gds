@@ -108,7 +108,7 @@ func _on_open_demo():
 		dlg = ConfirmationDialog.new()
 		dlg.name = "ComponentLibraryDemoDialog"
 		dlg.title = "Select Pack Demo"
-		dlg.popup_centered_minsize()
+		#dlg.popup_centered_minsize() not available, will call popup() later
 		var grid = GridContainer.new()
 		grid.columns = 3
 		dlg.add_child(grid)
@@ -122,7 +122,8 @@ func _on_open_demo():
 			h.add_child(thumb)
 			var btn = Button.new()
 			btn.text = p
-			btn.pressed.connect(Callable(self, "_open_pack_demo"), [p, dlg])
+			var cb = Callable(self, "_open_pack_demo").bind(p, dlg)
+			btn.pressed.connect(cb)
 			h.add_child(btn)
 			grid.add_child(h)
 		get_editor_interface().get_editor_main_screen().add_child(dlg)
@@ -143,7 +144,8 @@ func _on_new_pack() -> void:
 	line.placeholder_text = "Enter pack name"
 	dlg.add_child(line)
 	dlg.set_hide_on_ok(false)
-	dlg.confirmed.connect(Callable(self, "_create_pack"), [line, dlg])
+	var cb2 = Callable(self, "_create_pack").bind(line, dlg)
+	dlg.confirmed.connect(cb2)
 	get_editor_interface().get_editor_main_screen().add_child(dlg)
 	dlg.popup_centered()
 
@@ -152,6 +154,10 @@ func _create_pack(line:LineEdit, dlg:AcceptDialog) -> void:
 	var name = line.text.strip_edges()
 	if name == "":
 		push_error("Pack name cannot be empty")
+		return
+	# only allow alphanumeric and underscore
+	if name.findn("^[A-Za-z0-9_]+$") != 0:
+		push_error("Pack name must be alphanumeric or underscore")
 		return
 	var basepath = "res://ComponentLibrary/Packs/%s".format(name)
 	var dir = DirAccess.open("res://ComponentLibrary/Packs")
@@ -167,7 +173,7 @@ func _create_pack(line:LineEdit, dlg:AcceptDialog) -> void:
 		root.set_script(load("res://ComponentLibrary/Shared/pack_demo.gd"))
 		root.set("pack_name", name)
 		demo_scene.pack(root)
-		ResourceSaver.save(basepath + "/Demo/" + name.to_lower() + "_demo.tscn", demo_scene)
+		ResourceSaver.save(demo_scene, basepath + "/Demo/" + name.to_lower() + "_demo.tscn")
 		# generate empty thumbnail
 		var thumb_path = basepath + "/Demo/preview.png"
 		var img = Image.new()
@@ -175,7 +181,7 @@ func _create_pack(line:LineEdit, dlg:AcceptDialog) -> void:
 		img.fill(Color(0,0,0,0))
 		var tex = ImageTexture.new()
 		tex.create_from_image(img)
-		ResourceSaver.save(thumb_path, tex)
+		ResourceSaver.save(tex, thumb_path)
 		# open newly created demo
 		get_editor_interface().open_scene_from_path(basepath + "/Demo/" + name.to_lower() + "_demo.tscn")
 	else:
@@ -194,7 +200,8 @@ func _on_new_component() -> void:
 	vbox.add_child(comp_label); vbox.add_child(comp_edit)
 	dlg.add_child(vbox)
 	dlg.set_hide_on_ok(false)
-	dlg.confirmed.connect(Callable(self, "_create_component"), [pack_edit, comp_edit, dlg])
+	var cb3 = Callable(self, "_create_component").bind(pack_edit, comp_edit, dlg)
+	dlg.confirmed.connect(cb3)
 	get_editor_interface().get_editor_main_screen().add_child(dlg)
 	dlg.popup_centered()
 
