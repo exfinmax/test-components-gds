@@ -36,26 +36,33 @@ var _registered_types: Array[String] = []
 # list of pack names (filled at runtime)
 var _packs: Array[String] = []
 
+func _load_packs() -> void:
+	_packs.clear()
+	var dir = DirAccess.open("res://ComponentLibrary/Packs")
+	if dir:
+		while true:
+			var name = dir.get_next()
+			if name == "":
+				break
+			if dir.current_is_dir():
+				_packs.append(name)
+	# sort for consistent order
+	_packs.sort()
+
 func _enter_tree() -> void:
 	var icon := _load_icon()
 	# register dependency scripts first
 	for config in DEPENDENCY_CONFIGS:
 		_register_config(config, icon)
 
-	# discover pack folders and register any components inside
-	var packs_dir = DirAccess.open("res://ComponentLibrary/Packs")
-	if packs_dir:
-		while true:
-			var pack = packs_dir.get_next()
-			if pack == "":
-				break
-			if packs_dir.current_is_dir():
-				_packs.append(pack)
-				# scan components subdirectory
-				var comp_path = "res://ComponentLibrary/Packs/%s/Components".format(pack)
-				var comp_dir = DirAccess.open(comp_path)
-				if comp_dir:
-					_scan_and_register(comp_dir, comp_path, icon)
+	# initial pack scan
+	_load_packs()
+	# register components within each pack
+	for pack in _packs:
+		var comp_path = "res://ComponentLibrary/Packs/%s/Components".format(pack)
+		var comp_dir = DirAccess.open(comp_path)
+		if comp_dir:
+			_scan_and_register(comp_dir, comp_path, icon)
 
 	# add demo menu
 	add_tool_menu_item("ComponentLibrary/Open Demo", Callable(self, "_on_open_demo"))
@@ -102,6 +109,8 @@ func _scan_and_register(dir:DirAccess, base_path:String, icon:Texture2D) -> void
 				push_warning("[component_library_share] failed to load %s" % full)
 
 func _on_open_demo():
+	# refresh pack list each time
+	_load_packs()
 	# custom grid showing thumbnails if available
 	var dlg = get_node_or_null("/root/ComponentLibraryDemoDialog")
 	if dlg == null:
@@ -155,8 +164,7 @@ func _create_pack(line:LineEdit, dlg:AcceptDialog) -> void:
 	if name == "":
 		push_error("Pack name cannot be empty")
 		return
-	# only allow alphanumeric and underscore
-	if name.findn("^[A-Za-z0-9_]+$") != 0:
+	if not name.match("^[A-Za-z0-9_]+$"):
 		push_error("Pack name must be alphanumeric or underscore")
 		return
 	var basepath = "res://ComponentLibrary/Packs/%s".format(name)
@@ -166,6 +174,9 @@ func _create_pack(line:LineEdit, dlg:AcceptDialog) -> void:
 		dir.make_dir(name + "/Components")
 		dir.make_dir(name + "/Demo")
 		dir.make_dir(name + "/Templates")
+		# keep pack list current
+		if not _packs.has(name):
+			_packs.append(name)
 		# create default demo scene
 		var demo_scene = PackedScene.new()
 		var root = Node.new()
@@ -173,7 +184,7 @@ func _create_pack(line:LineEdit, dlg:AcceptDialog) -> void:
 		root.set_script(load("res://ComponentLibrary/Shared/pack_demo.gd"))
 		root.set("pack_name", name)
 		demo_scene.pack(root)
-		ResourceSaver.save(demo_scene, basepath + "/Demo/" + name.to_lower() + "_demo.tscn")
+		ResourceSaver.save(basepath + "/Demo/" + name.to_lower() + "_demo.tscn", demo_scene)
 		# generate empty thumbnail
 		var thumb_path = basepath + "/Demo/preview.png"
 		var img = Image.new()
@@ -181,33 +192,36 @@ func _create_pack(line:LineEdit, dlg:AcceptDialog) -> void:
 		img.fill(Color(0,0,0,0))
 		var tex = ImageTexture.new()
 		tex.create_from_image(img)
-		ResourceSaver.save(tex, thumb_path)
+		ResourceSaver.save(thumb_path, tex)
 		# open newly created demo
 		get_editor_interface().open_scene_from_path(basepath + "/Demo/" + name.to_lower() + "_demo.tscn")
 	else:
 		push_error("Pack '%s' already exists or packs directory missing" % name)
 
 func _on_new_component() -> void:
-	# ask for pack and component name
+	# ask for existing pack and component name
+	_load_packs()
 	var dlg = AcceptDialog.new()
 	dlg.title = "New Component"
 	var vbox = VBoxContainer.new()
 	var pack_label = Label.new(); pack_label.text = "Pack:"
-	var pack_edit = LineEdit.new()
+	var pack_box = ComboBox.new()
+	for p in _packs:
+		pack_box.add_item(p)
 	var comp_label = Label.new(); comp_label.text = "Component Name (snake_case):"
 	var comp_edit = LineEdit.new()
-	vbox.add_child(pack_label); vbox.add_child(pack_edit)
+	vbox.add_child(pack_label); vbox.add_child(pack_box)
 	vbox.add_child(comp_label); vbox.add_child(comp_edit)
 	dlg.add_child(vbox)
 	dlg.set_hide_on_ok(false)
-	var cb3 = Callable(self, "_create_component").bind(pack_edit, comp_edit, dlg)
+	var cb3 = Callable(self, "_create_component").bind(pack_box, comp_edit, dlg)
 	dlg.confirmed.connect(cb3)
 	get_editor_interface().get_editor_main_screen().add_child(dlg)
 	dlg.popup_centered()
 
-func _create_component(pack_edit:LineEdit, comp_edit:LineEdit, dlg:AcceptDialog) -> void:
+func _create_component(pack_box:ComboBox, comp_edit:LineEdit, dlg:AcceptDialog) -> void:
 	dlg.hide()
-	var pack = pack_edit.text.strip_edges()
+	var pack = pack_box.get_item_text(pack_box.get_selected()) if pack_box.get_selected() >= 0 else ""
 	var name = comp_edit.text.strip_edges()
 	if pack == "" or name == "":
 		push_error("Pack and component name must not be empty")
