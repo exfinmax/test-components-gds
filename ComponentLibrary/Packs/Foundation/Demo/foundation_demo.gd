@@ -1,6 +1,8 @@
-extends "res://ComponentLibrary/Shared/pack_demo.gd"
+extends PackDemo
 
-@export var pack_name:String = "Foundation"
+func _ready():
+	pack_name = "Foundation"
+	._ready()
 
 func _populate_demo():
     # show cooldown component: button disables for 2 seconds after press

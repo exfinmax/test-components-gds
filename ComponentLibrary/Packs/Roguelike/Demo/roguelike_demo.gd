@@ -1,6 +1,8 @@
-extends "res://ComponentLibrary/Shared/pack_demo.gd"
+extends PackDemo
 
-@export var pack_name:String = "Roguelike"
+func _ready():
+	pack_name = "Roguelike"
+	._ready()
 
 func _populate_demo():
     var wt = WeightedSpawnTableComponent.new()

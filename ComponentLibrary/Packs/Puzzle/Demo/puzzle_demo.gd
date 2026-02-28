@@ -1,6 +1,8 @@
-extends "res://ComponentLibrary/Shared/pack_demo.gd"
+extends PackDemo
 
-@export var pack_name:String = "Puzzle"
+func _ready():
+	pack_name = "Puzzle"
+	._ready()
 
 func _populate_demo():
     var seq = SequenceSwitchComponent.new()

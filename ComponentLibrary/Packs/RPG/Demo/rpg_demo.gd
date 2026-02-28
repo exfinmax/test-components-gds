@@ -1,6 +1,8 @@
-extends "res://ComponentLibrary/Shared/pack_demo.gd"
+extends PackDemo
 
-@export var pack_name:String = "RPG"
+func _ready():
+	pack_name = "RPG"
+	._ready()
 
 func _populate_demo():
     var attr = AttributeSetComponent.new()

@@ -1,6 +1,8 @@
-extends "res://ComponentLibrary/Shared/pack_demo.gd"
+extends PackDemo
 
-@export var pack_name:String = "Card"
+func _ready():
+	pack_name = "Card"
+	._ready()
 
 func _populate_demo():
     var deck = DeckDrawComponent.new()

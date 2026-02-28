@@ -1,6 +1,8 @@
-extends "res://ComponentLibrary/Shared/pack_demo.gd"
+extends PackDemo
 
-@export var pack_name:String = "Survival"
+func _ready():
+	pack_name = "Survival"
+	._ready()
 
 func _populate_demo():
     var se = StatusEffectComponent.new()
