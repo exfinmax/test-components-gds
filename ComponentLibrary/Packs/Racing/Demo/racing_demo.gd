@@ -1,4 +1,6 @@
-extends Node
+extends "res://ComponentLibrary/Shared/pack_demo.gd"
 
-func _ready():
-    print("Racing demo ready")
+@export var pack_name:String = "Racing"
+
+func _populate_demo():
+	print("Racing demo: place checkpoints or lap counters in scene to observe components.")
