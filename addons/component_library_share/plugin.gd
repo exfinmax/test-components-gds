@@ -1,4 +1,4 @@
-﻿@tool
+@tool
 extends EditorPlugin
 
 # just register a few standalone dependency scripts; all other components will be discovered automatically
@@ -107,7 +107,7 @@ func _on_open_demo():
 	if dlg == null:
 		dlg = ConfirmationDialog.new()
 		dlg.name = "ComponentLibraryDemoDialog"
-		dlg.window_title = "Select Pack Demo"
+		dlg.title = "Select Pack Demo"
 		dlg.popup_centered_minsize()
 		var grid = GridContainer.new()
 		grid.columns = 3
@@ -138,7 +138,7 @@ func _open_pack_demo(pack:String, dlg:ConfirmationDialog) -> void:
 
 func _on_new_pack() -> void:
 	var dlg = AcceptDialog.new()
-	dlg.window_title = "New Pack"
+	dlg.title = "New Pack"
 	var line = LineEdit.new()
 	line.placeholder_text = "Enter pack name"
 	dlg.add_child(line)
@@ -184,7 +184,7 @@ func _create_pack(line:LineEdit, dlg:AcceptDialog) -> void:
 func _on_new_component() -> void:
 	# ask for pack and component name
 	var dlg = AcceptDialog.new()
-	dlg.window_title = "New Component"
+	dlg.title = "New Component"
 	var vbox = VBoxContainer.new()
 	var pack_label = Label.new(); pack_label.text = "Pack:"
 	var pack_edit = LineEdit.new()

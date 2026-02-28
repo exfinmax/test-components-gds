@@ -2,7 +2,7 @@ extends PackDemo
 
 func _ready():
 	pack_name = "Time"
-	._ready()
+	super._ready()
 
 func _populate_demo():
 	var t = TimelineSwitchComponent.new()

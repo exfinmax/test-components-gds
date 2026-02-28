@@ -2,7 +2,7 @@ extends PackDemo
 
 func _ready():
 	pack_name = "Builder"
-	._ready()
+	super._ready()
 
 func _populate_demo():
 	# instantiate grid placement and show placing a marker on click

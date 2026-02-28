@@ -1,4 +1,5 @@
 extends Node
+class_name PackDemo
 
 @export var pack_name: String = ""
 
@@ -9,6 +10,9 @@ func _ready():
 	# allow pack-specific extension
 	if has_method("_populate_demo"):
 		_populate_demo()
+
+func _populate_demo() -> void:
+	pass
 
 func _default_populate():
 	if pack_name == "":
