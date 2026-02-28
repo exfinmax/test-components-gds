@@ -11,7 +11,7 @@
 [ext_resource type="PackedScene" uid="uid://d1ot4iwo3y46x" path="res://ComponentLibrary/Packs/Combat/Components/health_component.tscn" id="9_health"]
 [ext_resource type="PackedScene" uid="uid://xyuo71ffcdx5" path="res://ComponentLibrary/Packs/Combat/Components/hurtbox_component.tscn" id="10_hurtbox"]
 [ext_resource type="Script" uid="uid://sl05k6aoy1oa" path="res://ComponentLibrary/Packs/Character/Components/Components/animation_config.gd" id="11_ilhos"]
-[ext_resource type="Script" uid="uid://ddup5xawg6y3m" path="res://VFX/CanYing/canying.gd" id="12_6a0bx"]
+[ext_resource type="Script" uid="uid://ddup5xawg6y3m" path="res://ComponentLibrary/Packs/VFX/Templates/CanYing/canying.gd" id="12_6a0bx"]
 
 [sub_resource type="Gradient" id="Gradient_player"]
 colors = PackedColorArray(0.2, 0.6, 1, 1, 0.2, 0.6, 1, 0)

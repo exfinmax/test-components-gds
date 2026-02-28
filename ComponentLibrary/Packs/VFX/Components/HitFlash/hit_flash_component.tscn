@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://ce1rlkmp4unsb"]
+
+[ext_resource type="Script" uid="uid://24gld2h72cmq" path="res://ComponentLibrary/Packs/VFX/Components/HitFlash/hit_flash_component.gd" id="1_vquxk"]
+
+[node name="HitFlashComponent" type="Node" unique_id=2128164178]
+script = ExtResource("1_vquxk")

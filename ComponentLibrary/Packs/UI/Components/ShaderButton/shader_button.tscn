@@ -1,0 +1,68 @@
+[gd_scene format=3 uid="uid://dssid7iw4aqb6"]
+
+[ext_resource type="Script" uid="uid://c2qtfgumfei5" path="res://ComponentLibrary/Packs/UI/Components/ShaderButton/shader_button.gd" id="1_q8250"]
+[ext_resource type="Script" uid="uid://i3xgym8bhl33" path="res://ComponentLibrary/Packs/UI/Components/ButtonEffectModule/button_effect_module.gd" id="2_tc11w"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_tuexh"]
+bg_color = Color(0.44622445, 0.4462245, 0.44622445, 0.7372549)
+border_width_left = 10
+border_width_top = 10
+border_width_right = 10
+border_width_bottom = 10
+border_color = Color(0, 0, 0, 1)
+expand_margin_left = 10.0
+expand_margin_top = 10.0
+expand_margin_right = 10.0
+expand_margin_bottom = 10.0
+
+[node name="Button" type="Button" unique_id=1318297190]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -36.0
+offset_top = -15.5
+offset_right = 36.0
+offset_bottom = 15.5
+grow_horizontal = 2
+grow_vertical = 2
+text = "开始游戏"
+script = ExtResource("1_q8250")
+
+[node name="ButtonEffectModule" type="Node" parent="." unique_id=643296376 node_paths=PackedStringArray("button")]
+script = ExtResource("2_tc11w")
+button = NodePath("..")
+metadata/_custom_type_script = "uid://i3xgym8bhl33"
+
+[node name="Panel" type="Panel" parent="." unique_id=678889262]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_tuexh")
+
+[node name="Label" type="Label" parent="." unique_id=1045718359]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_outline_color = Color(0.12323087, 0.1232309, 1.2032688e-08, 1)
+theme_override_constants/shadow_offset_x = 1
+theme_override_constants/shadow_offset_y = 1
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/font_size = 20
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="PressAudio" type="AudioStreamPlayer" parent="." unique_id=1798197973]
+volume_db = 24.0
+
+[node name="SelectAudio" type="AudioStreamPlayer" parent="." unique_id=379967188]
+
+[connection signal="resized" from="Label" to="." method="_on_label_resized"]

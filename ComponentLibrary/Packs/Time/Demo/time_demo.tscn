@@ -1,4 +1,7 @@
-[gd_scene load_steps=2 format=3]
-[ext_resource type="Script" path="res://ComponentLibrary/Packs/Time/Demo/time_demo.gd" id=1]
-[node name="TimeDemo" type="Node"]
+[gd_scene format=3 uid="uid://cksl4lxo6lmu7"]
+
+[ext_resource type="Script" uid="uid://dwjy0c6ilbcl4" path="res://ComponentLibrary/Packs/Time/Demo/time_demo.gd" id="1"]
+
+[node name="TimeDemo" type="Node" unique_id=2006857105]
 script = ExtResource("1")
+pack_name = "Time"

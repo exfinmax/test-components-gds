@@ -10,7 +10,7 @@
 [ext_resource type="Script" uid="uid://cwinxi15tff2b" path="res://ComponentLibrary/Packs/Character/Components/Character/ReplayEnemy/record_component.gd" id="8_record"]
 [ext_resource type="Script" uid="uid://74chmyih0dlj" path="res://ComponentLibrary/Packs/Character/Components/Character/ReplayEnemy/replay_component.gd" id="9_replay"]
 [ext_resource type="PackedScene" uid="uid://d1ot4iwo3y46x" path="res://ComponentLibrary/Packs/Combat/Components/health_component.tscn" id="10_health"]
-[ext_resource type="Script" uid="uid://ddup5xawg6y3m" path="res://VFX/CanYing/canying.gd" id="11_ror2n"]
+[ext_resource type="Script" uid="uid://ddup5xawg6y3m" path="res://ComponentLibrary/Packs/VFX/Templates/CanYing/canying.gd" id="11_ror2n"]
 
 [sub_resource type="Gradient" id="Gradient_enemy"]
 colors = PackedColorArray(1, 0.2, 0.2, 1, 0, 0, 0, 1)
