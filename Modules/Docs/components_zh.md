@@ -1,101 +1,86 @@
-﻿# 组件分层与清单（中文）
+# 组件库结构与使用说明（中文）
 
-本文档对应 `Modules/` 的分层设计，核心目标是把“跨项目可复用能力”和“特定玩法能力”拆开，避免组件仓越长越臃肿。
+## 目标
 
-## 分层原则
+本仓库定位为“可复制复用”的组件库，不绑定单一游戏项目。
 
-- `Foundation`：项目无关、玩法无关的基础能力。只处理通用技术问题，不带具体游戏语义。
-- `UI/Common` 与 `VFX/Common`：跨品类可复用的表现层组件，负责反馈与展示，不直接承载关卡规则。
-- `Gameplay/Common`：通用玩法语义（受伤、交互、资源池、机关门控等），适用于多数动作/解谜项目。
-- `Gameplay/Platformer`：平台跳跃强相关组件。
-- `Gameplay/Time`：时间能力强相关组件。
+核心原则：
 
-这套分层把“核心组件”和“特化组件”隔离开：
-- 先在 `Foundation + UI/VFX/Common + Gameplay/Common` 建稳定底座。
-- 再按项目类型引入 `Platformer` 或 `Time`。
+- 全局能力只保留一套，不做并行封装。
+- 组件尽量自包含，依赖统一收敛。
+- 每个组件包可按目录复制到新项目直接使用。
 
-## 当前组件清单
+## 三层架构
 
-### Foundation
+### 1) Global Services（全局服务层）
 
-- `CooldownComponent`：标签化冷却计时。
-- `LifetimeComponent`：对象生命周期与自动回收。
-- `StateFlagComponent`：轻量状态位管理。
-- `ConditionGateComponent`：状态条件门。
-- `TagComponent`：标签查询与筛选。
-- `ObjectPoolComponent`：全局 `ObjectPool` 的适配器（不再维护局部池实现）。
-- `EventChannelComponent`：全局 `EventBus` 的命名空间适配器（支持本地信号旁路）。
-- `TickSchedulerComponent`：支持挂载到 `LocalTimeDomain`，可被局部时间流速影响。
+放在 `Core/` 与 `Systems/`，作为唯一事实来源：
 
-### UI/Common
+- 事件总线：`Core/event_bus.gd`（Autoload: `EventBus`）
+- 对象池：`Core/object_pool.gd`（Autoload: `ObjectPool`）
+- 全局时间：`Systems/Time/TimeController.gd`（Autoload: `TimeController`）
+- 局部时间域：`Systems/Time/local_time_domain.gd`
 
-- `UIPageStateComponent`：统一页面状态切换（主菜单/暂停/背包等）。
+### 2) Modules（通用能力层）
 
-### VFX/Common
+放在 `Modules/`，按玩法域拆分：
 
-- `ImpactVFXComponent`：命中特效统一入口，支持对象池。
+- `Foundation`：基础逻辑（冷却、标签、黑板、调度等）
+- `Gameplay/Common`：受击、交互、资源、机关等
+- `Gameplay/Platformer`：平台跳跃相关
+- `Gameplay/Time`：时间玩法相关
+- `UI/Common`、`VFX/Common`：通用表现层
 
-### Gameplay/Common
+说明：该层不再重复实现全局事件总线与对象池。
 
-- `ResourcePoolComponent`：生命/能量等资源池。
-- `InvincibilityComponent`：无敌窗口。
-- `ActionGateComponent`：资源 + 冷却门控。
-- `DamageReceiverComponent`：统一受击入口。
-- `InteractableComponent`：标准化交互对象。
-- `PeriodicSpawnerComponent`：周期生成。
-- `CheckpointMemoryComponent`：检查点数据恢复。
-- `KnockbackReceiverComponent`：击退处理。
-- `TelegraphComponent`：预警后触发。
-- `TimedDoorComponent`：持续激活开门逻辑。
+### 3) ComponentLibrary（可复制组件包）
 
-### Gameplay/Platformer
+放在 `ComponentLibrary/`：
 
-- `AirJumpComponent`：空中跳。
-- `FallDamageComponent`：落地伤害。
-- `OneWayDropComponent`：单向平台下落。
-- `PlatformAttachComponent`：移动平台附着。
+- `Dependencies/`：复制时需要的统一依赖
+- `Packs/<Genre>/`：按游戏品类组织的组件包
 
-### Gameplay/Time
+## 依赖规则
 
-- `TimeEnergyComponent`：时间能量池。
-- `TimeAbilityComponent`：时间能力调度。
-- `TimelineSwitchComponent`：时间线开关。
-- `TimeFragmentPickupComponent`：时间碎片拾取。
-- `RewindEchoBridgeComponent`：回溯与回声桥接。
-- `EchoTriggerPlateComponent`：回声触发压板。
+- 若组件需要全局服务，直接使用 `EventBus` / `ObjectPool` / `TimeController`。
+- 若组件需要局部时间，显式实现：
+  - `_local_time_process(delta)`
+  - `_local_time_physics_process(delta)`
+  并挂在 `LocalTimeDomain` 子树下。
 
-## 接入顺序建议
-
-1. 先接 `Foundation` 与 `UI/VFX/Common`。
-2. 再接 `Gameplay/Common`。
-3. 项目是平台跳跃时再引入 `Gameplay/Platformer`。
-4. 项目有时间能力时再引入 `Gameplay/Time`。
-
-## 本轮新增（核心/通用补强）
+## 当前重点组件（Modules）
 
 ### Foundation
+
+- `CooldownComponent`
+- `LifetimeComponent`
+- `StateFlagComponent`
+- `ConditionGateComponent`
+- `TagComponent`
 - `DataBlackboardComponent`
-  - 文件：`Modules/Foundation/Components/data_blackboard_component.gd`
-  - 作用：提供跨组件共享上下文，降低硬引用。
-- `TickSchedulerComponent`
-  - 文件：`Modules/Foundation/Components/tick_scheduler_component.gd`
-  - 作用：任务分频调度，减少全局逐帧负载；可接入局部时间域。
+- `TickSchedulerComponent`（已支持接入 `LocalTimeDomain`）
 
 ### Gameplay/Common
+
+- `ResourcePoolComponent`
+- `InvincibilityComponent`
+- `ActionGateComponent`
+- `DamageReceiverComponent`
+- `InteractableComponent`
+- `PeriodicSpawnerComponent`
+- `CheckpointMemoryComponent`
+- `KnockbackReceiverComponent`
+- `TelegraphComponent`
+- `TimedDoorComponent`
 - `StateStackComponent`
-  - 文件：`Modules/Gameplay/Common/Components/state_stack_component.gd`
-  - 作用：可嵌套状态流管理（交互/过场/暂停等）。
 - `TriggerRouterComponent`
-  - 文件：`Modules/Gameplay/Common/Components/trigger_router_component.gd`
-  - 作用：统一触发事件路由，减少场景连线复杂度。
 
-## 架构约束（2026-02）
+### UI/Common / VFX/Common
 
-- 全局单例层（`Core` / `Systems`）是唯一事实来源：
-  - 事件总线：`EventBus`
-  - 对象池：`ObjectPool`
-  - 全局时间与冻结帧：`TimeController`
-- `Modules/Foundation` 中同类组件保留为“适配器”而不是并行实现，避免双轨能力分叉。
-- 局部时间控制采用 `LocalTimeDomain`：
-  - 仅对显式适配了 `_local_time_process/_local_time_physics_process` 的组件生效。
-  - 不侵入 Godot 默认全局时间模型，按需接入。
+- `UIPageStateComponent`
+- `ImpactVFXComponent`（直接接入全局 `ObjectPool`）
+
+## ADR 关联
+
+- `Docs/adr/0002-global-and-local-time-flow.md`
+- `Docs/adr/0003-portable-component-pack-and-dependency-hub.md`

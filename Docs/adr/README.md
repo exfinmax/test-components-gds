@@ -14,6 +14,6 @@
 
 | ADR | 标题 | 状态 | 日期 |
 |---|---|---|---|
-| [0001](0001-global-services-boundary.md) | 全局服务边界与单一事实来源 | Accepted | 2026-02-28 |
+| [0001](0001-global-services-boundary.md) | 全局服务边界与单一事实来源 | Superseded | 2026-02-28 |
 | [0002](0002-global-and-local-time-flow.md) | 全局时间与局部时间域模型 | Accepted | 2026-02-28 |
-
+| [0003](0003-portable-component-pack-and-dependency-hub.md) | 去除多余适配层并引入可复制组件包规范 | Accepted | 2026-02-28 |
