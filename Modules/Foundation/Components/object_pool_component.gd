@@ -1,29 +1,28 @@
 extends Node
 class_name ObjectPoolComponent
-## 通用对象池（Foundation 层）
-## 作用：复用临时节点（弹道、飘字、特效），减少频繁创建/销毁导致的卡顿。
 
+@export var pool_name: StringName = &""
 @export var prefab: PackedScene
 @export var warmup_count: int = 8
 @export var max_size: int = 64
-@export var recycle_on_tree_exit: bool = true
-
-var _available: Array[Node] = []
-var _borrowed: Dictionary = {}
+@export var auto_expand: bool = true
+@export var auto_register_on_ready: bool = true
+@export var auto_unregister_on_exit: bool = false
 
 func _ready() -> void:
-	if warmup_count > 0:
-		for _i in range(warmup_count):
-			var item := _create_instance()
-			if item:
-				_recycle_internal(item)
+	if auto_register_on_ready:
+		_ensure_registered()
+
+func _exit_tree() -> void:
+	if auto_unregister_on_exit:
+		unregister_pool()
 
 func borrow(parent: Node = null) -> Node:
-	var item: Node = null
-	if not _available.is_empty():
-		item = _available.pop_back()
-	else:
-		item = _create_instance()
+	if not _ensure_registered():
+		return null
+
+	var pool := _get_global_pool()
+	var item: Node = pool.call("acquire", _resolved_pool_name())
 	if item == null:
 		return null
 
@@ -31,56 +30,52 @@ func borrow(parent: Node = null) -> Node:
 		if item.get_parent() != null:
 			item.get_parent().remove_child(item)
 		parent.add_child(item)
-	elif item.get_parent() == null:
-		add_child(item)
-
-	if item is CanvasItem:
-		(item as CanvasItem).visible = true
-	item.set_process(true)
-	item.set_physics_process(true)
-	_borrowed[item.get_instance_id()] = item
 	return item
 
 func recycle(item: Node) -> void:
 	if item == null:
 		return
-	var key := item.get_instance_id()
-	if not _borrowed.has(key):
-		return
-	_borrowed.erase(key)
-	_recycle_internal(item)
-
-func recycle_all() -> void:
-	for key in _borrowed.keys():
-		var item: Node = _borrowed[key]
-		_recycle_internal(item)
-	_borrowed.clear()
-
-func _create_instance() -> Node:
-	if prefab == null:
-		return null
-	var item := prefab.instantiate()
-	if recycle_on_tree_exit:
-		item.tree_exiting.connect(func():
-			# 如果节点被外部释放，避免池里残留脏引用。
-			var id := item.get_instance_id()
-			_borrowed.erase(id)
-			_available.erase(item)
-		)
-	return item
-
-func _recycle_internal(item: Node) -> void:
-	if item == null:
-		return
-	item.set_process(false)
-	item.set_physics_process(false)
-	if item is CanvasItem:
-		item.visible = false
-	if item.get_parent() != self:
-		if item.get_parent() != null:
-			item.get_parent().remove_child(item)
-		add_child(item)
-	if _available.size() >= max_size:
+	var pool := _get_global_pool()
+	if pool == null:
 		item.queue_free()
 		return
-	_available.append(item)
+	pool.call("release", _resolved_pool_name(), item)
+
+func recycle_all() -> void:
+	var pool := _get_global_pool()
+	if pool == null:
+		return
+	if pool.call("has_pool", _resolved_pool_name()):
+		pool.call("release_all", _resolved_pool_name())
+
+func unregister_pool() -> void:
+	var pool := _get_global_pool()
+	if pool == null:
+		return
+	if pool.call("has_pool", _resolved_pool_name()):
+		pool.call("unregister_pool", _resolved_pool_name())
+
+func _ensure_registered() -> bool:
+	var pool := _get_global_pool()
+	if pool == null:
+		push_warning("[ObjectPoolComponent] 未找到全局 ObjectPool")
+		return false
+	if prefab == null:
+		push_warning("[ObjectPoolComponent] 未设置 prefab")
+		return false
+	if not pool.call("has_pool", _resolved_pool_name()):
+		pool.call("register_pool", _resolved_pool_name(), prefab, warmup_count, max_size, auto_expand)
+	return true
+
+func _resolved_pool_name() -> StringName:
+	if pool_name != StringName():
+		return pool_name
+	return StringName(name)
+
+func _get_global_pool() -> Node:
+	var pool := get_node_or_null("/root/ObjectPool")
+	if pool == null:
+		return null
+	if not pool.has_method("register_pool") or not pool.has_method("acquire"):
+		return null
+	return pool

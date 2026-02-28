@@ -23,8 +23,9 @@
 - `StateFlagComponent`：轻量状态位管理。
 - `ConditionGateComponent`：状态条件门。
 - `TagComponent`：标签查询与筛选。
-- `ObjectPoolComponent`：通用对象池，减少频繁实例化。
-- `EventChannelComponent`：轻量事件通道，解耦模块依赖。
+- `ObjectPoolComponent`：全局 `ObjectPool` 的适配器（不再维护局部池实现）。
+- `EventChannelComponent`：全局 `EventBus` 的命名空间适配器（支持本地信号旁路）。
+- `TickSchedulerComponent`：支持挂载到 `LocalTimeDomain`，可被局部时间流速影响。
 
 ### UI/Common
 
@@ -78,7 +79,7 @@
   - 作用：提供跨组件共享上下文，降低硬引用。
 - `TickSchedulerComponent`
   - 文件：`Modules/Foundation/Components/tick_scheduler_component.gd`
-  - 作用：任务分频调度，减少全局逐帧负载。
+  - 作用：任务分频调度，减少全局逐帧负载；可接入局部时间域。
 
 ### Gameplay/Common
 - `StateStackComponent`
@@ -87,3 +88,14 @@
 - `TriggerRouterComponent`
   - 文件：`Modules/Gameplay/Common/Components/trigger_router_component.gd`
   - 作用：统一触发事件路由，减少场景连线复杂度。
+
+## 架构约束（2026-02）
+
+- 全局单例层（`Core` / `Systems`）是唯一事实来源：
+  - 事件总线：`EventBus`
+  - 对象池：`ObjectPool`
+  - 全局时间与冻结帧：`TimeController`
+- `Modules/Foundation` 中同类组件保留为“适配器”而不是并行实现，避免双轨能力分叉。
+- 局部时间控制采用 `LocalTimeDomain`：
+  - 仅对显式适配了 `_local_time_process/_local_time_physics_process` 的组件生效。
+  - 不侵入 Godot 默认全局时间模型，按需接入。

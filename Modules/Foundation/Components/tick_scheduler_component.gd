@@ -1,14 +1,21 @@
 extends Node
 class_name TickSchedulerComponent
-## 帧调度器（Foundation 层）
-## 作用：按 key 注册轻量任务，统一调度更新频率，降低大量组件逐帧更新压力。
 
 signal task_registered(task_id: StringName)
 signal task_unregistered(task_id: StringName)
 
 @export var default_interval: float = 0.1
+@export var use_local_time_domain: bool = true
+@export var local_time_domain_path: NodePath
 
 var _tasks: Dictionary = {}
+var _local_time_domain: LocalTimeDomain = null
+
+func _ready() -> void:
+	if use_local_time_domain:
+		_local_time_domain = _resolve_local_time_domain()
+		if _local_time_domain != null:
+			_local_time_domain.register_participant(self)
 
 func register_task(task_id: StringName, callback: Callable, interval: float = -1.0) -> void:
 	if task_id == StringName():
@@ -17,7 +24,7 @@ func register_task(task_id: StringName, callback: Callable, interval: float = -1
 	_tasks[task_id] = {
 		"callback": callback,
 		"interval": maxf(0.001, safe_interval),
-		"elapsed": 0.0
+		"elapsed": 0.0,
 	}
 	task_registered.emit(task_id)
 
@@ -31,6 +38,12 @@ func clear_tasks() -> void:
 	_tasks.clear()
 
 func _process(delta: float) -> void:
+	_tick(delta)
+
+func _local_time_process(delta: float) -> void:
+	_tick(delta)
+
+func _tick(delta: float) -> void:
 	for task_id in _tasks.keys():
 		var state: Dictionary = _tasks[task_id]
 		state["elapsed"] = float(state.get("elapsed", 0.0)) + delta
@@ -42,3 +55,13 @@ func _process(delta: float) -> void:
 				cb.call()
 		_tasks[task_id] = state
 
+func _resolve_local_time_domain() -> LocalTimeDomain:
+	if local_time_domain_path != NodePath():
+		return get_node_or_null(local_time_domain_path) as LocalTimeDomain
+
+	var current := get_parent()
+	while current != null:
+		if current is LocalTimeDomain:
+			return current as LocalTimeDomain
+		current = current.get_parent()
+	return null
