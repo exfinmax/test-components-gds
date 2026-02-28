@@ -46,4 +46,3 @@ func _render() -> void:
 		if i == selected_index:
 			card.modulate = Color(0.75, 1.0, 0.85, 1.0)
 		_items.add_child(card)
-

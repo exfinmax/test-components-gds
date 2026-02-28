@@ -8,6 +8,8 @@
 - `object_pool.gd`: 全局对象池（建议 Autoload 名为 `ObjectPool`）
 - `time_controller.gd`: 全局时间控制（建议 Autoload 名为 `TimeController`）
 - `local_time_domain.gd`: 局部时间域父节点模板
+- `component_base.gd`: 通用组件基类（`ComponentBase`）
+- `character_component_base.gd`: 角色组件基类（`CharacterComponentBase`）
 
 ## 兼容规则
 

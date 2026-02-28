@@ -43,7 +43,7 @@ func _play_toast_animation(label: Label) -> void:
 	)
 
 func _trim_overflow() -> void:
-	var keep_count := max(max_items, 1)
+	var keep_count :int= max(max_items, 1)
 	var overflow := _list.get_child_count() - keep_count
 	for _i in range(max(overflow, 0)):
 		_remove_toast(_list.get_child(0))

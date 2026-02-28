@@ -21,13 +21,14 @@ config/icon="res://icon.svg"
 
 [autoload]
 
-EventBus="*res://Core/event_bus.gd"
 DebugHelper="*res://Systems/Debug/debug_helper.gd"
 MusicPlayer="*res://Systems/Audio/music_player.tscn"
 TimeController="*res://Systems/Time/TimeController.gd"
 SaveManager="*uid://dxwhkqq1xh5th"
 SettingsManager="*uid://by4i0prdc3bpf"
+EventBus="*uid://ccyvwap4uhctk"
 ObjectPool="*uid://cpc51d7pqjdol"
+MCPGameBridge="res://addons/godot_mcp/game_bridge/mcp_game_bridge.gd"
 
 [display]
 
@@ -40,7 +41,14 @@ project/assembly_name="test_components"
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/assetplus/plugin.cfg")
+enabled=PackedStringArray("res://addons/assetplus/plugin.cfg", "res://addons/component_library_share/plugin.cfg", "res://addons/godot_mcp/plugin.cfg", "res://addons/polygon2d_tool/plugin.cfg")
+
+[godot_mcp]
+
+bind_mode=0
+custom_bind_ip=""
+port_override_enabled=false
+port_override=6550
 
 [input]
 

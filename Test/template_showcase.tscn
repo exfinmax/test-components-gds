@@ -21,6 +21,7 @@ scale = Vector2(0.6, 0.6)
 texture = ExtResource("8")
 
 [node name="TimeEchoVisual" parent="." unique_id=588355190 instance=ExtResource("5")]
+target_path = NodePath("../Dummy")
 
 [node name="FreezeFrameEffect" type="Node" parent="." unique_id=1667669654]
 script = ExtResource("6")
@@ -40,3 +41,6 @@ offset_left = 16.0
 offset_top = 372.0
 offset_right = 296.0
 offset_bottom = 408.0
+
+[node name="Polygon2D" type="Polygon2D" parent="." unique_id=1424921316]
+polygon = PackedVector2Array(-32, -32, 32, -32, 32, 32, -32, 32)

@@ -1,0 +1,58 @@
+[gd_scene format=3 uid="uid://dtv2qid31i4eg"]
+
+[ext_resource type="Script" uid="uid://bjy533fgy8gux" path="res://ComponentLibrary/Packs/Systems/Components/Audio/music_player.gd" id="1_gifcd"]
+
+[sub_resource type="AudioStreamRandomizer" id="AudioStreamRandomizer_e78l4"]
+streams_count = 3
+
+[node name="MusicPlayer" type="Node" unique_id=889619028]
+process_mode = 3
+script = ExtResource("1_gifcd")
+
+[node name="SFX" type="Node" parent="." unique_id=1356852882]
+
+[node name="MusicAttack" type="AudioStreamPlayer" parent="SFX" unique_id=1878739880]
+
+[node name="Jump" type="AudioStreamPlayer" parent="SFX" unique_id=1049277870]
+volume_db = 10.0
+
+[node name="ResetDash" type="AudioStreamPlayer" parent="SFX" unique_id=1729512135]
+
+[node name="Star" type="AudioStreamPlayer" parent="SFX" unique_id=2033355518]
+
+[node name="Delusion" type="AudioStreamPlayer" parent="SFX" unique_id=1136548913]
+stream = SubResource("AudioStreamRandomizer_e78l4")
+volume_db = 10.0
+
+[node name="Die" type="AudioStreamPlayer" parent="SFX" unique_id=1243474007]
+
+[node name="Hit" type="AudioStreamPlayer" parent="SFX" unique_id=1997744255]
+
+[node name="Laser" type="AudioStreamPlayer" parent="SFX" unique_id=239963032]
+process_mode = 1
+
+[node name="ChangeScene" type="AudioStreamPlayer" parent="SFX" unique_id=257453639]
+
+[node name="Save" type="AudioStreamPlayer" parent="SFX" unique_id=1661004521]
+volume_db = -8.0
+
+[node name="Recover" type="AudioStreamPlayer" parent="SFX" unique_id=485946006]
+
+[node name="Defend" type="AudioStreamPlayer" parent="SFX" unique_id=149504790]
+volume_db = -20.0
+
+[node name="PickFile" type="AudioStreamPlayer" parent="SFX" unique_id=2100463582]
+
+[node name="Landatk" type="AudioStreamPlayer" parent="SFX" unique_id=2047009545]
+
+[node name="Dash" type="AudioStreamPlayer" parent="SFX" unique_id=1529114730]
+
+[node name="Move" type="AudioStreamPlayer" parent="SFX" unique_id=428558257]
+
+[node name="Air" type="AudioStreamPlayer" parent="SFX" unique_id=1120691810]
+
+[node name="Land" type="AudioStreamPlayer" parent="SFX" unique_id=1244778921]
+
+[node name="Absorb" type="AudioStreamPlayer" parent="SFX" unique_id=1521701885]
+
+[node name="BGMPlayer" type="AudioStreamPlayer" parent="." unique_id=1875456412]

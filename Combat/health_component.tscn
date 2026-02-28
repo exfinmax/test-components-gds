@@ -1,9 +1,0 @@
-[gd_scene format=3 uid="uid://d1ot4iwo3y46x"]
-
-[ext_resource type="Script" uid="uid://b82gom4c1mrvs" path="res://Combat/health_component.gd" id="1_sa7ac"]
-[ext_resource type="PackedScene" uid="uid://bce7srf7edef8" path="res://VFX/FloatingText/floating_text.tscn" id="2_m6m5w"]
-
-[node name="HealthComponent" type="Node2D" unique_id=30575417]
-process_mode = 3
-script = ExtResource("1_sa7ac")
-FloatingTextScene = ExtResource("2_m6m5w")

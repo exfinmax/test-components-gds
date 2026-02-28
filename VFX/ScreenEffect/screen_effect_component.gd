@@ -78,8 +78,7 @@ func _ready() -> void:
 	layer = 100  # 最顶层
 	_create_shader_rect()
 	
-	if auto_listen_events:
-		_connect_events.call_deferred()
+
 
 func _process(delta: float) -> void:
 	if not _material: return
@@ -154,18 +153,6 @@ func _set_targets(vig: float, sat: float, aber: float, overlay: Color) -> void:
 #endregion
 
 #region EventBus 自动连接
-
-func _connect_events() -> void:
-	if not EventBus: return
-	
-	EventBus.time_freeze_started.connect(func(_d): apply_preset(Preset.TIME_FREEZE))
-	EventBus.time_freeze_ended.connect(func(): fade_out(0.3))
-	EventBus.time_scale_changed.connect(_on_time_scale_changed)
-	EventBus.time_rewind_started.connect(func(): apply_preset(Preset.TIME_REWIND))
-	EventBus.time_rewind_ended.connect(func(): fade_out(0.3))
-	EventBus.entity_damaged.connect(func(_t, _a, _s): 
-		apply_preset(Preset.DAMAGE_HIT, 0.05)
-	)
 
 func _on_time_scale_changed(new_scale: float) -> void:
 	if new_scale < 0.8:

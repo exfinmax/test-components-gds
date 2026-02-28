@@ -6,6 +6,13 @@
 
 - `Dependencies/`：统一依赖（可先整体复制）
 - `Packs/`：按游戏品类拆分的组件包
+- `Demos/`：每个品类的最小可运行演示
+
+当前品类：
+
+- `Foundation` / `Action` / `Platformer` / `Time` / `UI` / `VFX`
+- `Shooter` / `RPG` / `Strategy` / `Survival` / `Card`
+- `Puzzle` / `Roguelike` / `Racing` / `Builder`
 
 ## 使用方式
 
@@ -16,6 +23,7 @@
    - `ObjectPool`
    - `TimeController`
 4. 组件有局部时间需求时，把节点放到 `LocalTimeDomain` 子树下。
+5. 可选启用 `res://addons/component_library_share/plugin.cfg`，获得编辑器创建入口。
 
 ## 设计约束
 

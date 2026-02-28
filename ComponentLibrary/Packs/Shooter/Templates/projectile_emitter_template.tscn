@@ -1,9 +1,0 @@
-[gd_scene load_steps=2 format=3]
-
-[ext_resource type="Script" path="res://ComponentLibrary/Packs/Shooter/Components/projectile_emitter_component.gd" id="1"]
-
-[node name="ProjectileEmitter" type="Node2D"]
-script = ExtResource("1")
-
-[node name="Muzzle" type="Marker2D" parent="."]
-position = Vector2(24, 0)

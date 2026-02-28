@@ -7,6 +7,16 @@
 - `Strategy/`
 - `Survival/`
 - `Card/`
+- `Puzzle/`
+- `Roguelike/`
+- `Foundation/`
+- `Action/`
+- `Platformer/`
+- `Time/`
+- `UI/`
+- `VFX/`
+- `Racing/`
+- `Builder/`
 
 每个包至少包含：
 

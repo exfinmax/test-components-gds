@@ -1,0 +1,11 @@
+[gd_scene format=3 uid="uid://bqm7n8xvxh3y0"]
+
+[ext_resource type="PackedScene" uid="uid://c5yqm8xvxh3yw" path="res://ComponentLibrary/Packs/Systems/Components/Debug/debug_console.tscn" id="1_console"]
+
+[node name="DebugConsoleWindow" type="Window"]
+oversampling_override = 1.0
+title = "Debug Console"
+initial_position = 2
+size = Vector2i(800, 600)
+
+[node name="DebugConsole" parent="." instance=ExtResource("1_console")]

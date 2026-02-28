@@ -1,0 +1,9 @@
+[gd_scene format=3 uid="uid://xyuo71ffcdx5"]
+
+[ext_resource type="Script" uid="uid://iv7mwxksj672" path="res://ComponentLibrary/Packs/Combat/Components/hurtbox_component.gd" id="1_f4yta"]
+
+[node name="HurtboxComponent" type="Area2D"]
+process_mode = 3
+collision_layer = 4
+collision_mask = 8
+script = ExtResource("1_f4yta")
