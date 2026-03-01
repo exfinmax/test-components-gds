@@ -1,10 +1,13 @@
-extends "res://ComponentLibrary/Shared/pack_demo.gd"
+extends PackDemo
 
-@export var pack_name:String = "Action"
+func _ready():
+	pack_name = "Action"
+	super._ready()
 
 func _populate_demo():
 	# action demo uses route_target for event callbacks
-	var route = load("res://ComponentLibrary/Packs/Action/Demo/route_target.gd").instantiate()
-	add_child(route)
-	# you can call route.on_route({}) from the editor console to test
-	print("Action demo: instantiated route_target; call on_route manually.")
+	var rt_script = load("res://ComponentLibrary/Packs/Action/Demo/route_target.gd")
+	if rt_script:
+		var route = rt_script.new()
+		add_child(route)
+		print("Action demo: instantiated route_target; call on_route manually.")

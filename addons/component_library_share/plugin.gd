@@ -59,7 +59,7 @@ func _enter_tree() -> void:
 	_load_packs()
 	# register components within each pack
 	for pack in _packs:
-		var comp_path = "res://ComponentLibrary/Packs/%s/Components".format(pack)
+		var comp_path = "res://ComponentLibrary/Packs/%s/Components" % pack
 		var comp_dir = DirAccess.open(comp_path)
 		if comp_dir:
 			_scan_and_register(comp_dir, comp_path, icon)
@@ -124,10 +124,10 @@ func _on_open_demo():
 		for p in _packs:
 			var h = HBoxContainer.new()
 			var thumb = TextureRect.new()
-			var path = "res://ComponentLibrary/Packs/%s/Demo/preview.png".format(p)
+			var path = "res://ComponentLibrary/Packs/%s/Demo/preview.png" % p
 			if ResourceLoader.exists(path):
 				thumb.texture = load(path)
-			thumb.rect_min_size = Vector2(64,64)
+			thumb.custom_minimum_size = Vector2(64,64)
 			h.add_child(thumb)
 			var btn = Button.new()
 			btn.text = p
@@ -140,7 +140,7 @@ func _on_open_demo():
 
 func _open_pack_demo(pack:String, dlg:ConfirmationDialog) -> void:
 	dlg.hide()
-	var path = "res://ComponentLibrary/Packs/%s/Demo/%s_demo.tscn".format(pack, pack.to_lower())
+	var path = "res://ComponentLibrary/Packs/%s/Demo/%s_demo.tscn" % [pack, pack.to_lower()]
 	if FileAccess.file_exists(path):
 		get_editor_interface().open_scene_from_path(path)
 	else:
@@ -152,7 +152,6 @@ func _on_new_pack() -> void:
 	var line = LineEdit.new()
 	line.placeholder_text = "Enter pack name"
 	dlg.add_child(line)
-	dlg.set_hide_on_ok(false)
 	var cb2 = Callable(self, "_create_pack").bind(line, dlg)
 	dlg.confirmed.connect(cb2)
 	get_editor_interface().get_editor_main_screen().add_child(dlg)
@@ -164,10 +163,7 @@ func _create_pack(line:LineEdit, dlg:AcceptDialog) -> void:
 	if name == "":
 		push_error("Pack name cannot be empty")
 		return
-	if not name.match("^[A-Za-z0-9_]+$"):
-		push_error("Pack name must be alphanumeric or underscore")
-		return
-	var basepath = "res://ComponentLibrary/Packs/%s".format(name)
+	var basepath = "res://ComponentLibrary/Packs/%s" % name
 	var dir = DirAccess.open("res://ComponentLibrary/Packs")
 	if dir and not dir.dir_exists(name):
 		dir.make_dir(name)
@@ -205,7 +201,7 @@ func _on_new_component() -> void:
 	dlg.title = "New Component"
 	var vbox = VBoxContainer.new()
 	var pack_label = Label.new(); pack_label.text = "Pack:"
-	var pack_box = ComboBox.new()
+	var pack_box = OptionButton.new()
 	for p in _packs:
 		pack_box.add_item(p)
 	var comp_label = Label.new(); comp_label.text = "Component Name (snake_case):"
@@ -213,20 +209,19 @@ func _on_new_component() -> void:
 	vbox.add_child(pack_label); vbox.add_child(pack_box)
 	vbox.add_child(comp_label); vbox.add_child(comp_edit)
 	dlg.add_child(vbox)
-	dlg.set_hide_on_ok(false)
 	var cb3 = Callable(self, "_create_component").bind(pack_box, comp_edit, dlg)
 	dlg.confirmed.connect(cb3)
 	get_editor_interface().get_editor_main_screen().add_child(dlg)
 	dlg.popup_centered()
 
-func _create_component(pack_box:ComboBox, comp_edit:LineEdit, dlg:AcceptDialog) -> void:
+func _create_component(pack_box:OptionButton, comp_edit:LineEdit, dlg:AcceptDialog) -> void:
 	dlg.hide()
 	var pack = pack_box.get_item_text(pack_box.get_selected()) if pack_box.get_selected() >= 0 else ""
 	var name = comp_edit.text.strip_edges()
 	if pack == "" or name == "":
 		push_error("Pack and component name must not be empty")
 		return
-	var dir = DirAccess.open("res://ComponentLibrary/Packs/%s/Components".format(pack))
+	var dir = DirAccess.open("res://ComponentLibrary/Packs/%s/Components" % pack)
 	if not dir:
 		push_error("Pack '%s' does not exist" % pack)
 		return
@@ -236,7 +231,7 @@ func _create_component(pack_box:ComboBox, comp_edit:LineEdit, dlg:AcceptDialog) 
 		return
 	# create stub script
 	var script = GDScript.new()
-	script.source_code = "extends Node\n\nclass_name %s".format(_snake_to_pascal(name))
+	script.source_code = "extends Node\n\nclass_name %s" % _snake_to_pascal(name)
 	var result = script.reload()
 	dir.remove_file(filename) # ensure not leftover
 	# write new script file
@@ -245,7 +240,7 @@ func _create_component(pack_box:ComboBox, comp_edit:LineEdit, dlg:AcceptDialog) 
 	fs.store_string(script.source_code)
 	fs.close()
 	# open script in editor
-	get_editor_interface().open_script(load("res://ComponentLibrary/Packs/%s/Components/%s".format(pack, filename)))
+	get_editor_interface().open_script(load("res://ComponentLibrary/Packs/%s/Components/%s" % [pack, filename]))
 
 
 func _load_icon() -> Texture2D:

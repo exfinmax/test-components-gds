@@ -1,4 +1,4 @@
-﻿extends CharacterBody2D
+extends CharacterBody2D
 class_name CharacterComponent
 ## 角色基类（组件容器）
 ## 职责：
@@ -113,7 +113,7 @@ func _physics_process(delta: float) -> void:
 			comp.physics_tick(drive_delta)
 
 	if _should_apply_time_compensation():
-		var factor := TimeController.get_compensation_factor()
+		var factor :float= TimeController.get_compensation_factor()
 		velocity *= factor
 		move_and_slide()
 		velocity /= factor

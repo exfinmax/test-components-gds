@@ -41,7 +41,7 @@ project/assembly_name="test_components"
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/assetplus/plugin.cfg", "res://addons/component_library_share/plugin.cfg", "res://addons/godot_mcp/plugin.cfg", "res://addons/polygon2d_tool/plugin.cfg")
+enabled=PackedStringArray("res://addons/assetplus/plugin.cfg", "res://addons/component_library_share/plugin.cfg", "res://addons/godot_mcp/plugin.cfg", "res://addons/polygon2d_tool/plugin.cfg", "res://addons/procedural_tex/plugin.cfg", "res://addons/procedural_tex/procedural_tex/plugin.cfg")
 
 [godot_mcp]
 

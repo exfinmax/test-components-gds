@@ -17,7 +17,7 @@ func _populate_demo() -> void:
 func _default_populate():
 	if pack_name == "":
 		return
-	var base = "res://ComponentLibrary/Packs/%s/Components".format(pack_name)
+	var base = "res://ComponentLibrary/Packs/%s/Components" % pack_name
 	var dir = DirAccess.open(base)
 	if not dir:
 		return

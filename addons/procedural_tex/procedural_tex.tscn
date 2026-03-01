@@ -1,0 +1,9 @@
+[gd_scene format=3 uid="uid://iyogm1xs5gx"]
+
+[ext_resource type="Script" path="res://addons/procedural_tex/procedural_tex.gd" id="1_aj1hc"]
+
+[node name="procedural_tex" type="SubViewport" unique_id=1072349472]
+transparent_bg = true
+size = Vector2i(64, 64)
+render_target_update_mode = 1
+script = ExtResource("1_aj1hc")
