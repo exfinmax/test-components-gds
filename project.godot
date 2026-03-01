@@ -24,6 +24,7 @@ config/icon="res://icon.svg"
 EventBus="*uid://ccyvwap4uhctk"
 ObjectPool="*uid://cpc51d7pqjdol"
 MCPGameBridge="*res://addons/godot_mcp/game_bridge/mcp_game_bridge.gd"
+TimeController="*uid://dt27sydn77cf3"
 
 [display]
 

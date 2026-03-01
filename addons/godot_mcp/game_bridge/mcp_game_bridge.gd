@@ -1,5 +1,4 @@
 extends Node
-class_name MCPGameBridge
 
 const DEFAULT_MAX_WIDTH := 1920
 

@@ -4,9 +4,9 @@ func _ready():
 	pack_name = "VFX"
 	super._ready()
 
-func _populate_demo():
-	_vfx_spawn_from_dir("res://ComponentLibrary/Packs/VFX/Templates", 0, 0)
-	var comp_path = "res://ComponentLibrary/Packs/VFX/Components/impact_vfx_component.gd"
+func _setup_demo():
+	_vfx_spawn_from_dir("res://ComponentLibrary/Modules/VFX/Templates", 0, 0)
+	var comp_path = "res://ComponentLibrary/Modules/VFX/Components/impact_vfx_component.gd"
 	if ResourceLoader.exists(comp_path):
 		var comp = load(comp_path).new()
 		add_child(comp)

@@ -72,7 +72,7 @@ func get_available_quests() -> Array:
 	return quest_mgr.get_available_quests().values()
 
 func trade_item(item_id: String, quantity: int) -> bool:
-	return inventory.has_item(item_id, quantity)
+	return inventory.has_item(item_id)
 
 func _process(delta: float) -> void:
 	if is_talking and not dialogue_mgr.is_in_dialogue():

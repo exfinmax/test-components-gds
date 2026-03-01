@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://xyuo71ffcdx5"]
 
-[ext_resource type="Script" uid="uid://iv7mwxksj672" path="res://ComponentLibrary/Packs/Combat/Components/hurtbox_component.gd" id="1_f4yta"]
+[ext_resource type="Script" uid="uid://iv7mwxksj672" path="res://ComponentLibrary/Modules/Combat/Components/hurtbox_component.gd" id="1_f4yta"]
 
 [node name="HurtboxComponent" type="Area2D"]
 process_mode = 3

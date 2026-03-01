@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://bgimvqxglgxcv"]
 
-[ext_resource type="Script" uid="uid://ddup5xawg6y3m" path="res://ComponentLibrary/Packs/VFX/Templates/CanYing/canying.gd" id="1_lmjw0"]
+[ext_resource type="Script" uid="uid://ddup5xawg6y3m" path="res://ComponentLibrary/Modules/VFX/Templates/CanYing/canying.gd" id="1_lmjw0"]
 
 [node name="CanyingComponent" type="Node2D"]
 z_index = 10

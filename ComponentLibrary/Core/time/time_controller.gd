@@ -61,6 +61,33 @@ func include_node(node_path: NodePath) -> void:
 func is_node_excluded(node_path: NodePath) -> bool:
 	return node_path in _excluded_nodes
 
+## engine_time_scale 别名（与 character.gd / time_ability_component.gd 的调用约定对齐）
+var engine_time_scale: float:
+	get: return time_scale
+	set(v): time_scale = v
+
+func get_real_delta(scaled_delta: float) -> float:
+	## 返回未缩放的真实 delta（time_scale=0 时返回 0）
+	if time_scale <= 0.0:
+		return 0.0
+	return scaled_delta / time_scale
+
+func get_compensation_factor() -> float:
+	## 返回速度补偿系数（让免疫节点以正常速度运动）
+	if time_scale <= 0.0:
+		return 1.0
+	return 1.0 / time_scale
+
+## 排除节点不受时间缩放影响（接受 Node 或 NodePath）
+func exclude(target) -> void:
+	var p: NodePath = target.get_path() if target is Node else NodePath(str(target))
+	exclude_node(p)
+
+## 重新纳入时间缩放
+func include(target) -> void:
+	var p: NodePath = target.get_path() if target is Node else NodePath(str(target))
+	include_node(p)
+
 ## 子弹时间效果
 func bullet_time(scale: float = 0.3, duration: float = 1.0) -> void:
 	set_time_scale(scale, 0.1)

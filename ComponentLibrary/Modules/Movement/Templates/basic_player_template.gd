@@ -23,8 +23,6 @@ var inventory: InventoryComponent = null
 @export var initial_health: float = 100.0
 @export var initial_attack: float = 20.0
 
-var velocity: Vector2 = Vector2.ZERO
-
 func _ready() -> void:
 	_setup_movement()
 	_setup_combat()
@@ -80,17 +78,14 @@ func _setup_inventory() -> void:
 	add_child(inventory)
 
 func take_damage(damage: float) -> void:
-	var current_health = attribute_system.get_value("health")
-	attribute_system.modify_base_value("health", -damage)
+	var current_health := attrs.get_attribute(&"health")
+	attrs.modify_base_attribute(&"health", -damage)
 	print("玩家受到 %.0f 伤害！剩余生命值: %.0f" % [
 		damage,
-		attribute_system.get_value("health")
+		attrs.get_attribute(&"health")
 	])
 
-func _process(delta: float) -> void:
-	if state_machine:
-		state_machine.process(delta)
-	
+func _physics_process(delta: float) -> void:
 	# 处理移动
 	match current_state:
 		"idle":
@@ -104,13 +99,12 @@ func _process(delta: float) -> void:
 			velocity.y = jump_force
 	
 	# 应用重力
-	velocity.y = min(velocity.y + gravity * delta, 500)
+	velocity.y = minf(velocity.y + gravity * delta, 500.0)
 	
-	# 移动
-	velocity = move_and_slide(velocity)
+	move_and_slide()
 	
 	# 更新当前状态名称
-	current_state = state_machine.get_current_state() if state_machine else "idle"
+	current_state = state_machine.get_current_state_name() if state_machine else "idle"
 	
 func get_health() -> float:
 	return attrs.get_attribute(&"health")

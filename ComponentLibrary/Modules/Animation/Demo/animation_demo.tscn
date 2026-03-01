@@ -1,0 +1,4 @@
+[gd_scene load_steps=2 format=3]
+[ext_resource type="Script" path="res://ComponentLibrary/Modules/Animation/Demo/animation_demo.gd" id=1]
+[node name="AnimationDemo" type="Node"]
+script = ExtResource("1")

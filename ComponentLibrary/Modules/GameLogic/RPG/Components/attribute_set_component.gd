@@ -55,8 +55,9 @@ func get_base_attribute(name: StringName) -> float:
 # ─── 修饰符管理 ──────────────────────────────────────────────────
 
 ## 添加一条修饰符。同一 source_id 下允许同属性多条不同类型的修饰符。
+## type 传 ModType 枚举值（int）
 func add_modifier(source_id: StringName, attr: StringName,
-		value: float, type: ModType = ModType.FLAT) -> void:
+		value: float, type: int = ModType.FLAT) -> void:
 	if not _modifiers.has(source_id):
 		_modifiers[source_id] = {}
 	var src: Dictionary = _modifiers[source_id]
@@ -68,14 +69,14 @@ func add_modifier(source_id: StringName, attr: StringName,
 
 ## 覆盖某来源在某属性上的指定类型修饰符（更新装备时无需先 remove）。
 func set_modifier(source_id: StringName, attr: StringName,
-		value: float, type: ModType = ModType.FLAT) -> void:
+		value: float, type: int = ModType.FLAT) -> void:
 	if not _modifiers.has(source_id):
 		_modifiers[source_id] = {}
 	var src: Dictionary = _modifiers[source_id]
 	var old := get_attribute(attr)
 	var kept: Array = []
-	for m: Dictionary in (src.get(attr, []) as Array):
-		if int(m.get("type", 0)) != int(type):
+	for m in (src.get(attr, []) as Array):
+		if int(m.get("type", 0)) != type:
 			kept.append(m)
 	kept.append({"type": type, "value": value})
 	src[attr] = kept
@@ -87,10 +88,10 @@ func remove_modifier_source(source_id: StringName) -> void:
 		return
 	var touched: Array = (_modifiers[source_id] as Dictionary).keys()
 	var snaps: Dictionary = {}
-	for a: StringName in touched:
+	for a in touched:
 		snaps[a] = get_attribute(a)
 	_modifiers.erase(source_id)
-	for a: StringName in touched:
+	for a in touched:
 		_emit_change(a, float(snaps[a]), get_attribute(a))
 
 func clear_modifiers() -> void:
@@ -115,7 +116,7 @@ func get_attribute(name: StringName) -> float:
 
 	for src_id in _modifiers.keys():
 		var src: Dictionary = _modifiers[src_id]
-		for m: Dictionary in (src.get(name, []) as Array):
+		for m in (src.get(name, []) as Array):
 			var v := float(m.get("value", 0.0))
 			match int(m.get("type", 0)):
 				ModType.FLAT:        flat_sum   += v
@@ -152,81 +153,3 @@ func get_component_data() -> Dictionary:
 		"final":   get_all_attributes(),
 		"sources": _modifiers.keys(),
 	}
-
-
-@export var base_attributes: Dictionary = {
-	&"hp": 100.0,
-	&"attack": 10.0,
-	&"defense": 5.0,
-}
-
-var _modifiers_by_source: Dictionary = {}
-
-func set_base_attribute(name: StringName, value: float) -> void:
-	var old_value := get_attribute(name)
-	base_attributes[name] = value
-	var new_value := get_attribute(name)
-	_emit_attribute_change(name, old_value, new_value)
-
-func add_modifier(source_id: StringName, name: StringName, delta: float) -> void:
-	if not _modifiers_by_source.has(source_id):
-		_modifiers_by_source[source_id] = {}
-	var source_mods: Dictionary = _modifiers_by_source[source_id]
-	var old_value := get_attribute(name)
-	source_mods[name] = float(source_mods.get(name, 0.0)) + delta
-	_modifiers_by_source[source_id] = source_mods
-	var new_value := get_attribute(name)
-	_emit_attribute_change(name, old_value, new_value)
-
-func set_modifier(source_id: StringName, name: StringName, value: float) -> void:
-	if not _modifiers_by_source.has(source_id):
-		_modifiers_by_source[source_id] = {}
-	var source_mods: Dictionary = _modifiers_by_source[source_id]
-	var old_value := get_attribute(name)
-	source_mods[name] = value
-	_modifiers_by_source[source_id] = source_mods
-	var new_value := get_attribute(name)
-	_emit_attribute_change(name, old_value, new_value)
-
-func remove_modifier_source(source_id: StringName) -> void:
-	if not _modifiers_by_source.has(source_id):
-		return
-
-	var touched_attrs: Dictionary = {}
-	for attr_name in (_modifiers_by_source[source_id] as Dictionary).keys():
-		touched_attrs[attr_name] = get_attribute(attr_name)
-
-	_modifiers_by_source.erase(source_id)
-
-	for attr_name in touched_attrs.keys():
-		var old_value: float = touched_attrs[attr_name]
-		var new_value := get_attribute(attr_name)
-		_emit_attribute_change(attr_name, old_value, new_value)
-
-func clear_modifiers() -> void:
-	var snapshot := {}
-	for key in base_attributes.keys():
-		snapshot[key] = get_attribute(key)
-	_modifiers_by_source.clear()
-	for key in snapshot.keys():
-		_emit_attribute_change(key, float(snapshot[key]), get_attribute(key))
-
-func get_attribute(name: StringName) -> float:
-	var value := float(base_attributes.get(name, 0.0))
-	for source in _modifiers_by_source.keys():
-		var source_mods: Dictionary = _modifiers_by_source[source]
-		value += float(source_mods.get(name, 0.0))
-	return value
-
-func get_all_attributes() -> Dictionary:
-	var result := {}
-	for key in base_attributes.keys():
-		result[key] = get_attribute(key)
-	return result
-
-func _emit_attribute_change(name: StringName, old_value: float, new_value: float) -> void:
-	if is_equal_approx(old_value, new_value):
-		return
-	attribute_changed.emit(name, old_value, new_value)
-	if new_value <= 0.0 and old_value > 0.0:
-		attribute_zeroed.emit(name)

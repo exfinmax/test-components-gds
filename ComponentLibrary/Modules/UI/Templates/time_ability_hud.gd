@@ -32,4 +32,3 @@ func set_rewind_charge(ratio: float) -> void:
 
 func show_hint(text: String) -> void:
 	_hint_label.text = text
-

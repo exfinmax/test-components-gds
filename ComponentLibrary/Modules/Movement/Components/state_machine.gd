@@ -44,8 +44,8 @@ class State:
 	func _on_input(event: InputEvent) -> void:
 		pass
 
-## 转移条件
-class Transition:
+## 转移条件（避免与全局 Transition 类冲突，内嵌类命名为 StateTransition）
+class StateTransition:
 	var from_state: String
 	var to_state: String
 	var condition: Callable
@@ -59,7 +59,7 @@ class Transition:
 var states: Dictionary[String, State] = {}
 
 ## 转移列表
-var transitions: Array[Transition] = []
+var transitions: Array[StateTransition] = []
 
 ## 当前状态
 var current_state: State = null
@@ -113,7 +113,7 @@ func add_transition(from_state: String, to_state: String, condition: Callable) -
 		push_error("One or both states do not exist")
 		return
 	
-	transitions.append(Transition.new(from_state, to_state, condition))
+	transitions.append(StateTransition.new(from_state, to_state, condition))
 
 ## 设置当前状态
 func set_state(state_name: String) -> bool:

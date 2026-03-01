@@ -45,8 +45,6 @@ class AbilityData:
 ## 能力标签（用于交互和响应）
 @export var tags: PackedStringArray = []
 
-## 是否启用此能力
-@export var enabled: bool = true
 
 ## 能力被激活信号
 signal ability_activated(ability: AbilityComponent)

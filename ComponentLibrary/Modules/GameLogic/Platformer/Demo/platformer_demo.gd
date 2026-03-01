@@ -4,7 +4,7 @@ func _ready():
 	pack_name = "Platformer"
 	super._ready()
 
-func _populate_demo():
+func _setup_demo():
 	# demonstrate CoyoteJumpComponent behaviour via console
 	var comp = CoyoteJumpComponent.new()
 	add_child(comp)

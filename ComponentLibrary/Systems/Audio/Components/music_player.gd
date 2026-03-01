@@ -88,7 +88,7 @@ func play_bgm_fade_in(stream: AudioStream, fade_duration: float = -1.0) -> void:
 	tween.tween_property(bgm_player, "volume_db", 0.0, fade_duration)
 	tween.finished.connect(func(): active_tweens.erase("bgm"))
 	
-	DebugHelper.log("MusicPlayer: BGM fade in started (%.2fs, %.1f%% of %.1fs)" % [fade_duration, default_bgm_fade_percent * 100, stream.get_length()])
+	print("MusicPlayer: BGM fade in started (%.2fs, %.1f%% of %.1fs)" % [fade_duration, default_bgm_fade_percent * 100, stream.get_length()])
 
 func stop_bgm_fade_out(fade_duration: float = -1.0) -> void:
 	"""停止背景音乐并淡出
@@ -118,7 +118,7 @@ func stop_bgm_fade_out(fade_duration: float = -1.0) -> void:
 		active_tweens.erase("bgm")
 	)
 	
-	DebugHelper.log("MusicPlayer: BGM fade out started (%.2fs)" % fade_duration)
+	print("MusicPlayer: BGM fade out started (%.2fs)" % fade_duration)
 
 func crossfade_bgm(new_stream: AudioStream, fade_duration: float = -1.0) -> void:
 	"""交叉淡入淡出切换背景音乐
@@ -155,7 +155,7 @@ func crossfade_bgm(new_stream: AudioStream, fade_duration: float = -1.0) -> void
 	tween.tween_property(bgm_player, "volume_db", 0.0, fade_duration * 0.5)
 	tween.finished.connect(func(): active_tweens.erase("bgm"))
 	
-	DebugHelper.log("MusicPlayer: BGM crossfade started (%.2fs, %.1f%% of %.1fs)" % [fade_duration, default_bgm_fade_percent * 100, new_stream.get_length()])
+	print("MusicPlayer: BGM crossfade started (%.2fs, %.1f%% of %.1fs)" % [fade_duration, default_bgm_fade_percent * 100, new_stream.get_length()])
 
 func setup_ui_sounds(node: Node) -> void :
 	var button: = node as Button
@@ -222,7 +222,7 @@ func play_sfx_fade_in(_name: String, fade_duration: float = -1.0) -> void:
 	)
 	
 	if player.stream:
-		DebugHelper.log("MusicPlayer: SFX '%s' fade in started (%.2fs, %.1f%% of %.1fs)" % [_name, fade_duration, default_sfx_fade_percent * 100, player.stream.get_length()])
+		print("MusicPlayer: SFX '%s' fade in started (%.2fs, %.1f%% of %.1fs)" % [_name, fade_duration, default_sfx_fade_percent * 100, player.stream.get_length()])
 
 func stop_sfx_fade_out(_name: String, fade_duration: float = -1.0) -> void:
 	"""停止音效并淡出
@@ -263,7 +263,7 @@ func stop_sfx_fade_out(_name: String, fade_duration: float = -1.0) -> void:
 		active_tweens.erase("sfx_" + _name)
 	)
 	
-	DebugHelper.log("MusicPlayer: SFX '%s' fade out started (%.2fs)" % [_name, fade_duration])
+	print("MusicPlayer: SFX '%s' fade out started (%.2fs)" % [_name, fade_duration])
 
 func stop_all_sfx() -> void:
 	for i:AudioStreamPlayer in sfx.get_children():
@@ -287,14 +287,14 @@ func set_bgm_fade_percent(percent: float) -> void:
 	percent: 百分比值（0.0 到 1.0），例如 0.02 表示 2%
 	"""
 	default_bgm_fade_percent = clamp(percent, 0.001, 0.5)  # 限制在 0.1% 到 50%
-	DebugHelper.log("MusicPlayer: BGM fade percent set to %.1f%%" % (default_bgm_fade_percent * 100))
+	print("MusicPlayer: BGM fade percent set to %.1f%%" % (default_bgm_fade_percent * 100))
 
 func set_sfx_fade_percent(percent: float) -> void:
 	"""设置 SFX 默认淡入淡出百分比
 	percent: 百分比值（0.0 到 1.0），例如 0.10 表示 10%
 	"""
 	default_sfx_fade_percent = clamp(percent, 0.001, 0.5)  # 限制在 0.1% 到 50%
-	DebugHelper.log("MusicPlayer: SFX fade percent set to %.1f%%" % (default_sfx_fade_percent * 100))
+	print("MusicPlayer: SFX fade percent set to %.1f%%" % (default_sfx_fade_percent * 100))
 
 func set_fade_limits(min_duration: float, max_duration: float) -> void:
 	"""设置淡入淡出时长的最小和最大限制
@@ -303,7 +303,7 @@ func set_fade_limits(min_duration: float, max_duration: float) -> void:
 	"""
 	min_fade_duration = max(0.01, min_duration)
 	max_fade_duration = max(min_fade_duration, max_duration)
-	DebugHelper.log("MusicPlayer: Fade limits set to %.2fs - %.2fs" % [min_fade_duration, max_fade_duration])
+	print("MusicPlayer: Fade limits set to %.2fs - %.2fs" % [min_fade_duration, max_fade_duration])
 
 func get_volume(bus_index: int) -> float:
 	var db: = AudioServer.get_bus_volume_db(bus_index)

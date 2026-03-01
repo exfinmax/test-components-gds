@@ -1,8 +1,8 @@
 [gd_scene format=3 uid="uid://ebnppf2p4kgg"]
 
-[ext_resource type="Script" uid="uid://dccgw3cifrk8m" path="res://ComponentLibrary/Packs/UI/Templates/Transition/transition_scene.gd" id="1_bctt4"]
-[ext_resource type="Shader" uid="uid://cbxibr7o3glbt" path="res://ComponentLibrary/Packs/UI/Templates/Transition/Dissolve2d.gdshader" id="2_ypvt8"]
-[ext_resource type="Texture2D" uid="uid://dfyb6to5nrww7" path="res://ComponentLibrary/Packs/UI/Templates/Transition/transition_pattern/8.png" id="3_rspyb"]
+[ext_resource type="Script" uid="uid://dccgw3cifrk8m" path="res://ComponentLibrary/Modules/UI/Templates/Transition/transition_scene.gd" id="1_bctt4"]
+[ext_resource type="Shader" uid="uid://cbxibr7o3glbt" path="res://ComponentLibrary/Modules/UI/Templates/Transition/Dissolve2d.gdshader" id="2_ypvt8"]
+[ext_resource type="Texture2D" uid="uid://dfyb6to5nrww7" path="res://ComponentLibrary/Modules/UI/Templates/Transition/transition_pattern/8.png" id="3_rspyb"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_s4jdv"]
 shader = ExtResource("2_ypvt8")

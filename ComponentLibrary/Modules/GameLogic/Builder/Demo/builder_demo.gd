@@ -4,7 +4,7 @@ func _ready():
 	pack_name = "Builder"
 	super._ready()
 
-func _populate_demo():
+func _setup_demo():
 	# instantiate grid placement and show placing a marker on click
 	var grid = GridPlacementComponent.new()
 	grid.cell_size = 32

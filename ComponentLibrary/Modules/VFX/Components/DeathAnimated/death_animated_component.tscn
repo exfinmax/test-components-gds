@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://b5vs5ykgsic5w"]
 
-[ext_resource type="Script" uid="uid://27pll55wanyh" path="res://ComponentLibrary/Packs/VFX/Components/DeathAnimated/death_animated_component.gd" id="1_ag2go"]
+[ext_resource type="Script" uid="uid://27pll55wanyh" path="res://ComponentLibrary/Modules/VFX/Components/DeathAnimated/death_animated_component.gd" id="1_ag2go"]
 
 [sub_resource type="Animation" id="Animation_iwr6c"]
 length = 0.001

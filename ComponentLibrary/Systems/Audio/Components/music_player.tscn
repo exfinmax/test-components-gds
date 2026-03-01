@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://dtv2qid31i4eg"]
 
-[ext_resource type="Script" uid="uid://bjy533fgy8gux" path="res://ComponentLibrary/Packs/Systems/Components/Audio/music_player.gd" id="1_gifcd"]
+[ext_resource type="Script" uid="uid://bjy533fgy8gux" path="res://ComponentLibrary/Modules/GameLogic/Foundation/Components/Audio/music_player.gd" id="1_gifcd"]
 
 [sub_resource type="AudioStreamRandomizer" id="AudioStreamRandomizer_e78l4"]
 streams_count = 3

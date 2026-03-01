@@ -4,7 +4,7 @@ func _ready():
 	pack_name = "UI"
 	super._ready()
 	# then add transition UI elements
-	var trans_scene = preload("res://ComponentLibrary/Packs/UI/Templates/Transition/TransitionScene.tscn")
+	var trans_scene = preload("res://ComponentLibrary/Modules/UI/Templates/Transition/TransitionScene.tscn")
 	var trans = trans_scene.instantiate()
 	add_child(trans)
 	trans.anchor_right = 1

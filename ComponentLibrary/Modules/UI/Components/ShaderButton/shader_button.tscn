@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://dssid7iw4aqb6"]
 
-[ext_resource type="Script" uid="uid://c2qtfgumfei5" path="res://ComponentLibrary/Packs/UI/Components/ShaderButton/shader_button.gd" id="1_q8250"]
-[ext_resource type="Script" uid="uid://i3xgym8bhl33" path="res://ComponentLibrary/Packs/UI/Components/ButtonEffectModule/button_effect_module.gd" id="2_tc11w"]
+[ext_resource type="Script" uid="uid://c2qtfgumfei5" path="res://ComponentLibrary/Modules/UI/Components/ShaderButton/shader_button.gd" id="1_q8250"]
+[ext_resource type="Script" uid="uid://i3xgym8bhl33" path="res://ComponentLibrary/Modules/UI/Components/ButtonEffectModule/button_effect_module.gd" id="2_tc11w"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_tuexh"]
 bg_color = Color(0.44622445, 0.4462245, 0.44622445, 0.7372549)
