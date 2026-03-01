@@ -197,7 +197,10 @@ func _create_dock_ui() -> void:
 	_dock_scene.add_child(_info_panel)
 	
 	# 添加到编辑器
-	add_control_to_dock(DOCK_POSITION_RIGHT_BL, _dock_scene)
+	var dock = EditorDock.new()
+	dock.DockLayout = DOCK_SLOT_RIGHT_BL
+	dock.add_child(_dock_scene)
+	add_dock(dock)
 	
 	# 填充树
 	_populate_tree()
