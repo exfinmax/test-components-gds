@@ -1,121 +1,104 @@
-## 高级战斗系统Demo - 展示属性、能力、效果的完整集成
-##
+## 高级战斗系统 Demo — 展示 AttributeSetComponent + BuffComponent + CooldownComponent 集成
+## 按键说明（调试模式运行）：
+##   [Enter]    向敌人发起一次攻击（带冷却）
+##   [S/Down]   对自己施加燃烧状态效果
+##   [W/Up]     给自己添加攻击强化 Buff
 extends PackDemo
 class_name CombatAdvancedDemo
 
-@onready var player = $Player
-@onready var enemy = $Enemy
+## 玩家战斗节点
+var player_attrs:    AttributeSetComponent
+var player_cooldown: CooldownComponent
+var player_status:   StatusEffectComponent
+var player_buffs:    BuffComponent
 
-var player_combat_mgr: Node = null
-var enemy_combat_mgr: Node = null
+## 敌人战斗节点
+var enemy_attrs: AttributeSetComponent
 
 func _ready() -> void:
 	super._ready()
 	_setup_player()
 	_setup_enemy()
-	_setup_ui()
+	_print_instructions()
 
 func _setup_player() -> void:
-	# 创建玩家战斗系统
-	player_combat_mgr = Node.new()
-	player_combat_mgr.name = "CombatManager"
-	player.add_child(player_combat_mgr)
-	
-	# 添加属性系统
-	var attr = AttributeSystem.new()
-	attr.name = "AttributeSystem"
-	player_combat_mgr.add_child(attr)
-	attr.set_base_value("health", 100)
-	attr.set_base_value("stamina", 100)
-	attr.set_base_value("attack", 15)
-	attr.set_base_value("defense", 5)
-	
-	# 添加效果管理器
-	var effects = EffectManager.new()
-	effects.name = "EffectManager"
-	player_combat_mgr.add_child(effects)
-	
-	# 添加冷却系统
-	var cooldown = CooldownComponent.new()
-	cooldown.name = "CooldownComponent"
-	player_combat_mgr.add_child(cooldown)
-	
-	# 连接信号
-	attr.attribute_changed.connect(_on_attribute_changed.bindv([player.name]))
-	effects.effect_applied.connect(_on_effect_applied.bindv([player.name]))
+	player_attrs = AttributeSetComponent.new()
+	player_attrs.name = "Attrs"
+	add_child(player_attrs)
+	player_attrs.set_base_attribute(&"hp",      100.0)
+	player_attrs.set_base_attribute(&"mp",       50.0)
+	player_attrs.set_base_attribute(&"attack",   20.0)
+	player_attrs.set_base_attribute(&"defense",   5.0)
+	player_attrs.attribute_changed.connect(
+		func(n, o, v): print("[玩家] %s: %.0f → %.0f" % [n, o, v]))
+
+	player_cooldown = CooldownComponent.new()
+	add_child(player_cooldown)
+
+	player_status = StatusEffectComponent.new()
+	add_child(player_status)
+	player_status.effect_ticked.connect(_on_status_ticked)
+	player_status.effect_expired.connect(func(id): print("[玩家] 状态结束: %s" % id))
+
+	player_buffs = BuffComponent.new()
+	add_child(player_buffs)
 
 func _setup_enemy() -> void:
-	# 创建敌人战斗系统（与玩家类似）
-	enemy_combat_mgr = Node.new()
-	enemy_combat_mgr.name = "CombatManager"
-	enemy.add_child(enemy_combat_mgr)
-	
-	var attr = AttributeSystem.new()
-	attr.name = "AttributeSystem"
-	enemy_combat_mgr.add_child(attr)
-	attr.set_base_value("health", 80)
-	attr.set_base_value("attack", 12)
-	attr.set_base_value("defense", 3)
-
-func _setup_ui() -> void:
-	# 创建UI显示战斗信息
-	var ui = Control.new()
-	ui.name = "CombatUI"
-	add_child(ui)
+	enemy_attrs = AttributeSetComponent.new()
+	enemy_attrs.name = "EnemyAttrs"
+	add_child(enemy_attrs)
+	enemy_attrs.set_base_attribute(&"hp",     80.0)
+	enemy_attrs.set_base_attribute(&"defense", 3.0)
+	enemy_attrs.attribute_changed.connect(
+		func(n, o, v): print("[敌人] %s: %.0f → %.0f" % [n, o, v]))
 
 func _process(delta: float) -> void:
-	# 演示：按空格进行一次攻击
+	# 推进状态效果 tick（StatusEffectComponent 依赖 _process 驱动）
+	player_status.tick(delta)
+
 	if Input.is_action_just_pressed("ui_accept"):
 		_perform_attack()
-	
-	# 演示：按E应用燃烧效果
 	if Input.is_action_just_pressed("ui_down"):
-		_apply_burn_effect()
+		_apply_burn()
+	if Input.is_action_just_pressed("ui_up"):
+		_apply_attack_buff()
 
 func _perform_attack() -> void:
-	var player_attr = player_combat_mgr.get_node("AttributeSystem") as AttributeSystem
-	var enemy_attr = enemy_combat_mgr.get_node("AttributeSystem") as AttributeSystem
-	
-	# 检查冷却
-	var cooldown = player_combat_mgr.get_node("CooldownComponent") as CooldownComponent
-	if cooldown.is_on_cooldown("attack"):
-		print("攻击冷却中...")
+	if player_cooldown.is_on_cooldown(&"attack"):
+		print("[攻击] 冷却中，剩余 %.1fs" % player_cooldown.get_remaining(&"attack"))
 		return
-	
-	# 计算伤害
-	var player_attack = player_attr.get_value("attack")
-	var enemy_defense = enemy_attr.get_value("defense")
-	var damage = int(player_attack - enemy_defense * 0.5)
-	damage = max(1, damage)
-	
-	# 应用伤害
-	enemy_attr.modify_base_value("health", -damage)
-	print("玩家造成 %d 伤害！敌人剩余血量: %.0f" % [
-		damage,
-		enemy_attr.get_value("health")
-	])
-	
-	# 启动冷却
-	cooldown.start_cooldown("attack", 1.0)
 
-func _apply_burn_effect() -> void:
-	var effects = player_combat_mgr.get_node("EffectManager") as EffectManager
-	
-	# 创建燃烧效果
-	var burn = EffectManager.EffectData.new()
-	burn.effect_name = "Burn"
-	burn.duration = 3.0
-	burn.tick_interval = 0.5
-	burn.on_tick = func(_delta):
-		var attr = player_combat_mgr.get_node("AttributeSystem") as AttributeSystem
-		attr.modify_base_value("health", -5)
-		print("燃烧造成伤害！")
-	
-	effects.apply_effect(burn)
-	print("应用燃烧效果！")
+	var atk := player_attrs.get_attribute(&"attack")
+	var def := enemy_attrs.get_attribute(&"defense")
+	var dmg := maxf(1.0, atk - def * 0.5)
+	enemy_attrs.modify_base_attribute(&"hp", -dmg)
+	print("[攻击] 造成 %.0f 伤害！敌人剩余 HP: %.0f" % [dmg, enemy_attrs.get_attribute(&"hp")])
+	player_cooldown.start_cooldown(&"attack", 1.0)
 
-func _on_attribute_changed(attr_name: String, old_value: float, new_value: float, owner_name: String) -> void:
-	print("[%s] %s: %.0f -> %.0f" % [owner_name, attr_name, old_value, new_value])
+func _apply_burn() -> void:
+	# 使用 StatusEffectComponent：数据驱动，在 on_ticked 信号里处理效果
+	player_status.add_effect(&"burn", 3.0, {"dmg_per_tick": 5.0}, 0.5)
+	print("[状态] 施加燃烧效果（3s，每0.5s触发）")
 
-func _on_effect_applied(effect: EffectManager.EffectData, owner_name: String) -> void:
-	print("[%s] 应用效果: %s" % [owner_name, effect.effect_name])
+func _apply_attack_buff() -> void:
+	# 使用 AttributeSetComponent 修饰符：+30% 攻击，来源 "buff_rage"
+	if player_attrs.has_modifier_source(&"buff_rage"):
+		player_attrs.remove_modifier_source(&"buff_rage")
+		print("[Buff] 移除狂暴（攻击恢复 %.0f）" % player_attrs.get_attribute(&"attack"))
+	else:
+		player_attrs.add_modifier(&"buff_rage", &"attack", 0.3, AttributeSetComponent.ModType.PERCENT_ADD)
+		print("[Buff] 施加狂暴+30%%攻击（当前 %.0f）" % player_attrs.get_attribute(&"attack"))
+
+func _on_status_ticked(effect_id: StringName, payload: Dictionary, stacks: int) -> void:
+	if effect_id == &"burn":
+		var dmg := float(payload.get("dmg_per_tick", 0.0)) * stacks
+		player_attrs.modify_base_attribute(&"hp", -dmg)
+		print("[燃烧] 造成 %.0f 伤害，剩余 HP: %.0f" % [dmg, player_attrs.get_attribute(&"hp")])
+
+func _print_instructions() -> void:
+	print("\n── CombatAdvancedDemo ──")
+	print("[Enter]  攻击（1s 冷却）")
+	print("[Down]   对自己施加燃烧")
+	print("[Up]     切换狂暴 Buff (+30%% 攻击)")
+	print("─────────────────────────\n")
+

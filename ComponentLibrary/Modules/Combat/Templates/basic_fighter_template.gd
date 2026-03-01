@@ -1,101 +1,86 @@
-## 基础战士模板 - 展示如何集成属性、能力、效果系统
-## 作为一个可直接使用的CharacterBody2D角色
+## 基础战士模板 — 展示 AttributeSetComponent + BuffComponent + AbilityComponent 集成
+## 可直接作为 CharacterBody2D 子类使用
 ##
 extends CharacterBody2D
 class_name BasicFighterTemplate
 
 # 组件引用
-var attribute_system: AttributeSystem = null
-var ability_mgr: AbilityComponent = null
-var effect_mgr: EffectManager = null
-var cooldown_mgr: CooldownComponent = null
+var attrs:       AttributeSetComponent = null
+var buffs:       BuffComponent         = null
+var status_fx:   StatusEffectComponent = null
+var ability_mgr: AbilityComponent      = null
+var cooldown:    CooldownComponent     = null
 
-@export var initial_health: float = 100.0
-@export var initial_attack: float = 15.0
+@export var initial_health:  float = 100.0
+@export var initial_attack:  float = 15.0
 @export var initial_defense: float = 5.0
 
 var is_alive: bool = true
 
 func _ready() -> void:
 	_setup_attributes()
-	_setup_abilities()
 	_setup_effects()
-	print("战士[%s]初始化完成 - 生命值: %.0f" % [name, attribute_system.get_value("health")])
+	_setup_abilities()
+	print("战士[%s]初始化完成 - 生命值: %.0f" % [name, attrs.get_attribute(&"health")])
 
 func _setup_attributes() -> void:
-	# 创建属性系统
-	attribute_system = AttributeSystem.new()
-	add_child(attribute_system)
-	
-	# 初始化属性
-	attribute_system.set_base_value("health", initial_health)
-	attribute_system.set_base_value("attack", initial_attack)
-	attribute_system.set_base_value("defense", initial_defense)
-	
-	# 监听生命值变化
-	attribute_system.attribute_changed.connect(_on_health_changed)
+	attrs = AttributeSetComponent.new()
+	attrs.name = "AttributeSetComponent"
+	add_child(attrs)
+	attrs.set_base_attribute(&"health",  initial_health)
+	attrs.set_base_attribute(&"attack",  initial_attack)
+	attrs.set_base_attribute(&"defense", initial_defense)
+	attrs.attribute_changed.connect(_on_attribute_changed)
+
+func _setup_effects() -> void:
+	buffs = BuffComponent.new()
+	buffs.name = "BuffComponent"
+	add_child(buffs)
+	status_fx = StatusEffectComponent.new()
+	status_fx.name = "StatusEffectComponent"
+	add_child(status_fx)
+	cooldown = CooldownComponent.new()
+	cooldown.name = "CooldownComponent"
+	add_child(cooldown)
 
 func _setup_abilities() -> void:
 	ability_mgr = AbilityComponent.new()
+	ability_mgr.name = "AbilityComponent"
 	add_child(ability_mgr)
-	
-	# 配置能力
 	ability_mgr.cooldown_duration = 1.0
 	ability_mgr.ability_name = "BasicAttack"
 
-func _setup_effects() -> void:
-	effect_mgr = EffectManager.new()
-	add_child(effect_mgr)
-	
-	cooldown_mgr = CooldownComponent.new()
-	add_child(cooldown_mgr)
-
 func take_damage(damage: float) -> void:
-	if not is_alive:
-		return
-	
-	var current_health = attribute_system.get_value("health")
-	attribute_system.modify_base_value("health", -damage)
-	
-	if current_health <= 0:
+	if not is_alive: return
+	attrs.modify_base_attribute(&"health", -damage)
+	if attrs.get_attribute(&"health") <= 0.0:
 		_on_death()
 
 func heal(amount: float) -> void:
-	var max_health = attribute_system.get_base_value("health")
-	attribute_system.modify_base_value("health", amount)
-	
-	var current = attribute_system.get_value("health")
-	if current > max_health:
-		attribute_system.set_base_value("health", max_health)
+	var max_hp := attrs.get_base_attribute(&"health")
+	attrs.modify_base_attribute(&"health", amount)
+	if attrs.get_attribute(&"health") > max_hp:
+		attrs.set_base_attribute(&"health", max_hp)
 
-func apply_buff(buff_name: String, duration: float, effect: Callable) -> void:
-	var effect_data = EffectManager.EffectData.new()
-	effect_data.effect_name = buff_name
-	effect_data.duration = duration
-	effect_data.on_tick = effect
-	effect_mgr.apply_effect(effect_data)
+## 应用状态效果（燃烧、减速等），通过 StatusEffectComponent
+func apply_status(effect_id: StringName, duration: float,
+		payload: Dictionary = {}, tick_interval: float = 1.0) -> void:
+	status_fx.add_effect(effect_id, duration, payload, tick_interval)
 
-func apply_debuff(debuff_name: String, duration: float, effect: Callable) -> void:
-	apply_buff(debuff_name, duration, effect)
+func remove_status(effect_id: StringName) -> void:
+	status_fx.remove_effect(effect_id)
 
-func _on_health_changed(attr_name: String, old_value: float, new_value: float) -> void:
-	if attr_name == "health":
-		print("[%s] 生命值变化: %.0f -> %.0f" % [name, old_value, new_value])
+func _on_attribute_changed(attr_name: StringName, old_value: float, new_value: float) -> void:
+	print("[%s] %s: %.0f → %.0f" % [name, attr_name, old_value, new_value])
 
 func _on_death() -> void:
 	is_alive = false
 	print("[%s] 已死亡" % name)
 	queue_free()
 
-func _process(delta: float) -> void:
-	if effect_mgr:
-		effect_mgr.process(delta)
-	if cooldown_mgr:
-		cooldown_mgr.process(delta)
-
 func debug_stats() -> String:
-	return "生命值: %.0f | 攻击: %.0f | 防御: %.0f" % [
-		attribute_system.get_value("health"),
-		attribute_system.get_value("attack"),
-		attribute_system.get_value("defense")
+	return "HP: %.0f | ATK: %.0f | DEF: %.0f" % [
+		attrs.get_attribute(&"health"),
+		attrs.get_attribute(&"attack"),
+		attrs.get_attribute(&"defense"),
 	]

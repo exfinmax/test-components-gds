@@ -8,8 +8,8 @@ var state_machine: StateMachine = null
 var current_state: String = "idle"
 
 # 战斗组件
-var attribute_system: AttributeSystem = null
-var effect_mgr: EffectManager = null
+var attrs:     AttributeSetComponent = null
+var status_fx: StatusEffectComponent  = null
 
 # RPG组件
 var inventory: InventoryComponent = null
@@ -64,15 +64,15 @@ func _setup_movement() -> void:
 	state_machine.set_state("idle")
 
 func _setup_combat() -> void:
-	attribute_system = AttributeSystem.new()
-	add_child(attribute_system)
-	
-	attribute_system.set_base_value("health", initial_health)
-	attribute_system.set_base_value("attack", initial_attack)
-	attribute_system.set_base_value("defense", 5.0)
-	
-	effect_mgr = EffectManager.new()
-	add_child(effect_mgr)
+	attrs = AttributeSetComponent.new()
+	attrs.name = "AttributeSetComponent"
+	add_child(attrs)
+	attrs.set_base_attribute(&"health",  initial_health)
+	attrs.set_base_attribute(&"attack",  initial_attack)
+	attrs.set_base_attribute(&"defense", 5.0)
+	status_fx = StatusEffectComponent.new()
+	status_fx.name = "StatusEffectComponent"
+	add_child(status_fx)
 
 func _setup_inventory() -> void:
 	inventory = InventoryComponent.new()
@@ -112,19 +112,15 @@ func _process(delta: float) -> void:
 	# 更新当前状态名称
 	current_state = state_machine.get_current_state() if state_machine else "idle"
 	
-	# 处理效果
-	if effect_mgr:
-		effect_mgr.process(delta)
-
 func get_health() -> float:
-	return attribute_system.get_value("health")
+	return attrs.get_attribute(&"health")
 
 func get_max_health() -> float:
-	return attribute_system.get_base_value("health")
+	return attrs.get_base_attribute(&"health")
 
 func debug_status() -> String:
-	return "HP: %.0f/%.0f | 状态: %s" % [
-		get_health(),
-		get_max_health(),
-		current_state
+	return "HP: %.0f/%.0f | ATK: %.0f | 状态: %s" % [
+		get_health(), get_max_health(),
+		attrs.get_attribute(&"attack"),
+		current_state,
 	]

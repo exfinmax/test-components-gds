@@ -96,12 +96,12 @@ func can_activate() -> bool:
 	if current_cooldown > 0:
 		return false
 	
-	# 检查成本（如果父节点有属性系统）
-	if has_node("../AttributeSystem"):
-		var attr_system = get_node("../AttributeSystem") as AttributeSystem
-		if attr_system:
+	# 检查成本（如果父节点有属性集组件）
+	if has_node("../AttributeSetComponent"):
+		var attrs := get_node("../AttributeSetComponent") as AttributeSetComponent
+		if attrs:
 			for resource_name in cost:
-				if attr_system.get_value(resource_name) < cost[resource_name]:
+				if attrs.get_attribute(resource_name) < cost[resource_name]:
 					return false
 	
 	return true
@@ -112,11 +112,11 @@ func activate(target: Node = null) -> bool:
 		return false
 	
 	# 消耗资源
-	if has_node("../AttributeSystem"):
-		var attr_system = get_node("../AttributeSystem") as AttributeSystem
-		if attr_system:
+	if has_node("../AttributeSetComponent"):
+		var attrs := get_node("../AttributeSetComponent") as AttributeSetComponent
+		if attrs:
 			for resource_name in cost:
-				attr_system.modify_base_value(resource_name, -cost[resource_name])
+				attrs.modify_base_attribute(resource_name, -cost[resource_name])
 	
 	is_active = true
 	elapsed_duration = 0.0
