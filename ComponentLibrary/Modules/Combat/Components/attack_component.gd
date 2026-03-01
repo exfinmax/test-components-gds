@@ -53,12 +53,12 @@ var _can_attack: bool = true
 var _original_damage: float = 0.0
 
 func _component_ready() -> void:
-	if not hitbox:
-		# 在 owner 的子节点中查找 HitBoxComponent
-		for child in owner.get_children():
-			if child is HitBoxComponent:
-				hitbox = child as HitBoxComponent
-				break
+	#if not hitbox:
+		## 在 owner 的子节点中查找 HitBoxComponent
+		#for child in owner.get_children():
+			#if child is HitBoxComponent:
+				#hitbox = child as HitBoxComponent
+				#break
 	
 	if hitbox:
 		hitbox.enabled = false
