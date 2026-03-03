@@ -52,4 +52,3 @@ func get_component_data() -> Dictionary:
 		"save_rotation": save_rotation,
 		"save_scale": save_scale,
 	}
-

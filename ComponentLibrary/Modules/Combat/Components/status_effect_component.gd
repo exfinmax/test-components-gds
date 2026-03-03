@@ -59,13 +59,8 @@ func clear_effects() -> void:
 	for id in ids:
 		effect_expired.emit(id)
 
-func _process(delta: float) -> void:
-	_tick(delta)
 
-func _local_time_process(delta: float) -> void:
-	_tick(delta)
-
-func _tick(delta: float) -> void:
+func tick(delta: float) -> void:
 	if _effects.is_empty():
 		return
 

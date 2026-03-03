@@ -1,5 +1,5 @@
 extends Node
-class_name LocalTimeDomainDependency
+class_name LocalTimeDomain
 
 @export var local_time_scale: float = 1.0
 @export var paused: bool = false

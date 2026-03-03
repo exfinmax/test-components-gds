@@ -29,9 +29,9 @@ ModuleName/
 │   └── ...
 │
 └── Demo/             # 🎮 完整演示（可运行的游戏示例）
-    ├── demo_scene.tscn       # 演示场景
-    ├── demo_scene.gd         # 演示逻辑
-    └── ...
+	├── demo_scene.tscn       # 演示场景
+	├── demo_scene.gd         # 演示逻辑
+	└── ...
 ```
 
 ### 📋 目录职责说明
@@ -68,9 +68,9 @@ Core/
 │   └── local_time_domain.gd        # 局部时间域
 │
 └── utils/             # 工具库
-    ├── Math.gd                     # 数学工具函数
-    ├── Complex.gd                  # 复数运算
-    └── FFT.gd                      # 快速傅里叶变换
+	├── Math.gd                     # 数学工具函数
+	├── Complex.gd                  # 复数运算
+	└── FFT.gd                      # 快速傅里叶变换
 ```
 
 ---
@@ -258,11 +258,11 @@ func _physics_process(delta):
    ```gdscript
    # 在Inspector中调整
    HealthComponent:
-       max_health: 100
-       regeneration_rate: 5
+	   max_health: 100
+	   regeneration_rate: 5
    
    HurtboxComponent:
-       damage_multiplier: 1.0
+	   damage_multiplier: 1.0
    ```
 
 ### 示例2：添加移动能力
@@ -284,18 +284,18 @@ func _physics_process(delta):
    @onready var dash = $DashComponent
    
    func _physics_process(delta):
-       var input = Vector2(
-           Input.get_axis("ui_left", "ui_right"),
-           0
-       )
-       
-       move.process_move(self, input, delta)
-       
-       if Input.is_action_just_pressed("ui_accept"):
-           jump.try_jump(self)
-       
-       if Input.is_action_just_pressed("dash"):
-           dash.perform_dash(self, input)
+	   var input = Vector2(
+		   Input.get_axis("ui_left", "ui_right"),
+		   0
+	   )
+	   
+	   move.process_move(self, input, delta)
+	   
+	   if Input.is_action_just_pressed("ui_accept"):
+		   jump.try_jump(self)
+	   
+	   if Input.is_action_just_pressed("dash"):
+		   dash.perform_dash(self, input)
    ```
 
 ### 示例3：查看完整Demo
@@ -331,10 +331,10 @@ func _physics_process(delta):
 ```gdscript
 # 示例：检查EventBus是否存在
 if has_node("/root/EventBus"):
-    EventBus.emit_signal("player_damaged", damage)
+	EventBus.emit_signal("player_damaged", damage)
 else:
-    # 降级处理：直接调用
-    _on_damaged(damage)
+	# 降级处理：直接调用
+	_on_damaged(damage)
 ```
 
 ### 2. 单一职责
@@ -412,11 +412,11 @@ ui_manager.update_health(health)  # 创建了耦合
    @export var strength: float = 1.0
    
    func _ready():
-       super._ready()
+	   super._ready()
    
    func process_component(delta: float) -> void:
-       # 组件逻辑
-       pass
+	   # 组件逻辑
+	   pass
    ```
 
 4. **创建组件场景**（可选）：

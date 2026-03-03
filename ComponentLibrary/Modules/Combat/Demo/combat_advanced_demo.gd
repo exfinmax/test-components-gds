@@ -101,4 +101,3 @@ func _print_instructions() -> void:
 	print("[Down]   对自己施加燃烧")
 	print("[Up]     切换狂暴 Buff (+30%% 攻击)")
 	print("─────────────────────────\n")
-

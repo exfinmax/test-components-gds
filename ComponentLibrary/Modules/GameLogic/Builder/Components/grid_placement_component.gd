@@ -1,4 +1,4 @@
-﻿extends Node
+extends Node
 class_name GridPlacementComponent
 
 signal placed(cell: Vector2i, payload: Dictionary)

@@ -1,0 +1,82 @@
+[gd_scene format=3 uid="uid://cfws88anbl5be"]
+
+[ext_resource type="Script" uid="uid://cnm3od1lt8ola" path="res://ComponentLibrary/Modules/GameLogic/Card/Demo/game.gd" id="1_0rb8f"]
+[ext_resource type="Script" uid="uid://dq1436e8pgvry" path="res://ComponentLibrary/Modules/GameLogic/Card/Components/hand.gd" id="2_drdp6"]
+[ext_resource type="Curve" uid="uid://dtskme7prx4g5" path="res://ComponentLibrary/Modules/GameLogic/Card/Components/hand_y_curve.tres" id="3_jwe8m"]
+[ext_resource type="Curve" uid="uid://dwkwcluylhkq0" path="res://ComponentLibrary/Modules/GameLogic/Card/Components/hand_rotation_curve.tres" id="4_lbysu"]
+
+[node name="Game" type="Control" unique_id=249032025]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_0rb8f")
+
+[node name="Background" type="ColorRect" parent="." unique_id=771315130]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.12393, 0.429359, 0.458081, 1)
+
+[node name="Hand" type="ColorRect" parent="." unique_id=783259992]
+custom_minimum_size = Vector2(800, 140)
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -400.0
+offset_top = -140.0
+offset_right = 400.0
+grow_horizontal = 2
+grow_vertical = 0
+color = Color(1, 1, 1, 0.168627)
+script = ExtResource("2_drdp6")
+hand_curve = ExtResource("3_jwe8m")
+rotation_curve = ExtResource("4_lbysu")
+max_rotation_degrees = 5
+x_sep = -10
+y_min = 0
+y_max = -15
+
+[node name="DrawCardButton" type="Button" parent="." unique_id=864571812]
+layout_mode = 0
+offset_left = 43.0
+offset_top = 36.0
+offset_right = 133.0
+offset_bottom = 67.0
+text = "Draw Card"
+
+[node name="ResetButton" type="Button" parent="." unique_id=818324750]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -45.0
+offset_top = 38.0
+offset_right = 45.0
+offset_bottom = 69.0
+grow_horizontal = 2
+text = "Reset"
+
+[node name="DiscardCardButton" type="Button" parent="." unique_id=614092160]
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -146.0
+offset_top = 39.0
+offset_right = -39.0
+offset_bottom = 70.0
+grow_horizontal = 0
+text = "Discard Card"
+
+[connection signal="pressed" from="DrawCardButton" to="." method="_on_draw_card_button_pressed"]
+[connection signal="pressed" from="ResetButton" to="." method="_on_reset_button_pressed"]
+[connection signal="pressed" from="DiscardCardButton" to="." method="_on_discard_card_button_pressed"]

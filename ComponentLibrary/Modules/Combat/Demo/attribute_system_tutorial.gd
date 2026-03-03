@@ -1,4 +1,4 @@
-﻿## AttributeSetComponent 教程 — 演示类型化修饰符的分层计算
+## AttributeSetComponent 教程 — 演示类型化修饰符的分层计算
 ##
 ## 计算顺序: base + FLAT → × (1 + PERCENT_ADD_sum) → × MULTIPLY → CLAMP
 ##

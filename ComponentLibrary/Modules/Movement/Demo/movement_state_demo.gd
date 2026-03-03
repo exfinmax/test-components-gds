@@ -124,7 +124,3 @@ func _is_on_ground() -> bool:
 
 func is_on_ground() -> bool:
 	return player_pos.y >= 400
-
-func _input(event: InputEvent) -> void:
-	if fsm:
-		fsm.input(event)

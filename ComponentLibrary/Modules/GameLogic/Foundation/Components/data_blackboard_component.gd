@@ -30,4 +30,3 @@ func clear_all() -> void:
 	for key in _data.keys():
 		value_removed.emit(key)
 	_data.clear()
-
