@@ -1,0 +1,135 @@
+[gd_scene format=3 uid="uid://demo_scene"]
+
+[ext_resource type="Script" path="res://addons/dialogue_manager/modify_test/demo/demo_scene.gd" id="1_dscn"]
+[ext_resource type="PackedScene" path="res://addons/dialogue_manager/modify_test/modify_balloon.tscn" id="2_mbal"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_main_bg"]
+bg_color = Color(0.06, 0.06, 0.1, 0.98)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.3, 0.3, 0.45, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_btn_start"]
+bg_color = Color(0.1, 0.28, 0.15, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.3, 0.7, 0.4, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_btn_restart"]
+bg_color = Color(0.1, 0.18, 0.32, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.3, 0.5, 0.85, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+
+[node name="DemoScene" type="Node"]
+script = ExtResource("1_dscn")
+
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.12, 0.1, 0.16, 1)
+
+[node name="UI" type="CanvasLayer" parent="."]
+layer = 10
+
+[node name="MainPanel" type="PanelContainer" parent="UI"]
+layout_mode = 3
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_top = -260.0
+offset_right = 400.0
+grow_vertical = 0
+theme_override_styles/panel = SubResource("StyleBoxFlat_main_bg")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="UI/MainPanel"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="TitleLabel" type="Label" parent="UI/MainPanel/VBoxContainer"]
+layout_mode = 2
+text = "📖 对话存档演示"
+theme_override_font_sizes/font_size = 18
+theme_override_colors/font_color = Color(0.95, 0.9, 0.6, 1)
+horizontal_alignment = 1
+
+[node name="HintLabel" type="Label" parent="UI/MainPanel/VBoxContainer"]
+layout_mode = 2
+text = "快捷键：PageDown=快进  PageUp=慢放  Enter=查看历史"
+theme_override_font_sizes/font_size = 12
+theme_override_colors/font_color = Color(0.55, 0.55, 0.65, 1)
+horizontal_alignment = 1
+autowrap_mode = 3
+
+[node name="HSeparator" type="HSeparator" parent="UI/MainPanel/VBoxContainer"]
+layout_mode = 2
+
+[node name="SlotsLabel" type="Label" parent="UI/MainPanel/VBoxContainer"]
+layout_mode = 2
+text = "存档槽："
+theme_override_font_sizes/font_size = 14
+theme_override_colors/font_color = Color(0.8, 0.8, 0.9, 1)
+
+[node name="SlotsContainer" type="VBoxContainer" parent="UI/MainPanel/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="HSeparator2" type="HSeparator" parent="UI/MainPanel/VBoxContainer"]
+layout_mode = 2
+
+[node name="StatusLabel" type="Label" parent="UI/MainPanel/VBoxContainer"]
+layout_mode = 2
+text = "演示就绪"
+theme_override_font_sizes/font_size = 13
+theme_override_colors/font_color = Color(0.6, 0.9, 0.6, 1)
+autowrap_mode = 3
+
+[node name="ButtonRow" type="HBoxContainer" parent="UI/MainPanel/VBoxContainer"]
+layout_mode = 2
+alignment = 1
+theme_override_constants/separation = 12
+
+[node name="StartButton" type="Button" parent="UI/MainPanel/VBoxContainer/ButtonRow"]
+layout_mode = 2
+custom_minimum_size = Vector2(120, 36)
+text = "▶ 开始对话"
+theme_override_styles/normal = SubResource("StyleBoxFlat_btn_start")
+theme_override_styles/hover = SubResource("StyleBoxFlat_btn_start")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_btn_start")
+theme_override_font_sizes/font_size = 15
+
+[node name="RestartButton" type="Button" parent="UI/MainPanel/VBoxContainer/ButtonRow"]
+layout_mode = 2
+custom_minimum_size = Vector2(120, 36)
+text = "↺ 从头开始"
+theme_override_styles/normal = SubResource("StyleBoxFlat_btn_restart")
+theme_override_styles/hover = SubResource("StyleBoxFlat_btn_restart")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_btn_restart")
+theme_override_font_sizes/font_size = 15
+
+[node name="ModifyBalloon" parent="." instance=ExtResource("2_mbal")]
+
+[connection signal="pressed" from="UI/MainPanel/VBoxContainer/ButtonRow/StartButton" to="." method="_on_start_button_pressed"]
+[connection signal="pressed" from="UI/MainPanel/VBoxContainer/ButtonRow/RestartButton" to="." method="_on_restart_button_pressed"]
