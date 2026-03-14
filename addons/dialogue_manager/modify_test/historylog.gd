@@ -142,7 +142,7 @@ func get_history() -> Array[String]:
 func _add_entry(bbcode_line: String) -> void:
 	_entries.append(bbcode_line)
 	if max_entries > 0 and _entries.size() > max_entries:
-		_entries = _entries.slice(_entries.size() - max_entries)
+		_entries = _entries.slice(_entries.size() - max_entries, _entries.size())
 		_rebuild_text()
 	else:
 		if is_instance_valid(_rich_label):

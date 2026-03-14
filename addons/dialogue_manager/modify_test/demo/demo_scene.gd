@@ -48,9 +48,11 @@ func _setup_balloon() -> void:
 	modify_balloon.chapter_name = "演示章节"
 
 	# 监听对话结束（DialogueManager 信号）
-	var dm := Engine.get_singleton("DialogueManager")
-	if dm:
+	if Engine.has_singleton("DialogueManager"):
+		var dm := Engine.get_singleton("DialogueManager")
 		dm.dialogue_ended.connect(_on_dialogue_ended)
+	else:
+		push_warning("Demo: DialogueManager singleton not found")
 
 
 func _setup_slot_ui() -> void:

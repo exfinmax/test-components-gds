@@ -114,9 +114,9 @@ func _refresh_display(save_system: Node = null) -> void:
 			if err == OK:
 				var data: Dictionary = json.get_data()
 				var d: Dictionary = data.get("dialogue", {})
-				_chapter_label.text   = str(d.get("chapter_name",   "未知章节"))
-				_character_label.text = str(d.get("character_name", ""))
-				_snippet_label.text   = str(d.get("dialogue_snippet", "…"))
+				_chapter_label.text   = d.get("chapter_name",   "未知章节")
+				_character_label.text = d.get("character_name", "")
+				_snippet_label.text   = d.get("dialogue_snippet", "…")
 				if _snippet_label.text.is_empty():
 					_snippet_label.text = "…"
 				return

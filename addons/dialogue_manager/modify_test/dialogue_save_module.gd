@@ -76,11 +76,11 @@ func collect_data() -> Dictionary:
 	}
 
 func apply_data(data: Dictionary) -> void:
-	dialogue_resource_path = str(data.get("dialogue_resource_path", ""))
-	dialogue_title         = str(data.get("dialogue_title",         ""))
-	chapter_name           = str(data.get("chapter_name",           ""))
-	character_name         = str(data.get("character_name",         ""))
-	dialogue_snippet       = str(data.get("dialogue_snippet",       ""))
+	dialogue_resource_path = data.get("dialogue_resource_path", "")
+	dialogue_title         = data.get("dialogue_title",         "")
+	chapter_name           = data.get("chapter_name",           "")
+	character_name         = data.get("character_name",         "")
+	dialogue_snippet       = data.get("dialogue_snippet",       "")
 	dialogue_variables     = (data.get("dialogue_variables", {}) as Dictionary).duplicate(true)
 
 func get_default_data() -> Dictionary:
