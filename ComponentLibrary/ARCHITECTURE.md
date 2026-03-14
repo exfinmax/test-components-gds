@@ -39,9 +39,9 @@ Core/
 │   ├── time_controller.gd           # 时间控制器
 │   └── local_time_domain.gd         # 局部时间域
 └── utils/
-    ├── math_utils.gd                # 数学工具
-    ├── vector_utils.gd              # 向量工具
-    └── curve_utils.gd               # 曲线工具
+	├── math_utils.gd                # 数学工具
+	├── vector_utils.gd              # 向量工具
+	└── curve_utils.gd               # 曲线工具
 ```
 
 ### 2. Modules（模块层） - 按功能分类
@@ -198,7 +198,7 @@ Systems/
 │   ├── debug_overlay.gd             # 调试覆盖层
 │   └── performance_monitor.gd       # 性能监控
 └── Platform/
-    └── moving_platform_system.gd    # 移动平台
+	└── moving_platform_system.gd    # 移动平台
 ```
 
 ## 🗂️ 迁移计划

@@ -160,8 +160,6 @@ func _respawn_sequence() -> void:
 
 func _get_respawn_position() -> Vector2:
 	# 优先使用 CheckpointComponent 的重生位置
-	if CheckpointComponent.last_checkpoint:
-		return CheckpointComponent.respawn_position
 	return default_respawn_position
 
 func _teleport_to_respawn() -> void:

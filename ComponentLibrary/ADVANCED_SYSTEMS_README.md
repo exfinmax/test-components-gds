@@ -54,7 +54,7 @@ ability.set_cooldown_duration(5.0)
 ability.set_ability_name("Fireball")
 
 if ability.can_activate():
-    ability.activate(target_position)
+	ability.activate(target_position)
 ```
 
 **Template**: `basic_fighter_template.gd`  
@@ -79,8 +79,8 @@ var cd = CooldownComponent.new()
 cd.start_cooldown("attack", 2.0)
 
 if not cd.is_on_cooldown("attack"):
-    # 可以攻击
-    cd.start_cooldown("attack", 2.0)
+	# 可以攻击
+	cd.start_cooldown("attack", 2.0)
 ```
 
 **集成**: AbilityComponent会自动使用此系统
@@ -133,7 +133,7 @@ fsm.add_state("idle")
 fsm.add_state("run")
 
 fsm.add_transition("idle", "run", func():
-    return Input.is_action_pressed("ui_right")
+	return Input.is_action_pressed("ui_right")
 )
 
 fsm.set_state("idle")
@@ -226,7 +226,7 @@ quest.reward.experience = 200
 
 quests.add_available_quest(quest)
 if quests.accept_quest("quest_001"):
-    print("任务已接受！")
+	print("任务已接受！")
 ```
 
 **Template**: `basic_npc_template.gd`  
@@ -316,8 +316,8 @@ add_child(fighter)
 extends BasicFighterTemplate
 
 func _populate_ability() -> void:
-    # 自定义你的能力
-    pass
+	# 自定义你的能力
+	pass
 ```
 
 ### 步骤3: 集成到你的游戏
@@ -344,8 +344,8 @@ ability.ability_activated.connect(_on_ability_activated)
 提供虚拟方法供子类覆盖自定义逻辑:
 ```gdscript
 func _on_ability_activate() -> void:
-    # 子类覆盖此方法
-    pass
+	# 子类覆盖此方法
+	pass
 ```
 
 ### 4. 数据驱动
@@ -383,13 +383,13 @@ strength.set_base_value("power", 10)
 
 # 装备加成
 var equipment = AttributeSystem.ModifierData.new(
-    5, AttributeSystem.ModifierData.Type.ADDITIVE, "装备"
+	5, AttributeSystem.ModifierData.Type.ADDITIVE, "装备"
 )
 strength.add_modifier("power", equipment)
 
 # 天赋加强
 var talent = AttributeSystem.ModifierData.new(
-    0.3, AttributeSystem.ModifierData.Type.PERCENTAGE, "天赋"
+	0.3, AttributeSystem.ModifierData.Type.PERCENTAGE, "天赋"
 )
 strength.add_modifier("power", talent)
 ```
@@ -397,11 +397,11 @@ strength.add_modifier("power", talent)
 ### 创建复杂的状态转移
 ```gdscript
 fsm.add_transition("idle", "attack", func():
-    return Input.is_action_just_pressed("ui_attack") and can_attack()
+	return Input.is_action_just_pressed("ui_attack") and can_attack()
 )
 
 fsm.add_transition("attack", "idle", func():
-    return not is_attacking()
+	return not is_attacking()
 )
 ```
 

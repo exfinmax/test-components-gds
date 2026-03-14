@@ -21,7 +21,7 @@ font_size = 24
 shadow_size = 3
 shadow_color = Color(0, 0, 0, 0.6)
 
-[node name="Card" type="Panel"]
+[node name="Card" type="Panel" unique_id=1164926409]
 custom_minimum_size = Vector2(100, 140)
 anchors_preset = 15
 anchor_right = 1.0
@@ -35,7 +35,7 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_5cuqc")
 script = ExtResource("1_4sblk")
 text = "Card 3"
 
-[node name="Label" type="Label" parent="."]
+[node name="Label" type="Label" parent="." unique_id=1840339114]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
