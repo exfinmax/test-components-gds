@@ -315,7 +315,7 @@ func _record_to_history(line: DialogueLine) -> void:
 func _save_progress() -> void:
 	if Engine.has_singleton("SaveSystem"):
 		var sys: Node = Engine.get_singleton("SaveSystem")
-		var module := sys.get_module("dialogue")
+		var module :DialogueSaveModule= sys.get_module("dialogue")
 		if module is DialogueSaveModule:
 			module.save_progress(
 				dialogue_resource,
@@ -351,7 +351,7 @@ func _on_balloon_gui_input(event: InputEvent) -> void:
 
 	# 跳过打字
 	if dialogue_label.is_typing:
-		var mouse_clicked := event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.is_pressed()
+		var mouse_clicked :bool= event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.is_pressed()
 		var skip_pressed  := event.is_action_pressed(skip_action)
 		if mouse_clicked or skip_pressed:
 			get_viewport().set_input_as_handled()

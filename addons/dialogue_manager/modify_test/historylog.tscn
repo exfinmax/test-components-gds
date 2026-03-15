@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://cq1hr3d7sj0vk"]
 
-[ext_resource type="Script" path="res://addons/dialogue_manager/modify_test/historylog.gd" id="1_hist"]
+[ext_resource type="Script" uid="uid://dr4kv8tc27r15" path="res://addons/dialogue_manager/modify_test/historylog.gd" id="1_hist"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_bg"]
 bg_color = Color(0.05, 0.05, 0.08, 0.92)
@@ -35,7 +35,7 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_hist")
 
-[node name="PanelContainer" type="PanelContainer" parent="."]
+[node name="PanelContainer" type="PanelContainer" parent="." unique_id=579569971]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -44,47 +44,43 @@ grow_horizontal = 2
 grow_vertical = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_bg")
 
-[node name="VBoxContainer" type="VBoxContainer" parent="PanelContainer"]
+[node name="VBoxContainer" type="VBoxContainer" parent="PanelContainer" unique_id=607943063]
 layout_mode = 2
 
-[node name="TitleBar" type="HBoxContainer" parent="PanelContainer/VBoxContainer"]
+[node name="TitleBar" type="HBoxContainer" parent="PanelContainer/VBoxContainer" unique_id=1237110544]
 layout_mode = 2
 theme_override_constants/separation = 8
 
-[node name="TitleLabel" type="Label" parent="PanelContainer/VBoxContainer/TitleBar"]
+[node name="TitleLabel" type="Label" parent="PanelContainer/VBoxContainer/TitleBar" unique_id=648607166]
 layout_mode = 2
 size_flags_horizontal = 3
-text = "📜 对话历史"
-theme_override_font_sizes/font_size = 16
 theme_override_colors/font_color = Color(0.9, 0.85, 0.6, 1)
+theme_override_font_sizes/font_size = 16
+text = "📜 对话历史"
 
-[node name="CloseButton" type="Button" parent="PanelContainer/VBoxContainer/TitleBar" unique_name_in_owner=true]
+[node name="CloseButton" type="Button" parent="PanelContainer/VBoxContainer/TitleBar" unique_id=1010225580]
 unique_name_in_owner = true
-layout_mode = 2
 custom_minimum_size = Vector2(28, 28)
-text = "✕"
-theme_override_styles/normal = SubResource("StyleBoxFlat_close")
-theme_override_styles/hover = SubResource("StyleBoxFlat_close")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_close")
-
-[node name="HSeparator" type="HSeparator" parent="PanelContainer/VBoxContainer"]
 layout_mode = 2
-theme_override_colors/separator_color = Color(0.3, 0.3, 0.4, 1)
+theme_override_styles/normal = SubResource("StyleBoxFlat_close")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_close")
+theme_override_styles/hover = SubResource("StyleBoxFlat_close")
+text = "✕"
 
-[node name="ScrollContainer" type="ScrollContainer" parent="PanelContainer/VBoxContainer" unique_name_in_owner=true]
+[node name="HSeparator" type="HSeparator" parent="PanelContainer/VBoxContainer" unique_id=1442496234]
+layout_mode = 2
+
+[node name="ScrollContainer" type="ScrollContainer" parent="PanelContainer/VBoxContainer" unique_id=928778]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_vertical = 3
 
-[node name="RichLabel" type="RichTextLabel" parent="PanelContainer/VBoxContainer/ScrollContainer" unique_name_in_owner=true]
+[node name="RichLabel" type="RichTextLabel" parent="PanelContainer/VBoxContainer/ScrollContainer" unique_id=1273750846]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
-bbcode_enabled = true
-scroll_active = false
-text = ""
-autowrap_mode = 3
 theme_override_font_sizes/normal_font_size = 15
+bbcode_enabled = true
 
 [connection signal="pressed" from="PanelContainer/VBoxContainer/TitleBar/CloseButton" to="." method="hide_log"]

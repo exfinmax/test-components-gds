@@ -27,7 +27,7 @@ func _ready() -> void:
 	_setup_save_system()
 	_setup_balloon()
 	_setup_slot_ui()
-	_set_status("演示就绪。点击"开始对话"按钮开始。")
+	_set_status("演示就绪。点击'开始对话'按钮开始。")
 
 
 func _setup_save_system() -> void:

@@ -71,7 +71,7 @@ func _ready() -> void:
 ## 添加角色台词（character 为空时不显示角色名）
 func add_dialogue_line(character: String, text: String) -> void:
 	var color := _character_colors.get(character, character_name_color)
-	var hex := color.to_html(false)
+	var hex :String= color.to_html(false)
 	var entry: String
 	if character.is_empty():
 		entry = "[color=#aaaaaa]%s[/color]" % _escape(text)
