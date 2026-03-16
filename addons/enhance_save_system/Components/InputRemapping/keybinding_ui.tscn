@@ -1,0 +1,52 @@
+[gd_scene format=3 uid="uid://cre0p744n82p7"]
+
+[ext_resource type="Script" uid="uid://dcxcd6csn2nhf" path="res://addons/enhance_save_system/Components/InputRemapping/keybinding_ui.gd" id="1_keybindui"]
+
+[node name="KeybindingUI" type="Control" unique_id=1437016358]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_keybindui")
+
+[node name="Layout" type="VBoxContainer" parent="." unique_id=1938018712]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="Header" type="HBoxContainer" parent="Layout" unique_id=1320825667]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="TitleLabel" type="Label" parent="Layout/Header" unique_id=1422262052]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "按键设置"
+vertical_alignment = 1
+
+[node name="ResetButton" type="Button" parent="Layout/Header" unique_id=771410440]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 8
+text = "恢复默认"
+
+[node name="HSeparator" type="HSeparator" parent="Layout" unique_id=1346544812]
+layout_mode = 2
+
+[node name="ScrollContainer" type="ScrollContainer" parent="Layout" unique_id=218807255]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+horizontal_scroll_mode = 0
+
+[node name="RowsContainer" type="VBoxContainer" parent="Layout/ScrollContainer" unique_id=1512898358]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3

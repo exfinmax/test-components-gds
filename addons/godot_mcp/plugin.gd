@@ -1,303 +1,1247 @@
 @tool
 extends EditorPlugin
 
-const WebSocketServer := preload("res://addons/godot_mcp/websocket_server.gd")
-const CommandRouter := preload("res://addons/godot_mcp/command_router.gd")
-const StatusPanel := preload("res://addons/godot_mcp/ui/status_panel.tscn")
-const MCPDebuggerPlugin := preload("res://addons/godot_mcp/core/mcp_debugger_plugin.gd")
+const MCPServer = preload("res://addons/godot_mcp/mcp_server.gd")
+const MCPLocalization = preload("res://addons/godot_mcp/i18n/localization.gd")
 
-const GAME_BRIDGE_AUTOLOAD := "MCPGameBridge"
-const GAME_BRIDGE_PATH := "res://addons/godot_mcp/game_bridge/mcp_game_bridge.gd"
+var mcp_server: MCPServer
+var dock: Control
+var _i18n: MCPLocalization
 
-const SETTING_BIND_MODE := "godot_mcp/bind_mode"
-const SETTING_CUSTOM_BIND_IP := "godot_mcp/custom_bind_ip"
-const SETTING_PORT_OVERRIDE_ENABLED := "godot_mcp/port_override_enabled"
-const SETTING_PORT_OVERRIDE := "godot_mcp/port_override"
+# Plugin settings
+var settings := {
+	"port": 3000,
+	"host": "127.0.0.1",
+	"auto_start": true,
+	"debug_mode": true,
+	"disabled_tools": [],
+	"language": "",  # Empty means auto-detect
+	"collapsed_categories": []  # Categories that are collapsed
+}
 
-var _websocket_server: WebSocketServer
-var _command_router: CommandRouter
-var _status_panel: Control
-var _debugger_plugin: MCPDebuggerPlugin
-var _restart_timer: Timer
+const SETTINGS_PATH = "user://godot_mcp_settings.json"
 
-var _current_bind_address := MCPConstants.LOCALHOST_BIND_ADDRESS
-var _current_bind_mode: MCPEnums.BindMode = MCPEnums.BindMode.LOCALHOST
+# UI references
+var _tab_container: TabContainer
+var _status_label: Label
+var _status_indicator: ColorRect
+var _port_spin: SpinBox
+var _endpoint_label: Label
+var _conn_label: Label
+var _tool_list_container: VBoxContainer
+var _tool_count_label: Label
+var _category_containers: Dictionary = {}
+var _tool_checkboxes: Dictionary = {}
+var _language_option: OptionButton
+
+# CLI config UI references
+var _cli_scope_option: OptionButton
+var _claude_cli_edit: TextEdit
+var _codex_cli_edit: TextEdit
+var _gemini_cli_edit: TextEdit
+var _current_cli_scope: String = "user"
+
+
+# Localization helper
+func _tr(key: String) -> String:
+	if _i18n:
+		return _i18n.get_text(key)
+	return key
 
 
 func _enter_tree() -> void:
-	_command_router = CommandRouter.new()
-	_command_router.setup(self)
+	_load_settings()
 
-	_websocket_server = WebSocketServer.new()
-	_websocket_server.command_received.connect(_on_command_received)
-	_websocket_server.client_connected.connect(_on_client_connected)
-	_websocket_server.client_disconnected.connect(_on_client_disconnected)
-	add_child(_websocket_server)
+	# Initialize localization
+	_i18n = MCPLocalization.get_instance()
+	if not settings.language.is_empty():
+		_i18n.set_language(settings.language)
 
-	_status_panel = StatusPanel.instantiate()
-	add_control_to_bottom_panel(_status_panel, "MCP")
+	mcp_server = MCPServer.new()
+	mcp_server.name = "MCPServer"
+	add_child(mcp_server)
 
-	_debugger_plugin = MCPDebuggerPlugin.new()
-	add_debugger_plugin(_debugger_plugin)
+	mcp_server.initialize(settings.port, settings.host, settings.debug_mode)
+	mcp_server.set_disabled_tools(settings.disabled_tools)
 
-	_restart_timer = Timer.new()
-	_restart_timer.one_shot = true
-	_restart_timer.timeout.connect(_do_restart_server)
-	add_child(_restart_timer)
+	_create_dock()
 
-	_ensure_game_bridge_autoload()
-	_ensure_bind_settings()
-	_setup_bind_ui()
-	_setup_version_display()
-	_apply_bind_settings(true)
-	MCPLog.info("Plugin initialized")
+	if settings.auto_start:
+		mcp_server.start()
+		_update_status_ui()
+
+	mcp_server.server_started.connect(_on_server_started)
+	mcp_server.server_stopped.connect(_on_server_stopped)
+	mcp_server.client_connected.connect(_update_connection_count)
+	mcp_server.client_disconnected.connect(_update_connection_count)
+
+	print("[Godot MCP] Plugin loaded")
 
 
 func _exit_tree() -> void:
-	if _restart_timer:
-		_restart_timer.stop()
-		_restart_timer.queue_free()
+	if mcp_server:
+		mcp_server.stop()
+		mcp_server.queue_free()
 
-	if _status_panel:
-		remove_control_from_bottom_panel(_status_panel)
-		_status_panel.queue_free()
+	if dock:
+		remove_control_from_docks(dock)
+		dock.queue_free()
 
-	if _websocket_server:
-		_websocket_server.stop_server()
-		_websocket_server.queue_free()
-
-	if _debugger_plugin:
-		remove_debugger_plugin(_debugger_plugin)
-		_debugger_plugin = null
-
-	if _command_router:
-		_command_router = null  # RefCounted - freed automatically
-
-	MCPLog.info("Plugin disabled")
+	print("[Godot MCP] Plugin unloaded")
 
 
-func _ensure_bind_settings() -> void:
-	if not ProjectSettings.has_setting(SETTING_BIND_MODE):
-		ProjectSettings.set_setting(SETTING_BIND_MODE, MCPEnums.BindMode.LOCALHOST)
-	if not ProjectSettings.has_setting(SETTING_CUSTOM_BIND_IP):
-		ProjectSettings.set_setting(SETTING_CUSTOM_BIND_IP, "")
-	if not ProjectSettings.has_setting(SETTING_PORT_OVERRIDE_ENABLED):
-		ProjectSettings.set_setting(SETTING_PORT_OVERRIDE_ENABLED, false)
-	if not ProjectSettings.has_setting(SETTING_PORT_OVERRIDE):
-		ProjectSettings.set_setting(SETTING_PORT_OVERRIDE, WebSocketServer.DEFAULT_PORT)
-	ProjectSettings.save()
+# Get editor scale factor for DPI-aware sizing
+func _get_editor_scale() -> float:
+	var editor = get_editor_interface()
+	if editor:
+		return editor.get_editor_scale()
+	return 1.0
 
 
-func _setup_bind_ui() -> void:
-	if not _status_panel:
+# Scale a value by editor scale
+func _scaled(value: float) -> float:
+	return value * _get_editor_scale()
+
+
+# Scale a Vector2 by editor scale
+func _scaled_vec(vec: Vector2) -> Vector2:
+	return vec * _get_editor_scale()
+
+
+func _create_dock() -> void:
+	dock = _create_dock_ui()
+	add_control_to_dock(DOCK_SLOT_RIGHT_UL, dock)
+
+
+func _create_dock_ui() -> Control:
+	var main_panel = VBoxContainer.new()
+	main_panel.name = "GodotMCP"
+	main_panel.custom_minimum_size = _scaled_vec(Vector2(280, 400))
+
+	# Header
+	var header = _create_header()
+	main_panel.add_child(header)
+
+	# Tab Container
+	_tab_container = TabContainer.new()
+	_tab_container.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	_tab_container.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	main_panel.add_child(_tab_container)
+
+	# Create tabs
+	var server_tab = _create_server_tab()
+	server_tab.name = _tr("tab_server")
+	_tab_container.add_child(server_tab)
+
+	var tools_tab = _create_tools_tab()
+	tools_tab.name = _tr("tab_tools")
+	_tab_container.add_child(tools_tab)
+
+	var config_tab = _create_config_tab()
+	config_tab.name = _tr("tab_config")
+	_tab_container.add_child(config_tab)
+
+	return main_panel
+
+
+func _create_header() -> Control:
+	var header = HBoxContainer.new()
+	header.custom_minimum_size.y = _scaled(40)
+
+	var margin = MarginContainer.new()
+	margin.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	margin.add_theme_constant_override("margin_left", int(_scaled(12)))
+	margin.add_theme_constant_override("margin_right", int(_scaled(12)))
+	margin.add_theme_constant_override("margin_top", int(_scaled(8)))
+	margin.add_theme_constant_override("margin_bottom", int(_scaled(8)))
+	header.add_child(margin)
+
+	var hbox = HBoxContainer.new()
+	hbox.add_theme_constant_override("separation", int(_scaled(10)))
+	margin.add_child(hbox)
+
+	# Status indicator
+	_status_indicator = ColorRect.new()
+	_status_indicator.custom_minimum_size = _scaled_vec(Vector2(12, 12))
+	_status_indicator.color = Color(0.9, 0.3, 0.3)
+	var indicator_container = CenterContainer.new()
+	indicator_container.add_child(_status_indicator)
+	hbox.add_child(indicator_container)
+
+	# Title
+	var title = Label.new()
+	title.text = "Godot MCP Server"
+	title.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	hbox.add_child(title)
+
+	# Status label
+	_status_label = Label.new()
+	_status_label.text = _tr("status_stopped")
+	_status_label.add_theme_color_override("font_color", Color(0.9, 0.3, 0.3))
+	hbox.add_child(_status_label)
+
+	return header
+
+
+func _create_server_tab() -> Control:
+	var scroll = ScrollContainer.new()
+	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	scroll.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
+
+	var margin = MarginContainer.new()
+	margin.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	margin.add_theme_constant_override("margin_left", int(_scaled(12)))
+	margin.add_theme_constant_override("margin_right", int(_scaled(12)))
+	margin.add_theme_constant_override("margin_top", int(_scaled(12)))
+	margin.add_theme_constant_override("margin_bottom", int(_scaled(12)))
+	scroll.add_child(margin)
+
+	var content = VBoxContainer.new()
+	content.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	content.add_theme_constant_override("separation", int(_scaled(16)))
+	margin.add_child(content)
+
+	# Server Status Section
+	var status_section = _create_section(_tr("server_status"))
+	content.add_child(status_section)
+
+	var status_grid = GridContainer.new()
+	status_grid.columns = 2
+	status_grid.add_theme_constant_override("h_separation", int(_scaled(12)))
+	status_grid.add_theme_constant_override("v_separation", int(_scaled(8)))
+	status_section.add_child(status_grid)
+
+	var endpoint_title = Label.new()
+	endpoint_title.text = _tr("endpoint")
+	status_grid.add_child(endpoint_title)
+
+	_endpoint_label = Label.new()
+	_endpoint_label.text = "http://%s:%d/mcp" % [settings.host, settings.port]
+	_endpoint_label.add_theme_color_override("font_color", Color(0.4, 0.7, 1.0))
+	_endpoint_label.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+	status_grid.add_child(_endpoint_label)
+
+	var conn_title = Label.new()
+	conn_title.text = _tr("connections")
+	status_grid.add_child(conn_title)
+
+	_conn_label = Label.new()
+	_conn_label.text = "0"
+	status_grid.add_child(_conn_label)
+
+	# Settings Section
+	var settings_section = _create_section(_tr("settings"))
+	content.add_child(settings_section)
+
+	var settings_grid = GridContainer.new()
+	settings_grid.columns = 2
+	settings_grid.add_theme_constant_override("h_separation", int(_scaled(12)))
+	settings_grid.add_theme_constant_override("v_separation", int(_scaled(8)))
+	settings_section.add_child(settings_grid)
+
+	var port_label = Label.new()
+	port_label.text = _tr("port")
+	settings_grid.add_child(port_label)
+
+	_port_spin = SpinBox.new()
+	_port_spin.min_value = 1024
+	_port_spin.max_value = 65535
+	_port_spin.value = settings.port
+	_port_spin.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_port_spin.value_changed.connect(_on_port_changed)
+	settings_grid.add_child(_port_spin)
+
+	var auto_start_check = CheckBox.new()
+	auto_start_check.text = _tr("auto_start")
+	auto_start_check.button_pressed = settings.auto_start
+	auto_start_check.toggled.connect(_on_auto_start_toggled)
+	settings_section.add_child(auto_start_check)
+
+	var debug_check = CheckBox.new()
+	debug_check.text = _tr("debug_log")
+	debug_check.button_pressed = settings.debug_mode
+	debug_check.toggled.connect(_on_debug_toggled)
+	settings_section.add_child(debug_check)
+
+	# Language selector
+	var lang_container = HBoxContainer.new()
+	lang_container.add_theme_constant_override("separation", int(_scaled(8)))
+	settings_section.add_child(lang_container)
+
+	var lang_label = Label.new()
+	lang_label.text = _tr("language")
+	lang_container.add_child(lang_label)
+
+	_language_option = OptionButton.new()
+	_language_option.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	var languages = _i18n.get_available_languages()
+	var current_lang = _i18n.get_language()
+	var idx = 0
+	for lang_code in languages:
+		_language_option.add_item(languages[lang_code], idx)
+		_language_option.set_item_metadata(idx, lang_code)
+		if lang_code == current_lang:
+			_language_option.select(idx)
+		idx += 1
+	_language_option.item_selected.connect(_on_language_changed)
+	lang_container.add_child(_language_option)
+
+	# Control Buttons
+	var btn_container = HBoxContainer.new()
+	btn_container.add_theme_constant_override("separation", int(_scaled(8)))
+	content.add_child(btn_container)
+
+	var start_btn = Button.new()
+	start_btn.text = _tr("btn_start")
+	start_btn.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	start_btn.custom_minimum_size.y = _scaled(32)
+	start_btn.pressed.connect(_on_start_pressed)
+	btn_container.add_child(start_btn)
+
+	var stop_btn = Button.new()
+	stop_btn.text = _tr("btn_stop")
+	stop_btn.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	stop_btn.custom_minimum_size.y = _scaled(32)
+	stop_btn.pressed.connect(_on_stop_pressed)
+	btn_container.add_child(stop_btn)
+
+	# Spacer to push author info to bottom
+	var spacer = Control.new()
+	spacer.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	content.add_child(spacer)
+
+	# Author Info Section
+	var author_separator = HSeparator.new()
+	content.add_child(author_separator)
+
+	var author_section = VBoxContainer.new()
+	author_section.add_theme_constant_override("separation", int(_scaled(4)))
+	content.add_child(author_section)
+
+	var author_title = Label.new()
+	author_title.text = _tr("about")
+	author_title.add_theme_color_override("font_color", Color(0.4, 0.7, 1.0))
+	author_section.add_child(author_title)
+
+	var author_info = VBoxContainer.new()
+	author_info.add_theme_constant_override("separation", int(_scaled(2)))
+	author_section.add_child(author_info)
+
+	var author_label = Label.new()
+	author_label.text = _tr("author") + " LIDAXIAN"
+	author_label.add_theme_color_override("font_color", Color(0.6, 0.6, 0.6))
+	author_info.add_child(author_label)
+
+	var github_container = HBoxContainer.new()
+	github_container.add_theme_constant_override("separation", int(_scaled(4)))
+	author_info.add_child(github_container)
+
+	var github_label = Label.new()
+	github_label.text = "GitHub:"
+	github_label.add_theme_color_override("font_color", Color(0.6, 0.6, 0.6))
+	github_container.add_child(github_label)
+
+	var github_btn = LinkButton.new()
+	github_btn.text = "https://github.com/DaxianLee/godot-mcp"
+	github_btn.uri = "https://github.com/DaxianLee/godot-mcp"
+	github_btn.underline = LinkButton.UNDERLINE_MODE_ON_HOVER
+	github_container.add_child(github_btn)
+
+	var wechat_label = Label.new()
+	wechat_label.text = _tr("wechat") + " lidaxian-AI"
+	wechat_label.add_theme_color_override("font_color", Color(0.6, 0.6, 0.6))
+	author_info.add_child(wechat_label)
+
+	return scroll
+
+
+func _create_tools_tab() -> Control:
+	var vbox = VBoxContainer.new()
+	vbox.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	vbox.size_flags_vertical = Control.SIZE_EXPAND_FILL
+
+	# Header
+	var header_margin = MarginContainer.new()
+	header_margin.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	header_margin.add_theme_constant_override("margin_left", int(_scaled(12)))
+	header_margin.add_theme_constant_override("margin_right", int(_scaled(12)))
+	header_margin.add_theme_constant_override("margin_top", int(_scaled(12)))
+	header_margin.add_theme_constant_override("margin_bottom", int(_scaled(8)))
+	vbox.add_child(header_margin)
+
+	var header_vbox = VBoxContainer.new()
+	header_vbox.add_theme_constant_override("separation", int(_scaled(8)))
+	header_margin.add_child(header_vbox)
+
+	_tool_count_label = Label.new()
+	_tool_count_label.text = _tr("tools_enabled") % [0, 0]
+	header_vbox.add_child(_tool_count_label)
+
+	# Collapse/Expand all buttons
+	var collapse_btn_container = HBoxContainer.new()
+	collapse_btn_container.add_theme_constant_override("separation", int(_scaled(8)))
+	header_vbox.add_child(collapse_btn_container)
+
+	var expand_all_btn = Button.new()
+	expand_all_btn.text = _tr("btn_expand_all")
+	expand_all_btn.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	expand_all_btn.pressed.connect(_on_expand_all_categories)
+	collapse_btn_container.add_child(expand_all_btn)
+
+	var collapse_all_btn = Button.new()
+	collapse_all_btn.text = _tr("btn_collapse_all")
+	collapse_all_btn.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	collapse_all_btn.pressed.connect(_on_collapse_all_categories)
+	collapse_btn_container.add_child(collapse_all_btn)
+
+	# Select/Deselect all buttons
+	var bulk_btn_container = HBoxContainer.new()
+	bulk_btn_container.add_theme_constant_override("separation", int(_scaled(8)))
+	header_vbox.add_child(bulk_btn_container)
+
+	var select_all_btn = Button.new()
+	select_all_btn.text = _tr("btn_select_all")
+	select_all_btn.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	select_all_btn.pressed.connect(_on_select_all_tools)
+	bulk_btn_container.add_child(select_all_btn)
+
+	var deselect_all_btn = Button.new()
+	deselect_all_btn.text = _tr("btn_deselect_all")
+	deselect_all_btn.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	deselect_all_btn.pressed.connect(_on_deselect_all_tools)
+	bulk_btn_container.add_child(deselect_all_btn)
+
+	vbox.add_child(HSeparator.new())
+
+	# Scrollable tool list
+	var scroll = ScrollContainer.new()
+	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	scroll.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	vbox.add_child(scroll)
+
+	var tool_margin = MarginContainer.new()
+	tool_margin.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	tool_margin.add_theme_constant_override("margin_left", int(_scaled(12)))
+	tool_margin.add_theme_constant_override("margin_right", int(_scaled(12)))
+	tool_margin.add_theme_constant_override("margin_top", int(_scaled(8)))
+	tool_margin.add_theme_constant_override("margin_bottom", int(_scaled(12)))
+	scroll.add_child(tool_margin)
+
+	_tool_list_container = VBoxContainer.new()
+	_tool_list_container.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_tool_list_container.add_theme_constant_override("separation", int(_scaled(8)))
+	tool_margin.add_child(_tool_list_container)
+
+	call_deferred("_populate_tools_list")
+
+	return vbox
+
+
+func _create_config_tab() -> Control:
+	var scroll = ScrollContainer.new()
+	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	scroll.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
+
+	var margin = MarginContainer.new()
+	margin.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	margin.add_theme_constant_override("margin_left", int(_scaled(12)))
+	margin.add_theme_constant_override("margin_right", int(_scaled(12)))
+	margin.add_theme_constant_override("margin_top", int(_scaled(12)))
+	margin.add_theme_constant_override("margin_bottom", int(_scaled(12)))
+	scroll.add_child(margin)
+
+	var content = VBoxContainer.new()
+	content.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	content.add_theme_constant_override("separation", int(_scaled(16)))
+	margin.add_child(content)
+
+	# Info - IDE 一键配置
+	var ide_header = Label.new()
+	ide_header.text = _tr("ide_config")
+	ide_header.add_theme_color_override("font_color", Color(0.4, 0.7, 1.0))
+	content.add_child(ide_header)
+
+	var info_label = Label.new()
+	info_label.text = _tr("ide_config_desc")
+	info_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	info_label.add_theme_color_override("font_color", Color(0.6, 0.6, 0.6))
+	content.add_child(info_label)
+
+	# Trae
+	content.add_child(_create_config_section(
+		"Trae",
+		_get_trae_config_path(),
+		_get_mcp_config(),
+		"trae"
+	))
+
+	# Cursor
+	content.add_child(_create_config_section(
+		"Cursor",
+		_get_cursor_config_path(),
+		_get_mcp_config(),
+		"cursor"
+	))
+
+	# Windsurf
+	content.add_child(_create_config_section(
+		"Windsurf",
+		_get_windsurf_config_path(),
+		_get_windsurf_config(),
+		"windsurf"
+	))
+
+	# 分隔线
+	var separator = HSeparator.new()
+	separator.add_theme_constant_override("separation", int(_scaled(16)))
+	content.add_child(separator)
+
+	# CLI 命令行配置说明
+	var cli_header = Label.new()
+	cli_header.text = _tr("cli_config")
+	cli_header.add_theme_color_override("font_color", Color(0.4, 0.7, 1.0))
+	content.add_child(cli_header)
+
+	var cli_desc = Label.new()
+	cli_desc.text = _tr("cli_config_desc")
+	cli_desc.add_theme_color_override("font_color", Color(0.6, 0.6, 0.6))
+	content.add_child(cli_desc)
+
+	# Scope 选择器
+	var scope_section = HBoxContainer.new()
+	scope_section.add_theme_constant_override("separation", int(_scaled(8)))
+	content.add_child(scope_section)
+
+	var scope_label = Label.new()
+	scope_label.text = _tr("config_scope")
+	scope_section.add_child(scope_label)
+
+	_cli_scope_option = OptionButton.new()
+	_cli_scope_option.add_item(_tr("scope_user"), 0)
+	_cli_scope_option.add_item(_tr("scope_project"), 1)
+	_cli_scope_option.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_cli_scope_option.item_selected.connect(_on_cli_scope_changed)
+	scope_section.add_child(_cli_scope_option)
+
+	# Claude CLI
+	content.add_child(_create_dynamic_cli_section("Claude Code", "claude"))
+
+	# Codex CLI
+	content.add_child(_create_dynamic_cli_section("Codex", "codex"))
+
+	# Gemini CLI
+	content.add_child(_create_dynamic_cli_section("Gemini", "gemini"))
+
+	return scroll
+
+
+func _create_section(title: String) -> VBoxContainer:
+	var section = VBoxContainer.new()
+	section.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	section.add_theme_constant_override("separation", int(_scaled(8)))
+
+	var title_label = Label.new()
+	title_label.text = title
+	title_label.add_theme_color_override("font_color", Color(0.8, 0.8, 0.8))
+	section.add_child(title_label)
+
+	return section
+
+
+func _create_config_section(title: String, filepath: String, config: String, config_type: String) -> VBoxContainer:
+	var section = _create_section(title)
+
+	var file_label = Label.new()
+	file_label.text = filepath
+	file_label.add_theme_color_override("font_color", Color(0.5, 0.6, 0.7))
+	file_label.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+	section.add_child(file_label)
+
+	# Config display
+	var code_edit = TextEdit.new()
+	code_edit.text = config
+	code_edit.editable = false
+	code_edit.custom_minimum_size.y = _scaled(80)
+	code_edit.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	code_edit.scroll_fit_content_height = true
+	section.add_child(code_edit)
+
+	# Buttons
+	var btn_container = HBoxContainer.new()
+	btn_container.add_theme_constant_override("separation", int(_scaled(8)))
+	section.add_child(btn_container)
+
+	var config_btn = Button.new()
+	config_btn.text = _tr("btn_one_click")
+	config_btn.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	config_btn.pressed.connect(func(): _write_config_file(config_type, filepath, config, title))
+	btn_container.add_child(config_btn)
+
+	var copy_btn = Button.new()
+	copy_btn.text = _tr("btn_copy")
+	copy_btn.pressed.connect(func(): _copy_to_clipboard(config, title))
+	btn_container.add_child(copy_btn)
+
+	return section
+
+
+func _create_category_section(category: String, tools: Array) -> VBoxContainer:
+	var section = VBoxContainer.new()
+	section.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	section.add_theme_constant_override("separation", int(_scaled(4)))
+
+	# Category header (clickable to collapse/expand)
+	var header = HBoxContainer.new()
+	header.add_theme_constant_override("separation", int(_scaled(4)))
+	section.add_child(header)
+
+	# Collapse/expand toggle button
+	var is_collapsed = category in settings.collapsed_categories
+	var toggle_btn = Button.new()
+	toggle_btn.text = "▶" if is_collapsed else "▼"
+	toggle_btn.flat = true
+	toggle_btn.custom_minimum_size = _scaled_vec(Vector2(20, 20))
+	toggle_btn.pressed.connect(func(): _on_category_collapse_toggled(category))
+	header.add_child(toggle_btn)
+
+	var category_check = CheckBox.new()
+	category_check.button_pressed = true
+	category_check.toggled.connect(func(pressed): _on_category_toggled(category, pressed))
+	header.add_child(category_check)
+
+	var category_keys = {
+		"scene": "cat_scene", "node": "cat_node", "script": "cat_script",
+		"resource": "cat_resource", "filesystem": "cat_filesystem", "project": "cat_project",
+		"editor": "cat_editor", "debug": "cat_debug", "animation": "cat_animation",
+		"material": "cat_material", "shader": "cat_shader", "lighting": "cat_lighting",
+		"particle": "cat_particle", "tilemap": "cat_tilemap", "geometry": "cat_geometry",
+		"physics": "cat_physics", "navigation": "cat_navigation", "audio": "cat_audio",
+		"ui": "cat_ui", "signal": "cat_signal", "group": "cat_group"
+	}
+	var display_category = _tr(category_keys.get(category, category)) if category in category_keys else category.capitalize()
+
+	var category_label = Label.new()
+	category_label.text = display_category
+	category_label.add_theme_color_override("font_color", Color(0.4, 0.7, 1.0))
+	category_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	category_label.mouse_filter = Control.MOUSE_FILTER_STOP
+	# Make label clickable to toggle collapse
+	category_label.gui_input.connect(func(event):
+		if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
+			_on_category_collapse_toggled(category)
+	)
+	header.add_child(category_label)
+
+	var count_label = Label.new()
+	count_label.name = "CountLabel"
+	count_label.add_theme_color_override("font_color", Color(0.5, 0.5, 0.5))
+	header.add_child(count_label)
+
+	# Tools list (indented)
+	var tools_margin = MarginContainer.new()
+	tools_margin.name = "ToolsMargin"
+	tools_margin.add_theme_constant_override("margin_left", int(_scaled(24)))
+	tools_margin.visible = not is_collapsed
+	section.add_child(tools_margin)
+
+	var tools_vbox = VBoxContainer.new()
+	tools_vbox.name = "ToolsList"
+	tools_vbox.add_theme_constant_override("separation", int(_scaled(2)))
+	tools_margin.add_child(tools_vbox)
+
+	for tool_def in tools:
+		var tool_name = tool_def.get("name", "")
+		# Always add category prefix to match _tool_definitions naming
+		var full_name = "%s_%s" % [category, tool_name]
+		var display_name = tool_name.replace("_", " ").capitalize()
+
+		# Create a container for tool checkbox and description
+		var tool_container = VBoxContainer.new()
+		tool_container.add_theme_constant_override("separation", int(_scaled(2)))
+		tools_vbox.add_child(tool_container)
+
+		var tool_check = CheckBox.new()
+		tool_check.text = display_name
+		tool_check.button_pressed = not (full_name in settings.disabled_tools)
+		tool_check.toggled.connect(func(pressed): _on_tool_toggled(full_name, pressed))
+		tool_container.add_child(tool_check)
+
+		# Add description label with i18n support
+		var desc_key = "tool_%s_desc" % full_name
+		var desc_text = _tr(desc_key)
+		# If no translation found (returns the key), don't show description
+		if desc_text != desc_key:
+			var desc_label = Label.new()
+			desc_label.text = desc_text
+			desc_label.add_theme_color_override("font_color", Color(0.5, 0.5, 0.5))
+			desc_label.add_theme_font_size_override("font_size", int(_scaled(11)))
+			desc_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+			var desc_margin = MarginContainer.new()
+			desc_margin.add_theme_constant_override("margin_left", int(_scaled(24)))
+			desc_margin.add_child(desc_label)
+			tool_container.add_child(desc_margin)
+
+		_tool_checkboxes[full_name] = tool_check
+
+	_category_containers[category] = {
+		"section": section,
+		"checkbox": category_check,
+		"count_label": count_label,
+		"tools_list": tools_vbox,
+		"tools_margin": tools_margin,
+		"toggle_btn": toggle_btn
+	}
+
+	_update_category_count(category)
+
+	return section
+
+
+func _populate_tools_list() -> void:
+	if not mcp_server or not _tool_list_container:
 		return
-	if _status_panel.has_method("set_config"):
-		_status_panel.set_config(_get_bind_mode(), _get_custom_bind_ip(), _get_port_override_enabled(), _get_port_override())
-	if _status_panel.has_signal("config_applied") and not _status_panel.config_applied.is_connected(_on_config_applied):
-		_status_panel.config_applied.connect(_on_config_applied)
+
+	for child in _tool_list_container.get_children():
+		child.queue_free()
+	_category_containers.clear()
+	_tool_checkboxes.clear()
+
+	var tools_by_category = mcp_server.get_tools_by_category()
+
+	for category in tools_by_category:
+		var tools = tools_by_category[category]
+		var section = _create_category_section(category, tools)
+		_tool_list_container.add_child(section)
+
+	_update_tool_count()
 
 
-func _get_bind_mode() -> MCPEnums.BindMode:
-	return ProjectSettings.get_setting(SETTING_BIND_MODE, MCPEnums.BindMode.LOCALHOST) as MCPEnums.BindMode
+func _update_category_count(category: String) -> void:
+	if not _category_containers.has(category):
+		return
+
+	var container = _category_containers[category]
+	var count_label = container["count_label"] as Label
+	var category_check = container["checkbox"] as CheckBox
+
+	# Count tools in this category using _tool_checkboxes
+	var total = 0
+	var enabled = 0
+
+	for tool_name in _tool_checkboxes:
+		if tool_name.begins_with(category + "_"):
+			total += 1
+			if _tool_checkboxes[tool_name].button_pressed:
+				enabled += 1
+
+	count_label.text = "%d/%d" % [enabled, total]
+	category_check.set_pressed_no_signal(enabled == total)
 
 
-func _get_custom_bind_ip() -> String:
-	return str(ProjectSettings.get_setting(SETTING_CUSTOM_BIND_IP, ""))
+func _update_tool_count() -> void:
+	if not _tool_count_label:
+		return
+
+	var total = _tool_checkboxes.size()
+	var enabled = 0
+
+	for tool_name in _tool_checkboxes:
+		if _tool_checkboxes[tool_name].button_pressed:
+			enabled += 1
+
+	_tool_count_label.text = _tr("tools_enabled") % [enabled, total]
 
 
-func _get_port_override_enabled() -> bool:
-	return bool(ProjectSettings.get_setting(SETTING_PORT_OVERRIDE_ENABLED, false))
+func _update_status_ui() -> void:
+	if not dock:
+		return
+
+	var is_running = mcp_server and mcp_server.is_running()
+	var color = Color(0.2, 0.8, 0.2) if is_running else Color(0.9, 0.3, 0.3)
+
+	if _status_indicator:
+		_status_indicator.color = color
+
+	if _status_label:
+		_status_label.text = _tr("status_running") if is_running else _tr("status_stopped")
+		_status_label.add_theme_color_override("font_color", color)
+
+	if _endpoint_label:
+		_endpoint_label.text = "http://%s:%d/mcp" % [settings.host, settings.port]
 
 
-func _get_port_override() -> int:
-	var raw_value := ProjectSettings.get_setting(SETTING_PORT_OVERRIDE, WebSocketServer.DEFAULT_PORT)
-	var port := int(raw_value)
-	if port < MCPConstants.PORT_MIN or port > MCPConstants.PORT_MAX:
-		MCPLog.warn("Invalid port override '%s'; falling back to default port %d" % [str(raw_value), WebSocketServer.DEFAULT_PORT])
-		return WebSocketServer.DEFAULT_PORT
-	return port
+func _update_connection_count() -> void:
+	if _conn_label and mcp_server:
+		_conn_label.text = "%d" % mcp_server.get_connection_count()
 
 
-func _get_listen_port() -> int:
-	return _get_port_override() if _get_port_override_enabled() else WebSocketServer.DEFAULT_PORT
+# Configuration helpers
+func _get_home_dir() -> String:
+	var home = OS.get_environment("HOME")
+	if home.is_empty():
+		home = OS.get_environment("USERPROFILE")
+	return home
 
 
-func _resolve_bind_address() -> String:
-	match _get_bind_mode():
-		MCPEnums.BindMode.WSL:
-			var ip := _get_wsl_vethernet_ipv4()
-			if ip.is_empty():
-				MCPLog.warn("WSL bind mode selected but vEthernet (WSL) IPv4 was not found; falling back to %s" % MCPConstants.LOCALHOST_BIND_ADDRESS)
-				return MCPConstants.LOCALHOST_BIND_ADDRESS
-			return ip
-		MCPEnums.BindMode.CUSTOM:
-			var ip := _get_custom_bind_ip().strip_edges()
-			if ip.is_empty():
-				MCPLog.warn("Custom bind mode selected but no IP was configured; falling back to %s" % MCPConstants.LOCALHOST_BIND_ADDRESS)
-				return MCPConstants.LOCALHOST_BIND_ADDRESS
-			if not _is_valid_ipv4(ip):
-				MCPLog.warn("Custom bind mode selected but IP '%s' is not a valid IPv4 address; falling back to %s" % [ip, MCPConstants.LOCALHOST_BIND_ADDRESS])
-				return MCPConstants.LOCALHOST_BIND_ADDRESS
-			return ip
+func _get_claude_config_path() -> String:
+	var home = _get_home_dir()
+	match OS.get_name():
+		"macOS":
+			return home + "/Library/Application Support/Claude/claude_desktop_config.json"
+		"Windows":
+			return OS.get_environment("APPDATA") + "/Claude/claude_desktop_config.json"
 		_:
-			return MCPConstants.LOCALHOST_BIND_ADDRESS
+			return home + "/.config/Claude/claude_desktop_config.json"
 
 
-func _is_valid_ipv4(ip: String) -> bool:
-	var s := ip.strip_edges()
-	if s.is_empty():
-		return false
-	var parts := s.split(".")
-	if parts.size() != 4:
-		return false
-	for p in parts:
-		if p.is_empty() or not p.is_valid_int():
-			return false
-		var n := int(p)
-		if n < 0 or n > 255:
-			return false
-	return true
+func _get_cursor_config_path() -> String:
+	return _get_home_dir() + "/.cursor/mcp.json"
 
 
-func _is_valid_bind_address(ip: String) -> bool:
-	if ip == "0.0.0.0" or ip == "127.0.0.1" or ip == "::" or ip == "::1":
-		return true
-
-	var local_ips := IP.get_local_addresses()
-	return ip in local_ips
+func _get_windsurf_config_path() -> String:
+	return _get_home_dir() + "/.codeium/windsurf/mcp_config.json"
 
 
-func _get_wsl_vethernet_ipv4() -> String:
-	# Autodetect "vEthernet (WSL)" IPv4 via PowerShell (Windows only).
-	if OS.get_name() != "Windows":
-		return ""
-
-	var output := []
-	# Use ErrorAction Stop + catch so failures return an empty string and don't emit noisy errors.
-	# Match any adapter alias that contains "WSL" to be resilient to name variations.
-	# Note: The wildcard pattern 'vEthernet*WSL*' provides flexibility but may match
-	# unexpected adapters in custom network configurations. Document expected adapter names.
-	# SECURITY NOTE: Keep this PowerShell command as a fixed string literal. Do NOT concatenate
-	# user input, project settings, environment variables, or any other external data into it,
-	# as that could introduce command injection vulnerabilities. If dynamic behavior is needed,
-	# implement strict validation and avoid direct string interpolation into PowerShell.
-	var cmd := "try { $ip = (Get-NetIPAddress -AddressFamily IPv4 -ErrorAction Stop | Where-Object { $_.InterfaceAlias -like 'vEthernet*WSL*' } | Select-Object -First 1 -ExpandProperty IPAddress); if ($ip) { $ip } else { '' } } catch { '' }"
-	var args := ["-NoProfile", "-Command", cmd]
-	var code := OS.execute("powershell", args, output, false)
-	if code != 0 or output.is_empty():
-		return ""
-
-	var text := String(output[0]).replace("\r", "")
-	for line in text.split("\n"):
-		var candidate := String(line).strip_edges()
-		if _is_valid_ipv4(candidate):
-			return candidate
-	return ""
+func _get_mcp_config() -> String:
+	return JSON.stringify({
+		"mcpServers": {
+			"godot-mcp": {
+				"url": "http://%s:%d/mcp" % [settings.host, settings.port]
+			}
+		}
+	}, "  ")
 
 
-func _restart_server() -> void:
-	# Debounce: stop any pending restart and schedule a new one
-	if _websocket_server:
-		_websocket_server.stop_server()
-	_restart_timer.start(0.1)
+func _get_windsurf_config() -> String:
+	return JSON.stringify({
+		"mcpServers": {
+			"godot-mcp": {
+				"serverUrl": "http://%s:%d/mcp" % [settings.host, settings.port]
+			}
+		}
+	}, "  ")
 
 
-func _do_restart_server() -> void:
-	if not is_inside_tree() or not _websocket_server:
-		return
-
-	var bind := _resolve_bind_address()
-
-	# Verify IP is local
-	if not _is_valid_bind_address(bind):
-		MCPLog.error("IP '%s' is not assigned to any local network interface. Aborting bind." % bind)
-		MCPLog.warn("Please check your IP configuration and local network interfaces.")
-		_update_status("Error: IP %s not found on this machine" % bind)
-		return
-
-	var port := _get_listen_port()
-	_current_bind_address = bind
-	_current_bind_mode = _get_bind_mode()
-	var mode_name := MCPEnums.get_mode_name(_current_bind_mode)
-
-	var err := _websocket_server.start_server(port, bind)
-	if err != OK:
-		_update_status("Failed to bind %s:%d (%s)" % [bind, port, error_string(err)])
-		return
-
-	_update_status("Waiting for connection... (bind %s:%d [%s])" % [bind, port, mode_name])
-	MCPLog.info("Server listening on %s:%d [%s]" % [bind, port, mode_name])
+func _get_trae_config_path() -> String:
+	var home = _get_home_dir()
+	match OS.get_name():
+		"macOS":
+			return home + "/Library/Application Support/Trae CN/User/mcp.json"
+		"Windows":
+			return OS.get_environment("APPDATA") + "/Trae CN/User/mcp.json"
+		_:
+			return home + "/.config/Trae CN/User/mcp.json"
 
 
-func _apply_bind_settings(restart: bool) -> void:
-	_current_bind_address = _resolve_bind_address()
-	_current_bind_mode = _get_bind_mode()
-	if restart:
-		_restart_server()
+func _get_claude_cli_command_local() -> String:
+	return "claude mcp add --scope project --transport http godot-mcp http://%s:%d/mcp" % [settings.host, settings.port]
+
+
+func _get_claude_cli_command_user() -> String:
+	return "claude mcp add --scope user --transport http godot-mcp http://%s:%d/mcp" % [settings.host, settings.port]
+
+
+func _get_codex_command() -> String:
+	return "codex mcp add --transport http godot-mcp http://%s:%d/mcp" % [settings.host, settings.port]
+
+
+func _create_cli_section(title: String, command: String, description: String) -> VBoxContainer:
+	var section = _create_section(title)
+
+	var desc_label = Label.new()
+	desc_label.text = description
+	desc_label.add_theme_color_override("font_color", Color(0.5, 0.6, 0.7))
+	section.add_child(desc_label)
+
+	# Command display
+	var code_edit = TextEdit.new()
+	code_edit.text = command
+	code_edit.editable = false
+	code_edit.custom_minimum_size.y = _scaled(40)
+	code_edit.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	code_edit.scroll_fit_content_height = true
+	section.add_child(code_edit)
+
+	# Copy button
+	var copy_btn = Button.new()
+	copy_btn.text = _tr("btn_copy_cmd")
+	copy_btn.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
+	copy_btn.pressed.connect(func(): _copy_to_clipboard(command, title))
+	section.add_child(copy_btn)
+
+	return section
+
+
+func _create_dynamic_cli_section(title: String, cli_type: String) -> VBoxContainer:
+	var section = _create_section(title)
+
+	# Command display
+	var code_edit = TextEdit.new()
+	code_edit.editable = false
+	code_edit.custom_minimum_size.y = _scaled(40)
+	code_edit.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	code_edit.scroll_fit_content_height = true
+	section.add_child(code_edit)
+
+	# Store reference for dynamic updates
+	if cli_type == "claude":
+		_claude_cli_edit = code_edit
+		code_edit.text = _get_claude_cli_command(_current_cli_scope)
+	elif cli_type == "codex":
+		_codex_cli_edit = code_edit
+		code_edit.text = _get_codex_cli_command(_current_cli_scope)
+	elif cli_type == "gemini":
+		_gemini_cli_edit = code_edit
+		code_edit.text = _get_gemini_cli_command(_current_cli_scope)
+
+	# Copy button
+	var copy_btn = Button.new()
+	copy_btn.text = _tr("btn_copy_cmd")
+	copy_btn.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
+	copy_btn.pressed.connect(func(): _copy_to_clipboard(code_edit.text, title))
+	section.add_child(copy_btn)
+
+	return section
+
+
+func _on_cli_scope_changed(index: int) -> void:
+	if index == 0:
+		_current_cli_scope = "user"
 	else:
-		_update_status("Waiting for connection... (bind %s:%d [%s])" % [_current_bind_address, _get_listen_port(), MCPEnums.get_mode_name(_current_bind_mode)])
+		_current_cli_scope = "project"
+
+	# Update CLI commands
+	_update_cli_commands()
 
 
-func _on_config_applied(config: Dictionary) -> void:
-	ProjectSettings.set_setting(SETTING_BIND_MODE, config.get("bind_mode", MCPEnums.BindMode.LOCALHOST))
-	ProjectSettings.set_setting(SETTING_CUSTOM_BIND_IP, str(config.get("custom_ip", "")))
-	ProjectSettings.set_setting(SETTING_PORT_OVERRIDE_ENABLED, bool(config.get("port_override_enabled", false)))
-	ProjectSettings.set_setting(SETTING_PORT_OVERRIDE, int(config.get("port_override", WebSocketServer.DEFAULT_PORT)))
-	ProjectSettings.save()
-	_apply_bind_settings(true)
+func _update_cli_commands() -> void:
+	if _claude_cli_edit:
+		_claude_cli_edit.text = _get_claude_cli_command(_current_cli_scope)
+	if _codex_cli_edit:
+		_codex_cli_edit.text = _get_codex_cli_command(_current_cli_scope)
+	if _gemini_cli_edit:
+		_gemini_cli_edit.text = _get_gemini_cli_command(_current_cli_scope)
 
 
-func _ensure_game_bridge_autoload() -> void:
-	if not ProjectSettings.has_setting("autoload/" + GAME_BRIDGE_AUTOLOAD):
-		ProjectSettings.set_setting("autoload/" + GAME_BRIDGE_AUTOLOAD, GAME_BRIDGE_PATH)
-		ProjectSettings.save()
-		MCPLog.info("Added MCPGameBridge autoload")
+func _get_claude_cli_command(scope: String) -> String:
+	return "claude mcp add --scope %s --transport http godot-mcp http://%s:%d/mcp" % [scope, settings.host, settings.port]
 
 
-func get_debugger_plugin() -> MCPDebuggerPlugin:
-	return _debugger_plugin
+func _get_codex_cli_command(scope: String) -> String:
+	return "codex mcp add --scope %s --transport http godot-mcp http://%s:%d/mcp" % [scope, settings.host, settings.port]
 
 
-func _on_command_received(id: String, command: String, params: Dictionary) -> void:
-	var response = await _command_router.handle_command(command, params)
-	response["id"] = id
-	_websocket_server.send_response(response)
+func _get_gemini_cli_command(scope: String) -> String:
+	return "gemini mcp add --scope %s --transport http godot-mcp http://%s:%d/mcp" % [scope, settings.host, settings.port]
 
 
-func _on_client_connected() -> void:
-	var host_info := ""
-	if _websocket_server.get_connected_host():
-		host_info = " from %s:%d" % [_websocket_server.get_connected_host(), _websocket_server.get_connected_port()]
-	var bind_info := "(%s: %s:%d)" % [MCPEnums.get_mode_name(_current_bind_mode), _current_bind_address, _get_listen_port()]
-	_update_status("Connected%s %s" % [host_info, bind_info])
-	MCPLog.info("Client connected%s %s" % [host_info, bind_info])
+func _write_config_file(config_type: String, filepath: String, new_config: String, client_name: String) -> void:
+	var json = JSON.new()
+	if json.parse(new_config) != OK:
+		_show_message(_tr("msg_parse_error"))
+		return
+
+	var new_config_data = json.get_data()
+	var final_config: Dictionary = {}
+
+	if FileAccess.file_exists(filepath):
+		var file = FileAccess.open(filepath, FileAccess.READ)
+		if file:
+			var existing_text = file.get_as_text()
+			file.close()
+			if not existing_text.strip_edges().is_empty():
+				if json.parse(existing_text) == OK:
+					final_config = json.get_data()
+
+	if final_config.has("mcpServers"):
+		final_config["mcpServers"]["godot-mcp"] = new_config_data["mcpServers"]["godot-mcp"]
+	else:
+		final_config = new_config_data
+
+	var dir_path = filepath.get_base_dir()
+	if not DirAccess.dir_exists_absolute(dir_path):
+		var err = DirAccess.make_dir_recursive_absolute(dir_path)
+		if err != OK:
+			_show_message(_tr("msg_dir_error") + dir_path)
+			return
+
+	var file = FileAccess.open(filepath, FileAccess.WRITE)
+	if file:
+		file.store_string(JSON.stringify(final_config, "  "))
+		file.close()
+		_show_message(_tr("msg_config_success") % client_name)
+		print("[Godot MCP] Config written to: %s" % filepath)
+	else:
+		_show_message(_tr("msg_write_error"))
 
 
-func _on_client_disconnected() -> void:
-	_update_status("Disconnected")
-	if _status_panel and _status_panel.has_method("clear_server_version"):
-		_status_panel.clear_server_version()
-	MCPLog.info("Client disconnected")
+func _show_message(message: String) -> void:
+	print("[Godot MCP] %s" % message)
+	var dialog = AcceptDialog.new()
+	dialog.dialog_text = message
+	dialog.title = "Godot MCP"
+	if dock:
+		dock.add_child(dialog)
+		dialog.popup_centered()
+		dialog.confirmed.connect(func(): dialog.queue_free())
 
 
-func _update_status(status: String) -> void:
-	if _status_panel and _status_panel.has_method("set_status"):
-		_status_panel.set_status(status)
+func _copy_to_clipboard(text: String, source: String) -> void:
+	DisplayServer.clipboard_set(text)
+	_show_message(_tr("msg_copied") % source)
 
 
-func _setup_version_display() -> void:
-	if _status_panel and _status_panel.has_method("set_addon_version"):
-		_status_panel.set_addon_version(_get_addon_version())
+func _on_language_changed(index: int) -> void:
+	var lang_code = _language_option.get_item_metadata(index)
+	if _i18n:
+		_i18n.set_language(lang_code)
+		settings.language = lang_code
+		_save_settings()
+		# Rebuild UI to apply new language (use deferred to avoid crash)
+		call_deferred("_rebuild_dock")
 
 
-func _get_addon_version() -> String:
-	var config := ConfigFile.new()
-	var err := config.load("res://addons/godot_mcp/plugin.cfg")
-	if err == OK:
-		return config.get_value("plugin", "version", "")
-	return ""
+func _rebuild_dock() -> void:
+	# Store current tab index
+	var current_tab = 0
+	if _tab_container:
+		current_tab = _tab_container.current_tab
+
+	# Clear UI references first
+	_tab_container = null
+	_status_label = null
+	_status_indicator = null
+	_port_spin = null
+	_endpoint_label = null
+	_conn_label = null
+	_tool_list_container = null
+	_tool_count_label = null
+	_category_containers.clear()
+	_tool_checkboxes.clear()
+	_language_option = null
+	_cli_scope_option = null
+	_claude_cli_edit = null
+	_codex_cli_edit = null
+	_gemini_cli_edit = null
+
+	# Remove old dock safely
+	if dock and is_instance_valid(dock):
+		remove_control_from_docks(dock)
+		dock.queue_free()
+		dock = null
+
+	# Wait a frame before recreating
+	await get_tree().process_frame
+
+	# Recreate dock
+	_create_dock()
+
+	# Restore tab selection
+	if _tab_container:
+		_tab_container.current_tab = current_tab
+
+	# Update UI
+	call_deferred("_update_status_ui")
+	call_deferred("_update_tool_count")
 
 
-func on_server_version_received(version: String) -> void:
-	if _status_panel and _status_panel.has_method("set_server_version"):
-		_status_panel.set_server_version(version)
+# Event handlers
+func _on_server_started() -> void:
+	_update_status_ui()
+
+
+func _on_server_stopped() -> void:
+	_update_status_ui()
+
+
+func _on_start_pressed() -> void:
+	if not mcp_server:
+		return
+	settings.port = int(_port_spin.value) if _port_spin else settings.port
+	mcp_server.set_port(settings.port)
+	mcp_server.start()
+	_update_status_ui()
+	_save_settings()
+
+
+func _on_stop_pressed() -> void:
+	if mcp_server:
+		mcp_server.stop()
+	_update_status_ui()
+
+
+func _on_port_changed(value: float) -> void:
+	settings.port = int(value)
+	_update_status_ui()
+	_save_settings()
+
+
+func _on_auto_start_toggled(pressed: bool) -> void:
+	settings.auto_start = pressed
+	_save_settings()
+
+
+func _on_debug_toggled(pressed: bool) -> void:
+	settings.debug_mode = pressed
+	if mcp_server:
+		mcp_server.set_debug_mode(pressed)
+	_save_settings()
+
+
+func _on_tool_toggled(tool_name: String, enabled: bool) -> void:
+	if enabled:
+		settings.disabled_tools.erase(tool_name)
+	else:
+		if not tool_name in settings.disabled_tools:
+			settings.disabled_tools.append(tool_name)
+
+	if mcp_server:
+		mcp_server.set_disabled_tools(settings.disabled_tools)
+
+	var category = tool_name.split("_")[0] if "_" in tool_name else tool_name
+	_update_category_count(category)
+	_update_tool_count()
+	_save_settings()
+
+
+func _on_category_toggled(category: String, enabled: bool) -> void:
+	if not _category_containers.has(category):
+		return
+
+	# Toggle all tools in this category using _tool_checkboxes
+	for tool_name in _tool_checkboxes:
+		if tool_name.begins_with(category + "_"):
+			_tool_checkboxes[tool_name].set_pressed_no_signal(enabled)
+			if enabled:
+				settings.disabled_tools.erase(tool_name)
+			else:
+				if not tool_name in settings.disabled_tools:
+					settings.disabled_tools.append(tool_name)
+
+	if mcp_server:
+		mcp_server.set_disabled_tools(settings.disabled_tools)
+
+	_update_category_count(category)
+	_update_tool_count()
+	_save_settings()
+
+
+func _on_category_collapse_toggled(category: String) -> void:
+	if not _category_containers.has(category):
+		return
+
+	var container = _category_containers[category]
+	var tools_margin = container["tools_margin"] as MarginContainer
+	var toggle_btn = container["toggle_btn"] as Button
+
+	var is_collapsed = category in settings.collapsed_categories
+
+	if is_collapsed:
+		# Expand
+		settings.collapsed_categories.erase(category)
+		tools_margin.visible = true
+		toggle_btn.text = "▼"
+	else:
+		# Collapse
+		settings.collapsed_categories.append(category)
+		tools_margin.visible = false
+		toggle_btn.text = "▶"
+
+	_save_settings()
+
+
+func _on_expand_all_categories() -> void:
+	settings.collapsed_categories.clear()
+
+	for category in _category_containers:
+		var container = _category_containers[category]
+		var tools_margin = container["tools_margin"] as MarginContainer
+		var toggle_btn = container["toggle_btn"] as Button
+		tools_margin.visible = true
+		toggle_btn.text = "▼"
+
+	_save_settings()
+
+
+func _on_collapse_all_categories() -> void:
+	settings.collapsed_categories.clear()
+
+	for category in _category_containers:
+		settings.collapsed_categories.append(category)
+		var container = _category_containers[category]
+		var tools_margin = container["tools_margin"] as MarginContainer
+		var toggle_btn = container["toggle_btn"] as Button
+		tools_margin.visible = false
+		toggle_btn.text = "▶"
+
+	_save_settings()
+
+
+func _on_select_all_tools() -> void:
+	settings.disabled_tools.clear()
+
+	for tool_name in _tool_checkboxes:
+		_tool_checkboxes[tool_name].set_pressed_no_signal(true)
+
+	for category in _category_containers:
+		_category_containers[category]["checkbox"].set_pressed_no_signal(true)
+		_update_category_count(category)
+
+	if mcp_server:
+		mcp_server.set_disabled_tools(settings.disabled_tools)
+
+	_update_tool_count()
+	_save_settings()
+
+
+func _on_deselect_all_tools() -> void:
+	for tool_name in _tool_checkboxes:
+		_tool_checkboxes[tool_name].set_pressed_no_signal(false)
+		if not tool_name in settings.disabled_tools:
+			settings.disabled_tools.append(tool_name)
+
+	for category in _category_containers:
+		_category_containers[category]["checkbox"].set_pressed_no_signal(false)
+		_update_category_count(category)
+
+	if mcp_server:
+		mcp_server.set_disabled_tools(settings.disabled_tools)
+
+	_update_tool_count()
+	_save_settings()
+
+
+# Settings persistence
+func _load_settings() -> void:
+	if FileAccess.file_exists(SETTINGS_PATH):
+		var file = FileAccess.open(SETTINGS_PATH, FileAccess.READ)
+		if file:
+			var json = JSON.new()
+			if json.parse(file.get_as_text()) == OK:
+				var data = json.get_data()
+				if data is Dictionary:
+					settings.merge(data, true)
+			file.close()
+
+
+func _save_settings() -> void:
+	var file = FileAccess.open(SETTINGS_PATH, FileAccess.WRITE)
+	if file:
+		file.store_string(JSON.stringify(settings, "\t"))
+		file.close()
+
+
+# Public API
+func get_server() -> MCPServer:
+	return mcp_server
+
+
+func start_server() -> void:
+	_on_start_pressed()
+
+
+func stop_server() -> void:
+	_on_stop_pressed()

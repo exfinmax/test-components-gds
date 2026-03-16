@@ -1,0 +1,79 @@
+[gd_scene format=3 uid="uid://d10aw34aasyv8"]
+
+[ext_resource type="Script" uid="uid://fmwlxyuh21j8" path="res://addons/enhance_save_system/demo/encryption_test.gd" id="1_0"]
+
+[node name="EncryptionTest" type="Control" unique_id=1445008833]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_0")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="." unique_id=772105924]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 20.0
+offset_top = 20.0
+offset_right = -20.0
+offset_bottom = -20.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Label" type="Label" parent="VBoxContainer" unique_id=926615686]
+layout_mode = 2
+text = "存档加密解密测试"
+horizontal_alignment = 1
+
+[node name="HSeparator" type="HSeparator" parent="VBoxContainer" unique_id=1862293761]
+layout_mode = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer" unique_id=852176961]
+layout_mode = 2
+
+[node name="EncryptionCheckbox" type="CheckBox" parent="VBoxContainer/HBoxContainer" unique_id=2046055969]
+layout_mode = 2
+text = "启用加密"
+
+[node name="HBoxContainer2" type="HBoxContainer" parent="VBoxContainer" unique_id=2128690785]
+layout_mode = 2
+
+[node name="Label2" type="Label" parent="VBoxContainer/HBoxContainer2" unique_id=333656959]
+layout_mode = 2
+text = "加密密钥:"
+
+[node name="EncryptionKey" type="LineEdit" parent="VBoxContainer/HBoxContainer2" unique_id=1896809874]
+custom_minimum_size = Vector2(200, 0)
+layout_mode = 2
+placeholder_text = "输入加密密钥"
+
+[node name="HBoxContainer3" type="HBoxContainer" parent="VBoxContainer" unique_id=763139279]
+layout_mode = 2
+
+[node name="SaveButton" type="Button" parent="VBoxContainer/HBoxContainer3" unique_id=1112895058]
+layout_mode = 2
+text = "保存"
+
+[node name="LoadButton" type="Button" parent="VBoxContainer/HBoxContainer3" unique_id=1800909699]
+layout_mode = 2
+text = "加载"
+
+[node name="HBoxContainer4" type="HBoxContainer" parent="VBoxContainer" unique_id=317620794]
+layout_mode = 2
+
+[node name="Label3" type="Label" parent="VBoxContainer/HBoxContainer4" unique_id=349579875]
+layout_mode = 2
+text = "测试数据:"
+
+[node name="TestData" type="LineEdit" parent="VBoxContainer/HBoxContainer4" unique_id=1230741699]
+custom_minimum_size = Vector2(200, 0)
+layout_mode = 2
+text = "测试数据"
+placeholder_text = "输入测试数据"
+
+[node name="StatusLabel" type="Label" parent="VBoxContainer" unique_id=944387872]
+layout_mode = 2
+text = "状态: 就绪"

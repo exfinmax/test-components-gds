@@ -1,0 +1,117 @@
+[gd_scene format=3 uid="uid://b2k4e3x7gaa8d"]
+
+[ext_resource type="Script" uid="uid://bur25j8sxqdd1" path="res://addons/enhance_save_system/demo/enhanced_save_demo.gd" id="1_7bb3n"]
+[ext_resource type="PackedScene" uid="uid://cre0p744n82p7" path="res://addons/enhance_save_system/Components/InputRemapping/keybinding_ui.tscn" id="1_e4epw"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_3v00o"]
+font_size = 24
+
+[node name="EnhancedSaveDemo" type="Control" unique_id=1203723606]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_7bb3n")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="." unique_id=221062820]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="Label" type="Label" parent="VBoxContainer" unique_id=347762726]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "增强型存档系统演示"
+label_settings = SubResource("LabelSettings_3v00o")
+
+[node name="HSeparator" type="HSeparator" parent="VBoxContainer" unique_id=1179178057]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="KeybindingUI" parent="VBoxContainer" unique_id=1437016358 instance=ExtResource("1_e4epw")]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="HSeparator2" type="HSeparator" parent="VBoxContainer" unique_id=1112266953]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="VBoxContainer2" type="VBoxContainer" parent="VBoxContainer" unique_id=1840974408]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Label2" type="Label" parent="VBoxContainer/VBoxContainer2" unique_id=1096938318]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "存档管理"
+
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer/VBoxContainer2" unique_id=1032605577]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Label3" type="Label" parent="VBoxContainer/VBoxContainer2/HBoxContainer" unique_id=1294375067]
+layout_mode = 2
+text = "槽位:"
+
+[node name="SaveSlotSpinBox" type="SpinBox" parent="VBoxContainer/VBoxContainer2/HBoxContainer" unique_id=389465493]
+layout_mode = 2
+size_flags_horizontal = 3
+min_value = 1.0
+max_value = 8.0
+value = 1.0
+
+[node name="SaveButton" type="Button" parent="VBoxContainer/VBoxContainer2/HBoxContainer" unique_id=1003406629]
+layout_mode = 2
+text = "保存"
+
+[node name="LoadButton" type="Button" parent="VBoxContainer/VBoxContainer2/HBoxContainer" unique_id=950791047]
+layout_mode = 2
+text = "加载"
+
+[node name="HBoxContainer2" type="HBoxContainer" parent="VBoxContainer/VBoxContainer2" unique_id=531595137]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="AutoSaveCheckbox" type="CheckBox" parent="VBoxContainer/VBoxContainer2/HBoxContainer2" unique_id=1356631710]
+layout_mode = 2
+text = "自动存档"
+
+[node name="Label4" type="Label" parent="VBoxContainer/VBoxContainer2/HBoxContainer2" unique_id=108372742]
+layout_mode = 2
+text = "间隔:"
+
+[node name="AutoSaveInterval" type="SpinBox" parent="VBoxContainer/VBoxContainer2/HBoxContainer2" unique_id=660507582]
+layout_mode = 2
+size_flags_horizontal = 3
+min_value = 10.0
+max_value = 3600.0
+step = 10.0
+value = 300.0
+
+[node name="HBoxContainer3" type="HBoxContainer" parent="VBoxContainer/VBoxContainer2" unique_id=281935444]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="ScreenshotCheckbox" type="CheckBox" parent="VBoxContainer/VBoxContainer2/HBoxContainer3" unique_id=483309683]
+layout_mode = 2
+text = "存档预览图"
+
+[node name="HBoxContainer4" type="HBoxContainer" parent="VBoxContainer/VBoxContainer2" unique_id=1745535025]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="EncryptionCheckbox" type="CheckBox" parent="VBoxContainer/VBoxContainer2/HBoxContainer4" unique_id=658921092]
+layout_mode = 2
+text = "存档加密"
+
+[node name="StatusLabel" type="Label" parent="VBoxContainer" unique_id=935704465]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "状态: 就绪"

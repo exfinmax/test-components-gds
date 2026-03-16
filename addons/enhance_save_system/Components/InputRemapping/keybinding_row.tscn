@@ -1,0 +1,29 @@
+[gd_scene format=3 uid="uid://dxllrn47y1tw0"]
+
+[ext_resource type="Script" uid="uid://badp5fte1l1kx" path="res://addons/enhance_save_system/Components/InputRemapping/keybinding_row.gd" id="1_8wuhb"]
+
+[node name="KeybindingRow" type="HBoxContainer" unique_id=1096872369]
+custom_minimum_size = Vector2(0, 36)
+size_flags_horizontal = 3
+script = ExtResource("1_8wuhb")
+
+[node name="ActionLabel" type="Label" parent="." unique_id=1010614958]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+text = "ActionName"
+vertical_alignment = 1
+clip_text = true
+
+[node name="BindingsContainer" type="VBoxContainer" parent="." unique_id=2085290795]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(160, 0)
+layout_mode = 2
+size_flags_horizontal = 8
+
+[node name="AddButton" type="Button" parent="." unique_id=3085290795]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(60, 0)
+layout_mode = 2
+size_flags_horizontal = 4
+text = "+ 添加"
