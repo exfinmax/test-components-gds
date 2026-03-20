@@ -1,0 +1,191 @@
+[gd_scene format=3 uid="uid://bg4nj8cerlf7e"]
+
+[ext_resource type="Script" uid="uid://defx66kptdw74" path="res://addons/dialogue_manager/modify_test/demo/enhanced_demo.gd" id="1_script"]
+[ext_resource type="PackedScene" uid="uid://bg0vrq48n6yn6" path="res://addons/dialogue_manager/modify_test/enhanced_balloon.tscn" id="2_balloon"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_panel"]
+bg_color = Color(0.08, 0.08, 0.12, 0.95)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.3, 0.35, 0.5, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_btn1"]
+bg_color = Color(0.15, 0.35, 0.2, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.3, 0.7, 0.4, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_btn2"]
+bg_color = Color(0.15, 0.25, 0.4, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.3, 0.5, 0.8, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_btn3"]
+bg_color = Color(0.4, 0.2, 0.25, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.7, 0.4, 0.5, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_btn_back"]
+bg_color = Color(0.25, 0.2, 0.15, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.6, 0.5, 0.35, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[node name="EnhancedDemo" type="Node" unique_id=655105649]
+script = ExtResource("1_script")
+
+[node name="Background" type="ColorRect" parent="." unique_id=440348781]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.1, 0.08, 0.14, 1)
+
+[node name="UI" type="CanvasLayer" parent="." unique_id=870817851]
+layer = 10
+
+[node name="MainPanel" type="PanelContainer" parent="UI" unique_id=524143054]
+anchors_preset = 9
+anchor_bottom = 1.0
+offset_right = 380.0
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="UI/MainPanel" unique_id=40813545]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="TitleLabel" type="Label" parent="UI/MainPanel/VBoxContainer" unique_id=210507899]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.95, 0.9, 0.6, 1)
+theme_override_font_sizes/font_size = 20
+text = "🚀 增强气球演示系统"
+horizontal_alignment = 1
+
+[node name="SubtitleLabel" type="Label" parent="UI/MainPanel/VBoxContainer" unique_id=287004667]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.6, 0.6, 0.7, 1)
+theme_override_font_sizes/font_size = 12
+text = "展示入场动画、标签解析、分支选择等核心功能"
+horizontal_alignment = 1
+autowrap_mode = 3
+
+[node name="HSeparator" type="HSeparator" parent="UI/MainPanel/VBoxContainer" unique_id=1294012772]
+layout_mode = 2
+
+[node name="SceneButtons" type="VBoxContainer" parent="UI/MainPanel/VBoxContainer" unique_id=2055920475]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="Scene1Button" type="Button" parent="UI/MainPanel/VBoxContainer/SceneButtons" unique_id=2042625442]
+custom_minimum_size = Vector2(0, 50)
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+theme_override_styles/normal = SubResource("StyleBoxFlat_btn1")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_btn1")
+theme_override_styles/hover = SubResource("StyleBoxFlat_btn1")
+text = "📖 场景一：新手教程引导"
+
+[node name="Scene1Desc" type="Label" parent="UI/MainPanel/VBoxContainer/SceneButtons" unique_id=2092252841]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.5, 0.7, 0.5, 1)
+theme_override_font_sizes/font_size = 11
+text = "    入场动画 | 自动推进 | 快进慢放 | 历史记录"
+
+[node name="Scene2Button" type="Button" parent="UI/MainPanel/VBoxContainer/SceneButtons" unique_id=24589621]
+custom_minimum_size = Vector2(0, 50)
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+theme_override_styles/normal = SubResource("StyleBoxFlat_btn2")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_btn2")
+theme_override_styles/hover = SubResource("StyleBoxFlat_btn2")
+text = "👥 场景二：角色对话场景"
+
+[node name="Scene2Desc" type="Label" parent="UI/MainPanel/VBoxContainer/SceneButtons" unique_id=158145596]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.5, 0.6, 0.8, 1)
+theme_override_font_sizes/font_size = 11
+text = "    头像系统 | 气泡方向 | 角色颜色 | 打字音效"
+
+[node name="Scene3Button" type="Button" parent="UI/MainPanel/VBoxContainer/SceneButtons" unique_id=269170397]
+custom_minimum_size = Vector2(0, 50)
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+theme_override_styles/normal = SubResource("StyleBoxFlat_btn3")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_btn3")
+theme_override_styles/hover = SubResource("StyleBoxFlat_btn3")
+text = "🔗 场景三：分支选择场景"
+
+[node name="Scene3Desc" type="Label" parent="UI/MainPanel/VBoxContainer/SceneButtons" unique_id=1574847260]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.8, 0.5, 0.6, 1)
+theme_override_font_sizes/font_size = 11
+text = "    多选项分支 | URL链接 | 选项动画 | 颜色标签"
+
+[node name="HSeparator2" type="HSeparator" parent="UI/MainPanel/VBoxContainer" unique_id=2089396816]
+layout_mode = 2
+
+[node name="StatusLabel" type="Label" parent="UI/MainPanel/VBoxContainer" unique_id=1480732134]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.7, 0.9, 0.7, 1)
+theme_override_font_sizes/font_size = 13
+text = "请选择一个演示场景开始体验"
+autowrap_mode = 3
+
+[node name="ButtonRow" type="HBoxContainer" parent="UI/MainPanel/VBoxContainer" unique_id=727280666]
+layout_mode = 2
+alignment = 1
+
+[node name="BackButton" type="Button" parent="UI/MainPanel/VBoxContainer/ButtonRow" unique_id=1197752325]
+custom_minimum_size = Vector2(140, 40)
+layout_mode = 2
+theme_override_font_sizes/font_size = 15
+theme_override_styles/normal = SubResource("StyleBoxFlat_btn_back")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_btn_back")
+theme_override_styles/hover = SubResource("StyleBoxFlat_btn_back")
+text = "↩ 返回选择"
+
+[node name="HintLabel" type="Label" parent="UI/MainPanel/VBoxContainer" unique_id=572661226]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.45, 0.45, 0.55, 1)
+theme_override_font_sizes/font_size = 11
+text = "提示：PageDown=快进  PageUp=慢放  H=历史记录"
+horizontal_alignment = 1
+autowrap_mode = 3
+
+[node name="EnhancedBalloon" parent="." unique_id=139398154 instance=ExtResource("2_balloon")]
+balloon_direction = "right"
+enter_animation_type = "slide_down"

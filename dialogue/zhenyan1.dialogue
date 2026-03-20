@@ -1,0 +1,195 @@
+~ beforezhenyan
+# 审判开场 - 从左到右依次展示舞台上少女的立绘
+do MusicPlayer.stop_music()
+do game.add_zhenwu_to_slot(4, load("res://resource/zhenwu4.tres"))
+do game.add_zhenwu_to_slot(5, load("res://resource/zhenwu5.tres"))
+do game.add_zhenwu_to_slot(6, load("res://resource/zhenwu6.tres"))
+（明明现在什么都不清楚……怀着忐忑不安的心情，我们赶到了剧场）
+（这里的气氛压抑得让人几乎窒息。）
+
+# 设置5个角色立绘（害怕表情）
+# human_0 = 艾琳(lihui6) 位置 -700
+# human_1 = 浅见瞳(lihui2) 位置 -350
+# human_2 = 雾岛莉亚(lihui1) 位置 0 (中间)
+# human_3 = 米娜(lihui4) 位置 350
+# human_4 = 索菲(lihui3) 位置 700
+do game.set_human_lihui_resource(0, 6, "hp")
+do game.play_human_action(0, 0, -900)
+do game.set_human_lihui_resource(1, 2, "hp")
+do game.play_human_action(1, 0, -550)
+do game.set_human_lihui_resource(2, 1, "ex")
+do game.play_human_action(2, 0, -200)
+do game.set_human_lihui_resource(3, 4, "hp")
+do game.play_human_action(3, 0, 150)
+do game.set_human_lihui_resource(4, 3, "hp")
+do game.play_human_action(4, 0, 500)
+
+# 相机从左到右依次切换展示
+do game.play_human_action(0, 4, 1.5)
+do game.play_human_action(0, 1, 400)
+do game.set_camera_follower(0)
+艾琳: ……
+do game.play_human_action(1, 4, 1.5)
+do game.play_human_action(1, 1, 400)
+do game.set_camera_follower(1)
+浅见瞳: ……
+do game.play_human_action(2, 4, 1.5)
+do game.play_human_action(2, 1, 400)
+do game.set_camera_follower(2)
+雾岛莉亚: ……
+do game.play_human_action(3, 4, 1.5)
+do game.play_human_action(3, 1, 400)
+do game.set_camera_follower(3)
+米娜: ……
+do game.play_human_action(4, 4, 1.5)
+do game.play_human_action(4, 1, 400)
+do game.set_camera_follower(4)
+索菲: ……
+
+# 蕾希登场，顶替雾岛莉亚位置（中间human_2）
+do game.set_camera_follower(2)
+do game.set_human_lihui_resource(2, 7, "ax")
+蕾希: 那么，审判正式开始，请各位开始讨论吧。
+
+# 雾岛莉亚顶替蕾希出现在中间
+do game.set_human_lihui_resource(2, 1, "hp")
+do game.set_camera_follower(2)
+雾岛莉亚: （心跳得好快……）
+do game.set_human_lihui(2, "sk")
+雾岛莉亚: （目前我们对于真相一无所知，大家的发言难免会产生偏差，甚至凶手可能会用谎言误导我们。）
+do game.set_human_lihui(2, "zz")
+雾岛莉亚: （必须保持冷静！如果察觉到某人的发言中存在着言语的违和感，就使用"追问"进行详细的提问吧，如果发现了矛盾，就拿出证据"反驳"吧）
+do MusicPlayer.play_bgm(load("res://assets/music/Lanterns in the Fog.wav"))
+=> END
+
+
+~ zhenyan
+{{Global.current_zhenren}}: [center]{{Global.current_zhenyan}}[/center]
+=> END
+
+~ afterzhenyan
+# 第一轮证言结束
+do game.set_camera_follower(2)
+do game.set_human_lihui(2, "sk")
+雾岛莉亚: （大家都想要把这起惨剧归结为“意外”……）
+do game.set_human_lihui(2, "zz")
+雾岛莉亚: （但是，我总是有一种强烈的违和感，找出同伴话语间的矛盾，然后把证据摆出来吧！）
+do game.set_camera_follower(0)
+do game.set_human_lihui(0, "zz")
+艾琳: 虽然我理解你们不想怀疑同伴的心情，但“意外”这种说法，简直是荒谬至极。
+# 蕾希出现又消失
+do game.set_camera_follower(2)
+do game.set_human_lihui_resource(2, 7, "ax")
+蕾希: 艾琳小姐说得没错。真相并不会因为各位闭上眼睛就消失。
+do game.set_human_lihui(2, "zz")
+蕾希: 好了，既然大家都表达完了自己的“愿望”，那就请重新审视这些言论吧。
+do game.set_human_lihui_resource(2, 1, "zz")
+=> END
+
+
+
+~ zhuiwen0
+# 追问1：米娜的第一条证言
+do game.set_camera_follower(2)
+do game.set_human_lihui(2, "sk")
+雾岛莉亚: 米娜小姐……我理解你的感受。大家确实是互相帮助的同伴。
+do game.set_camera_follower(3)
+do game.set_human_lihui(3, "hp")
+米娜: 对吧？在那场火烧起来之前，我们明明还在讨论明天要做什么……这种事，怎么可能会是真的。
+=> END
+
+~ zhuiwen1
+# 追问2：米娜的第二条证言
+do game.set_camera_follower(2)
+do game.set_human_lihui(2, "zz")
+雾岛莉亚: 如果真的只是意外，未免也太巧合了。
+do game.set_camera_follower(3)
+do game.set_human_lihui(3, "ax")
+米娜: 可能是书架倒了碰翻了油灯什么的！这种可能性是存在的吧？
+do game.set_camera_follower(2)
+do game.set_human_lihui(2, "sk")
+雾岛莉亚: 意外吗？真的存在这种可能性吗？
+=> END
+
+~ zhuiwen2
+# 追问3：索菲的证言
+do game.set_camera_follower(2)
+do game.set_human_lihui(2, "ax")
+雾岛莉亚: 索菲小姐，你的能力，具体看到了什么？
+do game.set_camera_follower(4)
+do game.set_human_lihui(4, "hp")
+索菲: 所有人，都是恐慌与不安。
+=> END
+
+~ zhuiwen3
+# 追问4：浅见瞀的证言
+do game.set_camera_follower(2)
+do game.set_human_lihui(2, "sk")
+雾岛莉亚: 小瞀，你从刚才开始就抖得很厉害。别担心，只要我们一起查清楚真相，就不会有事的。
+do game.set_camera_follower(1)
+do game.set_human_lihui(1, "hp")
+浅见瞀: 嗯……我明白……
+=> END
+
+~ zhuiwen4
+我: 这是第4句话的追问
+{{Global.current_zhenren}}: 总之就是这样
+=> END
+
+~ zhuiwen5
+do! Global.game.play_vfx("flash")
+我: 何意味，你明明可以出示证物秒杀他的
+{{Global.current_zhenren}}: 总之就是这样
+do Global.game.play_vfx("close_back_deal")
+=> END
+
+~ zhenque
+# 论破成功
+do Global.game.play_vfx("flash")
+do! Global.game.play_vfx("taluo")
+do game.shake(5,10,30,true)
+do game.set_camera_follower(2)
+do game.set_human_lihui(2, "zr")
+雾岛莉亚: 米娜小姐，你说这可能只是一场意外？这是不可能的。
+do game.set_human_lihui(2, "ax")
+雾岛莉亚: 大家请看这个。
+雾岛莉亚: 露米在死前，给我们留下了死亡信息。
+do game.set_human_lihui(2, "zz")
+雾岛莉亚: 这说明，这一定是一场凶杀案！
+do game.set_camera_follower(1)
+do game.set_human_lihui(1, "hp")
+浅见瞀: ……死、死亡信息！
+do game.set_camera_follower(3)
+do game.set_human_lihui(3, "hp")
+米娜: ……！
+do game.set_human_lihui(3, "ax")
+米娜: 你是…说，真的有凶手…在我们之间…?
+do game.set_camera_follower(0)
+do game.set_human_lihui(0, "zz")
+艾琳: ……
+do game.set_human_lihui(0, "ax")
+艾琳: 哼，我已经知道谁是凶手了。
+do game.set_camera_follower(2)
+do game.set_human_lihui(2, "ax")
+雾岛莉亚: 艾琳小姐？你已经看穿真相了吗？
+do game.set_camera_follower(0)
+do game.set_human_lihui(0, "zz")
+艾琳: 请听我的发言。
+# 进入第二阶段：艾琳的推理
+do game.zhen_yan.switch_to_zhenyan2()
+=> END
+
+
+
+
+~ cuowu
+# 出示证物错误
+do game.set_camera_follower(2)
+do game.set_human_lihui(2, "ax")
+雾岛莉亚: 你的发言和这件证物有矛盾！
+# 蕾希出现又消失
+do game.set_human_lihui_resource(2, 7, "ax")
+蕾希: 哎呀，不要太心急了，莉亚小姐，盲目的指控并不能推导出真相，再好好想想吧。
+do game.set_human_lihui_resource(2, 1, "sk")
+雾岛莉亚: （糟糕，是我太心急了，还是重新想想吧。）
+=> END

@@ -1,0 +1,117 @@
+# ==================== 第三场审判：时间线重新梳理 ====================
+
+~ beforezhenyan
+do game.set_camera_follower(0)
+do game.set_human_lihui(0, "zz")
+艾琳: ………
+艾琳: 你说得对，雾岛。
+do game.set_human_lihui(0, "ax")
+艾琳: 除了这个物证，我们还必须从最基础的时间线来重新梳理。
+艾琳: 案发的时候，大家都在哪里，有不在场证明吗？
+艾琳: 当时，我正和雾岛，浅见在一起，这一点我们三人都可以作证。
+do game.set_camera_follower(1)
+do game.set_human_lihui(1, "hp")
+浅见瞳: ……没，没错，当时我们在探望莉亚。
+do game.set_camera_follower(2)
+do game.set_human_lihui(2, "zz")
+雾岛莉亚: ……确实如此。
+do game.set_camera_follower(4)
+do game.set_human_lihui(4, "sk")
+索菲: 唉，虽然很不情愿，但是我和那个蓝头发女人一起待在教堂里。
+do game.set_camera_follower(3)
+do game.set_human_lihui(3, "hp")
+米娜: 呜……怎么这样……大家都在一起，只有我是一个人吗？
+do game.set_camera_follower(0)
+do game.set_human_lihui(0, "ax")
+艾琳: 这么看来，证据已经确凿了，米娜，只有你有可能犯案。
+do game.set_camera_follower(3)
+do game.set_human_lihui(3, "hp")
+米娜: 可是！可是！真的不是我干的！
+do game.set_camera_follower(2)
+do game.set_human_lihui(2, "sk")
+雾岛莉亚: （总感觉有一种违和感…艾琳的推理的哪部分不够严谨呢？）
+# 自动弹出特殊追问
+do game.show_special_question()
+=> END
+
+
+~ zhenyan
+{{Global.current_zhenren}}: [center]{{Global.current_zhenyan}}[/center]
+=> END
+
+
+# ==================== 特殊追问选项（自动弹出） ====================
+
+# 选项一：作案的手法（错误）
+~ special_question_method
+do game.set_camera_follower(2)
+do game.set_human_lihui(2, "zz")
+雾岛莉亚: 艾琳小姐，我认为还是不够严谨，我们还不确定作案的手法，不能直接认定米娜是凶手。
+do game.set_camera_follower(4)
+do game.set_human_lihui(4, "sk")
+索菲: 可是只有她才能作案吧。
+do game.set_camera_follower(0)
+do game.set_human_lihui(0, "ax")
+艾琳: 没错，我想已经没有深究手法的必要了。
+do game.set_camera_follower(2)
+do game.set_human_lihui(2, "sk")
+雾岛莉亚: （不行，这样说服不了大家，冷静点……矛盾究竟在哪里……）
+# 重新打开追问界面
+do game.show_special_question()
+=> END
+
+
+# 选项二：作案的时间（正确）
+~ special_question_time
+do game.set_camera_follower(2)
+do game.play_vfx("taluo")
+do game.set_human_lihui(2, "zr")
+雾岛莉亚: 艾琳小姐，你的推理建立在案件发生在着火时的基础上。但如果，露米小姐在火灾发生之前就已经遇害了呢？
+do game.set_camera_follower(0)
+do game.set_human_lihui(0, "zz")
+艾琳: ……
+do game.set_human_lihui(0, "sk")
+艾琳: 那要怎么解释这场火灾，总不可能是图书馆自己烧起来的吧。
+# 进入下一阶段：关于机关的证言
+do game.zhen_yan.switch_to_zhenyan4()
+=> END
+
+
+# 选项三：作案的地点（错误）
+~ special_question_place
+do game.set_camera_follower(2)
+do game.set_human_lihui(2, "zz")
+雾岛莉亚: 艾琳小姐，真正的案发地点真的是图书馆吗？会不会是凶手移动了尸体？
+do game.set_camera_follower(4)
+do game.set_human_lihui(4, "sk")
+索菲: 我调查了别的地方，没发现可疑的痕迹。
+do game.set_camera_follower(0)
+do game.set_human_lihui(0, "ax")
+艾琳: 我认为不存在这样的可能，搬运尸体的风险太高了。
+do game.set_camera_follower(2)
+do game.set_human_lihui(2, "sk")
+雾岛莉亚: （不行，这样说服不了大家，冷静点……矛盾究竟在哪里……）
+# 重新打开追问界面
+do game.show_special_question()
+=> END
+
+
+~ afterzhenyan
+=> END
+
+
+~ cuowu
+do game.set_camera_follower(2)
+do game.set_human_lihui(2, "ax")
+雾岛莉亚: 你的发言和这件证物有矛盾！
+do game.set_human_lihui_resource(2, 7, "ax")
+蕾希: 哎呀，不要太心急了，莉亚小姐，盲目的指控并不能推导出真相，再好好想想吧。
+do game.set_human_lihui_resource(2, 1, "sk")
+雾岛莉亚: （糟糕，是我太心急了，还是重新想想吧。）
+=> END
+
+
+~ zhenque
+do Global.game.play_vfx("flash")
+雾岛莉亚: （找到矛盾了！）
+=> END

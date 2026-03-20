@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://dm6ttkjr8fylv"]
 
 [ext_resource type="Script" uid="uid://0acbxv7ikmp8" path="res://addons/dialogue_manager/modify_test/demo/demo_scene.gd" id="1_dscn"]
-[ext_resource type="PackedScene" path="res://addons/dialogue_manager/modify_test/modify_balloon.tscn" id="2_mbal"]
+[ext_resource type="PackedScene" uid="uid://bg0vrq48n6yn6" path="res://addons/dialogue_manager/modify_test/enhanced_balloon.tscn" id="2_b0tqu"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_main_bg"]
 bg_color = Color(0.06, 0.06, 0.1, 0.98)
@@ -127,7 +127,7 @@ theme_override_styles/pressed = SubResource("StyleBoxFlat_btn_restart")
 theme_override_styles/hover = SubResource("StyleBoxFlat_btn_restart")
 text = "↺ 从头开始"
 
-[node name="ModifyBalloon" parent="." unique_id=1113070889 instance=ExtResource("2_mbal")]
+[node name="EnhancedBalloon" parent="UI" unique_id=139398154 instance=ExtResource("2_b0tqu")]
 
 [connection signal="pressed" from="UI/MainPanel/VBoxContainer/ButtonRow/StartButton" to="." method="_on_start_button_pressed"]
 [connection signal="pressed" from="UI/MainPanel/VBoxContainer/ButtonRow/RestartButton" to="." method="_on_restart_button_pressed"]

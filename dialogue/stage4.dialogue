@@ -1,0 +1,45 @@
+~ start
+if Global.load_time[Global.current_stage.to_int()] < 1 and not GameEvents.is_load_game:
+	我: 永眠教团...在他们看来，他们才是正义吗？
+	我: ...但我为什么要去考虑他们呢？
+	我: 作为梦清者，我的职责就是苏醒人类，重振现实！
+do GameEvents.dialogue_end("1")
+=> END
+
+
+~ stage4_1
+if Global.player_skill[3]
+	=> stage4_2
+elif not Global.is_first_talk_4
+	set Global.is_first_talk_4 = true
+	我: 你好，[next=auto]我是梦醒者的最新梦清者
+	梦主：流浪汉: 呵呵，现实苦难多，我要去做梦了，不管你是谁，能不能别来烦我了。
+	我: 但是现实会有你不曾见过的未来，说不定会更好。
+	梦主：流浪汉: 说的好听，我不认为现实会更好，就现在这个鸟样。[next=auto]
+	梦主：流浪汉: 我早就已经是底层中的底层了。
+	梦主：流浪汉: 你想拯救我吗？你又能拿什么拯救我？
+	梦主：流浪汉: 不如给我我拿瓶酒过来。
+	梦主：流浪汉: 那些家伙还敢和我抢酒喝...简直和我一个样。
+	梦主：流浪汉: 去吧，别来烦我了。
+do push_quest.emit("2", "stage4")
+do GameEvents.dialogue_end("1")
+=> END
+
+~ stage4_2
+梦主：流浪汉: 不错，你竟然能把他们全部消灭了。
+梦主：流浪汉: 正好，我要睡觉了，再见。
+- 为什么不去尝试呢？ 
+	梦主：流浪汉: 尝试？我已经没有尝试的勇气了......
+- 你真的觉得这样很好吗？
+	set Global.screct2 = true
+	梦主：流浪汉: ......但我已经没有回头路了。
+	梦主：流浪汉: ......我已经没有希望了。
+我: 连尝试都不敢[next=auto]...
+梦主：流浪汉: [speed=1.5][shake rate=20 level=10]你又怎么知道我没有尝试过积极面对生活！[/shake]
+梦主：流浪汉: 这个该死的世道，[shake rate=20 level=10]已经没有我们普通人的出头之日了！[/shake]就这么说...[next=auto]
+梦主：流浪汉: ...算了，跟你一个不知现实为何物的家伙来说，也太没意思了
+梦主：流浪汉: ...快走吧，要不然你也要被迫睡了。
+梦主：流浪汉: 毕竟深睡后，那个家伙会来接我...
+do GameEvents.dialogue_end("2")
+=> END
+

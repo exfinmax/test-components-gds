@@ -28,7 +28,8 @@ extends RefCounted
 # 构造保护：防止直接实例化
 # ──────────────────────────────────────────────
 
-@abstract func _init() -> void
+func _init() -> void:
+	pass
 
 
 # ──────────────────────────────────────────────
@@ -67,3 +68,11 @@ func get_default_data() -> Dictionary:
 ## 模块元信息（Debug / 编辑器工具用）
 func get_meta_data() -> Dictionary:
 	return { "key": get_module_key(), "global": is_global() }
+
+## [virtual] 存档版本迁移钩子
+## 当存档版本低于当前 FORMAT_VERSION 时，MigrationManager 会依次调用此方法
+## old_version: 存档文件中的旧版本号
+## old_payload: 该模块在旧版本中的数据字典
+## 返回迁移后的数据字典（默认不做任何转换）
+func migrate_payload(old_payload: Dictionary, _old_version: int) -> Dictionary:
+	return old_payload

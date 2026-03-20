@@ -1,0 +1,40 @@
+[gd_scene load_steps=2 format=3 uid="uid://migration_demo"]
+
+[ext_resource type="Script" path="res://addons/enhance_save_system/demo/migration_demo.gd" id="1_md"]
+
+[node name="MigrationDemo" type="Control"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+script = ExtResource("1_md")
+
+[node name="VBox" type="VBoxContainer" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 20.0
+offset_top = 20.0
+offset_right = -20.0
+offset_bottom = -20.0
+
+[node name="Title" type="Label" parent="VBox"]
+text = "存档迁移 Demo"
+theme_override_font_sizes/font_size = 20
+
+[node name="Controls" type="HBoxContainer" parent="VBox"]
+
+[node name="CreateBtn" type="Button" parent="VBox/Controls"]
+text = "创建旧版本存档 (v1)"
+
+[node name="MigrateBtn" type="Button" parent="VBox/Controls"]
+text = "执行迁移"
+
+[node name="CleanupBtn" type="Button" parent="VBox/Controls"]
+text = "清理"
+
+[node name="Log" type="RichTextLabel" parent="VBox"]
+size_flags_vertical = 3
+bbcode_enabled = true
+scroll_following = true
+
+[connection signal="pressed" from="VBox/Controls/CreateBtn" to="." method="_on_create_old_save_pressed"]
+[connection signal="pressed" from="VBox/Controls/MigrateBtn" to="." method="_on_migrate_pressed"]
+[connection signal="pressed" from="VBox/Controls/CleanupBtn" to="." method="_on_cleanup_pressed"]

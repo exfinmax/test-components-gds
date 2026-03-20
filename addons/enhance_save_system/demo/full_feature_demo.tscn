@@ -1,0 +1,78 @@
+[gd_scene format=3 uid="uid://c2004bpxicjr5"]
+
+[ext_resource type="Script" uid="uid://qrd4j5vt8ltr" path="res://addons/enhance_save_system/demo/full_feature_demo.gd" id="1_ffd"]
+
+[node name="FullFeatureDemo" type="Control" unique_id=820344368]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+script = ExtResource("1_ffd")
+
+[node name="VBox" type="VBoxContainer" parent="." unique_id=533933772]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 20.0
+offset_top = 20.0
+offset_right = -20.0
+offset_bottom = -20.0
+
+[node name="Title" type="Label" parent="VBox" unique_id=1821472295]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "综合功能 Demo（加密 + 压缩 + 原子写入 + 迁移）"
+
+[node name="Options" type="HBoxContainer" parent="VBox" unique_id=466786269]
+layout_mode = 2
+
+[node name="EncCheck" type="CheckBox" parent="VBox/Options" unique_id=2089157983]
+layout_mode = 2
+text = "AES-GCM 加密"
+
+[node name="CompCheck" type="CheckBox" parent="VBox/Options" unique_id=1673638062]
+layout_mode = 2
+text = "GZIP 压缩"
+
+[node name="AtomicCheck" type="CheckBox" parent="VBox/Options" unique_id=82340804]
+layout_mode = 2
+text = "原子写入"
+
+[node name="BackupCheck" type="CheckBox" parent="VBox/Options" unique_id=2090353114]
+layout_mode = 2
+text = ".bak 备份"
+
+[node name="Buttons" type="HBoxContainer" parent="VBox" unique_id=1121842601]
+layout_mode = 2
+
+[node name="SaveBtn" type="Button" parent="VBox/Buttons" unique_id=1717425967]
+layout_mode = 2
+text = "保存"
+
+[node name="LoadBtn" type="Button" parent="VBox/Buttons" unique_id=1399325412]
+layout_mode = 2
+text = "加载"
+
+[node name="WrongKeyBtn" type="Button" parent="VBox/Buttons" unique_id=183256947]
+layout_mode = 2
+text = "用错误密钥加载"
+
+[node name="CleanupBtn" type="Button" parent="VBox/Buttons" unique_id=405923307]
+layout_mode = 2
+text = "清理"
+
+[node name="BenchBtn" type="Button" parent="VBox/Buttons" unique_id=1850572150]
+layout_mode = 2
+text = "压缩基准测试"
+
+[node name="Log" type="RichTextLabel" parent="VBox" unique_id=1996506406]
+layout_mode = 2
+size_flags_vertical = 3
+bbcode_enabled = true
+scroll_following = true
+
+[connection signal="pressed" from="VBox/Buttons/SaveBtn" to="." method="_on_save_pressed"]
+[connection signal="pressed" from="VBox/Buttons/LoadBtn" to="." method="_on_load_pressed"]
+[connection signal="pressed" from="VBox/Buttons/WrongKeyBtn" to="." method="_on_wrong_key_pressed"]
+[connection signal="pressed" from="VBox/Buttons/CleanupBtn" to="." method="_on_cleanup_pressed"]
+[connection signal="pressed" from="VBox/Buttons/BenchBtn" to="." method="_on_compression_bench_pressed"]

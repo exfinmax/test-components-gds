@@ -1,0 +1,262 @@
+[gd_scene load_steps=13 format=3 uid="uid://yus1loxriev2"]
+
+[ext_resource type="Script" uid="uid://bx0faoy706jbh" path="res://dialogue/balloon.gd" id="1_hrjo7"]
+[ext_resource type="AudioStream" uid="uid://brfjnkdtmctw8" path="res://dialogue/keyboard-typing-sound-effect-335503_[cut_0sec].wav" id="2_af48w"]
+[ext_resource type="Shader" uid="uid://cah0v5vqt2dn2" path="res://dialogue/stroke.gdshader" id="3_0hx7h"]
+[ext_resource type="Texture2D" uid="uid://1xatj8l13olm" path="res://icon.svg" id="3_3fodd"]
+[ext_resource type="Texture2D" uid="uid://d05iplyvng05t" path="res://assets/Elegant GUI kit/game/gui/textbox.png" id="4_267us"]
+[ext_resource type="PackedScene" uid="uid://ckvgyvclnwggo" path="res://addons/dialogue_manager/dialogue_label.tscn" id="4_m3ccg"]
+[ext_resource type="Texture2D" uid="uid://b5yprdnvil84n" path="res://assets/Elegant GUI kit/game/gui/quick_menu.png" id="7_af48w"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_267us"]
+shader = ExtResource("3_0hx7h")
+shader_parameter/edge_color = Color(0, 0, 0, 1)
+shader_parameter/far_color = Color(0.41869268, 0.8465145, 1, 1)
+shader_parameter/outer_size = 1.80000002682216
+shader_parameter/outer_strength = 0.999999977648
+shader_parameter/inner_size = 12.0
+shader_parameter/inner_strength = 0.999999977648
+shader_parameter/speed = 6.0
+shader_parameter/breathe_amp = 0.37999999150624
+shader_parameter/alpha_threshold = 0.83999998122432
+shader_parameter/scale = Vector2(1, 1)
+shader_parameter/rings = 8
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_af48w"]
+shader = ExtResource("3_0hx7h")
+shader_parameter/edge_color = Color(0, 0, 0, 1)
+shader_parameter/far_color = Color(0, 0.8, 1, 1)
+shader_parameter/outer_size = 3.0
+shader_parameter/outer_strength = 1.0
+shader_parameter/inner_size = 4.20000006258504
+shader_parameter/inner_strength = 1.0
+shader_parameter/speed = 6.0
+shader_parameter/breathe_amp = 0.5
+shader_parameter/alpha_threshold = 0.01
+shader_parameter/scale = Vector2(1, 1)
+shader_parameter/rings = 8
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_5t74j"]
+texture = ExtResource("7_af48w")
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_oj3c8"]
+content_margin_left = 40.0
+content_margin_top = 5.0
+content_margin_right = 5.0
+content_margin_bottom = 5.0
+draw_center = false
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_5d24i"]
+content_margin_left = 40.0
+content_margin_top = 5.0
+content_margin_right = 5.0
+content_margin_bottom = 5.0
+bg_color = Color(1, 1, 1, 0.25098)
+
+[node name="Balloon" type="CanvasLayer" node_paths=PackedStringArray("response_template")]
+process_mode = 3
+layer = 100
+offset = Vector2(0, -100)
+transform = Transform2D(1, 0, 0, 1, 0, -100)
+script = ExtResource("1_hrjo7")
+response_template = NodePath("Balloon/ResponseTemplate")
+
+[node name="TalkSound" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("2_af48w")
+
+[node name="Balloon" type="ColorRect" parent="."]
+texture_filter = 2
+anchors_preset = -1
+anchor_left = 0.15
+anchor_right = 0.85
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 0
+size_flags_horizontal = 3
+color = Color(1, 1, 1, 0)
+
+[node name="BGtexture" type="TextureRect" parent="Balloon"]
+material = SubResource("ShaderMaterial_267us")
+custom_minimum_size = Vector2(0, 192)
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_left = -57.0
+offset_top = -35.0
+offset_right = -57.0
+offset_bottom = 157.0
+grow_horizontal = 2
+scale = Vector2(1.11, 1)
+size_flags_horizontal = 4
+size_flags_vertical = 8
+texture = ExtResource("4_267us")
+expand_mode = 1
+
+[node name="Margin" type="MarginContainer" parent="Balloon"]
+custom_minimum_size = Vector2(0, 190)
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 114.0
+grow_horizontal = 2
+size_flags_horizontal = 4
+size_flags_vertical = 8
+metadata/_edit_layout_mode = 1
+
+[node name="HBox" type="HBoxContainer" parent="Balloon/Margin"]
+layout_mode = 2
+
+[node name="Portrait" type="Control" parent="Balloon/Margin/HBox"]
+visible = false
+custom_minimum_size = Vector2(150, 0)
+layout_mode = 2
+size_flags_vertical = 5
+
+[node name="HeadTexture" type="TextureRect" parent="Balloon/Margin/HBox/Portrait"]
+z_index = 9
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 4.0
+offset_top = -1.0
+offset_right = 4.0
+offset_bottom = -3.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("3_3fodd")
+expand_mode = 1
+stretch_mode = 4
+
+[node name="TextureRect" type="TextureRect" parent="Balloon/Margin/HBox/Portrait"]
+z_index = 9
+custom_minimum_size = Vector2(150, 150)
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -75.0
+offset_top = -75.0
+offset_right = 75.0
+offset_bottom = 75.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("3_3fodd")
+expand_mode = 1
+stretch_mode = 6
+
+[node name="NameTexture" type="TextureRect" parent="Balloon/Margin/HBox/Portrait"]
+layout_mode = 0
+offset_left = 155.0
+offset_top = 6.0
+offset_right = 231.0
+offset_bottom = 46.0
+scale = Vector2(1.28, 1.2)
+
+[node name="VBox" type="VBoxContainer" parent="Balloon/Margin/HBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 10
+
+[node name="DialogueLabel" parent="Balloon/Margin/HBox/VBox" instance=ExtResource("4_m3ccg")]
+unique_name_in_owner = true
+z_index = 9
+layout_mode = 2
+theme_override_font_sizes/normal_font_size = 35
+theme_override_font_sizes/bold_font_size = 35
+theme_override_font_sizes/bold_italics_font_size = 35
+theme_override_font_sizes/italics_font_size = 35
+theme_override_font_sizes/mono_font_size = 35
+text = "Dialogue"
+
+[node name="Temp" type="Control" parent="Balloon/Margin/HBox"]
+layout_mode = 2
+
+[node name="CharacterLabel" type="RichTextLabel" parent="Balloon"]
+unique_name_in_owner = true
+self_modulate = Color(3, 3, 3, 1)
+z_index = 1
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_left = 60.0
+offset_top = -59.0
+offset_right = -833.0
+offset_bottom = 3.0
+grow_horizontal = 2
+size_flags_horizontal = 4
+size_flags_vertical = 8
+mouse_filter = 1
+theme_override_font_sizes/normal_font_size = 30
+theme_override_font_sizes/bold_font_size = 30
+theme_override_font_sizes/bold_italics_font_size = 30
+theme_override_font_sizes/italics_font_size = 30
+theme_override_font_sizes/mono_font_size = 30
+bbcode_enabled = true
+text = "Character"
+fit_content = true
+scroll_active = false
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Panel" type="Panel" parent="Balloon/CharacterLabel"]
+show_behind_parent = true
+material = SubResource("ShaderMaterial_af48w")
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxTexture_5t74j")
+
+[node name="Responses" type="VBoxContainer" parent="Balloon"]
+unique_name_in_owner = true
+layout_mode = 0
+offset_top = 59.0
+offset_right = 1340.0
+offset_bottom = 59.0
+theme_override_constants/separation = 2
+
+[node name="ResponseTemplate" type="RichTextLabel" parent="Balloon"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 14
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_top = -22.5
+offset_bottom = 22.5
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/normal_font_size = 25
+theme_override_font_sizes/bold_font_size = 25
+theme_override_font_sizes/bold_italics_font_size = 25
+theme_override_font_sizes/italics_font_size = 25
+theme_override_font_sizes/mono_font_size = 25
+theme_override_styles/normal = SubResource("StyleBoxFlat_oj3c8")
+theme_override_styles/focus = SubResource("StyleBoxFlat_5d24i")
+bbcode_enabled = true
+text = "Response"
+fit_content = true
+scroll_active = false
+shortcut_keys_enabled = false
+meta_underlined = false
+hint_underlined = false
+
+[node name="AutoButton" type="Button" parent="Balloon"]
+custom_minimum_size = Vector2(50, 50)
+layout_mode = 0
+offset_left = 1304.0
+offset_top = -46.0
+offset_right = 1354.0
+offset_bottom = 4.0
+size_flags_horizontal = 0
+size_flags_vertical = 0
+text = "自动"
+
+[connection signal="gui_input" from="Balloon" to="." method="_on_balloon_gui_input"]
+[connection signal="resized" from="Balloon/Margin" to="." method="_on_margin_resized"]
+[connection signal="spoke" from="Balloon/Margin/HBox/VBox/DialogueLabel" to="." method="_on_dialogue_label_spoke"]

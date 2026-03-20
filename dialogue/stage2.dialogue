@@ -1,0 +1,97 @@
+~ start
+do dialogue_st(current_npc.npc_id)
+if current_npc.current_count == 0:
+	do Global.main.divider_half()
+	旁白: 已连接至深潜系统。
+	旁白: Creep，17岁，莱伯先天性黑蒙（亚型）患者，视力将随年龄缓慢而不可逆地丧失，同时伴有严重的畏光。
+	旁白: 患者目前处于高度警觉状态，内心空间似乎长久地受到自身幻觉的扭曲。建议缓慢接近，避免刺激。
+	Anchor: 好冷.以及.为什么我在空中？
+	Creep: 新的幻觉吗……
+	Anchor: [do current_balloon.change_texture("O")]啊，你好，Creep。我叫Anchor，我是来……
+	Creep: [do current_balloon.change_texture("HAN")]别靠近了！我..我看不清你。
+	Creep: [do current_balloon.change_texture("HAN")]离开..
+	do Global.main.divider_seven()
+elif current_npc.current_count == 1:
+	Anchor: 好疼.
+	旁白: Anchor，我逆向解析出了刚才在你脚下碎裂的结构，现在你可以随时按Q搭建临时踏板“脆弱桥”.
+	旁白: 脆弱桥在短时间后便会消散.但可以方便地回收再利用...
+	旁白: 不对，怎么突然有这么多的数据流..
+	旁白: Anchor，患者内心的幻听程度似乎比想象中更加严重.甚至可能波及到你自己！
+	旁白: 不要回头，保护好%&=@！
+	旁白: ...
+	Anchor: [do current_balloon.change_texture("O")]搭档？
+	旁白: .Anchor，你会像之前那样完美地赢下去的，对吧？
+	Anchor: [do current_balloon.change_texture("O")]？？？
+elif current_npc.current_count == 2:
+	do Global.main.divider_half()
+	Anchor: [do current_balloon.change_texture("JY")]这个追杀我的黑影究竟是谁.
+	Anchor: [do current_balloon.change_texture("JY")]复制我的路径，连我的缓时都被复制了.
+	Creep: [do current_balloon.change_texture("HJ")]对不起..对不起..
+	旁白: 她脑子里飘着很多无法沉淀的“思维”，其中有好的，也有坏的.
+	旁白: 辨认它们..把那些坏的幻觉干掉..别碰好的就行...
+	旁白: 别让我失望.
+	Anchor: [do current_balloon.change_texture("JY")]搭档到底怎么了……
+	do Global.main.divider_seven()
+elif current_npc.current_count == 3:
+	do Global.main.divider_half()
+	Anchor: [do current_balloon.change_texture("JY")]不要听进这些话，Creep，这些不是你家人的本意！
+	Creep: [do current_balloon.change_texture("ZZ")]可他们说的对……
+	Creep: [do current_balloon.change_texture("ZZ")]如果我从未出生，姐姐已经在大西洋彼岸留学归来。母亲不会彻夜不眠。父亲不会盯着账本皱眉。
+	幻觉: （合唱般的低语）"罪人.傲慢的罪人.连累所有人的罪人.."
+	Creep: [do current_balloon.change_texture("HAN")]是我..毁了这个家庭。
+	Anchor: 听我说，亲爱的，你并不背负任何罪恶。
+	Anchor: 家人们各自做出牺牲自己的选择，在我看来，这些恰恰是深爱你的证明。
+	幻觉: 撒谎！撒谎！！撒谎！！！
+	Creep: [do current_balloon.change_texture("HJ")]好疼..
+	do Global.main.divider_seven()
+elif current_npc.current_count == 4:
+	do Global.main.divider_half()
+	Anchor: 我们来做一件小事: 把‘事实’和‘解读’分成两堆。
+	Anchor: 比如，妈妈曾去世界各地找医生？
+	Creep: 事实……她去找医生是事实.可我记得她眼里有疲惫，有指责。
+	Anchor: 是啊，事实是她为你跑了很多地方；感受是她有时会因为疲惫而生气。
+	Anchor: 两个都是真的，但它们不等于你就是什么‘罪人’。
+	Anchor: 再比如，在你专心培养盆栽时，同学们在旁边笑？
+	Creep: [do current_balloon.change_texture("ZZ")]虽然我听不清他们在笑什么，但总感觉他们就是在笑我..
+	Anchor: 那是你的解读.事实是，这只是你听到的声音，但这些不一定关于你，也许他们只是在聊自己的事.
+	旁白: 场上出现会动的移动平台，依靠平台通关。
+	Anchor: 怎么让它动起来？
+	旁白: 自己试。	
+	旁白: 记不得了，看笔记本就行.
+	Anchor: [do current_balloon.change_texture("JY")]……我的搭档不会这么说话。
+	Anchor: [do current_balloon.change_texture("JY")]Creep正在饱受折磨，而你却在此安然旁观？
+	Anchor: [do current_balloon.change_texture("JY")]你到底是谁？从搭档身上离开！
+	旁白: 急了？
+	旁白: 那正好，你此时焦躁的情绪已经影响到桥的状态.祝愿"冲动桥"能发挥更大的作用吧.
+	旁白: 至于你的搭档，我可以向你保证，他从未离开。
+	旁白: 而同样地，我也从未离开……
+	do Global.main.divider_seven()
+elif current_npc.current_count == 5:
+	do Global.main.divider_half()
+	Anchor: 我听说你很喜欢去森林里，还做过很多标本。
+	Creep: ……以前是。
+	Creep: 花草、山野、河流，他们很宽容，无论我做错什么，他们总是愿意听我说话，接纳我。
+	Creep: [do current_balloon.change_texture("KX")]小时候最大的梦想，就是去世界各地收集各种美丽的植物。
+	Creep: [do current_balloon.change_texture("KX")]去看只有在雪山绽放的蓝色罂粟.去冰岛苔原看书上说的“外星人花园”.
+	Creep: [do current_balloon.change_texture("KX")]去看如油画般的彩虹桉树.去秋季的北海道针叶林..
+	Creep: [do current_balloon.change_texture("KX")]当初一个小豆丁的我，怀抱着那么大的憧憬，令我扛着父母的压力走到了如今..
+	Creep: [do current_balloon.change_texture("HAN")]可现在的我，连自己的视力都留不住了.
+	Anchor: 亲爱的，大自然的美不一定要用眼睛才能记住。
+	Anchor: 你仍可听见风声带来的故事，摸得到叶脉的细微纹理，闻得到泥土花草的清香。
+	Anchor: [do current_balloon.change_texture("Wink")]因为只要你不失去对世界的喜爱，世界的大门永远都会为你敞开呀。
+	do Global.main.divider_seven()
+elif current_npc.current_count == 6:
+	Anchor: [do current_balloon.change_texture("O")]我来了。但看起来…你似乎好多了！
+	Creep: [do current_balloon.change_texture("KX")]我能感到，脑中的幻觉正在一点点消失，头疼也消退了
+	Creep: [do current_balloon.change_texture("KX")]Anchor，你看我现在的眼睛，应该已经是空洞而无神的样子了吧？
+	Anchor: [do current_balloon.change_texture("JY")]我无法否认，它们或许无法再清晰地倒映出我的样子，但它们却让我更清晰地那个纯粹又敏感的你。
+	Anchor: [do current_balloon.change_texture("JY")]眼睛之所以有神，是因为背后有一个炽热的灵魂。
+	Anchor: [do current_balloon.change_texture("JY")]而你的灵魂从未黯淡，它只是被困在自己的小天地中。 
+	Anchor: 如果你愿意，我们可以一起，帮你找到最初的那份火苗。
+	Creep: [do current_balloon.change_texture("KX")]我想……继续完善我的标本册。也许我可以用盲文标注。
+	Creep: [do current_balloon.change_texture("SR")]也许我真的能触摸到那片雪山罂粟，感受到针叶林凌冽的空气……
+	Anchor: 那将会是很美的作品，Creep。
+	Creep: [do current_balloon.change_texture("SR")]嗯，谢谢你来……Anchor.
+=> END
+
+

@@ -92,8 +92,8 @@ func configure_focus() -> void:
 			item.focus_neighbor_right = items[i + 1].get_path()
 			item.focus_next = items[i + 1].get_path()
 
-		item.mouse_entered.connect(_on_response_mouse_entered.bind(item))
-		item.gui_input.connect(_on_response_gui_input.bind(item, item.get_meta("response")))
+		#item.mouse_entered.connect(_on_response_mouse_entered.bind(item))
+		#item.gui_input.connect(_on_response_gui_input.bind(item, item.get_meta("response")))
 
 	_previously_focused_item = items[0]
 

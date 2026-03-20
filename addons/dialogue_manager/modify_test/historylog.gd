@@ -60,7 +60,7 @@ var _character_colors: Dictionary = {}
 # ──────────────────────────────────────────────
 
 func _ready() -> void:
-	if is_instance_valid(_close_button):
+	if is_instance_valid(_close_button) && _close_button.pressed.is_connected(hide_log) == false:
 		_close_button.pressed.connect(hide_log)
 	hide()
 

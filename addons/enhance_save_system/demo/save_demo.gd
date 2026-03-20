@@ -22,7 +22,7 @@ func _ready() -> void:
 
 	# ── 步骤 1：注册模块 ────────────────────────────────────────
 	print("【1】注册模块...")
-	var sm := SaveSystem           # 演示用：手动实例化（游戏中用 AutoLoad）
+	var sm := get_tree().root.get_node_or_null("SaveSystem")        # 演示用：手动实例化（游戏中用 AutoLoad）
 	sm.game_version = "0.1.0-demo"
 	sm.max_slots = 4
 
@@ -72,8 +72,8 @@ func _ready() -> void:
 
 	# ── 步骤 4：保存 ──────────────────────────────────────────────
 	print("\n【4】保存数据...")
-	var ok_global := sm.save_global()
-	var ok_slot1  := sm.save_slot(1)
+	var ok_global :bool= sm.save_global()
+	var ok_slot1  :bool= sm.save_slot(1)
 	print("  save_global OK =", ok_global, "  save_slot(1) OK =", ok_slot1)
 
 	# ── 步骤 5：加载并验证 ────────────────────────────────────────
@@ -109,8 +109,8 @@ func _ready() -> void:
 	# ── 步骤 7：导出 / 导入 ────────────────────────────────────────
 	print("\n【7】导出槽位 1 → 导入为槽位 3...")
 	var export_path := "user://saves/export_demo.json"
-	var ok_export := sm.export_slot(1, export_path)
-	var ok_import := sm.import_slot(3, export_path)
+	var ok_export :bool= sm.export_slot(1, export_path)
+	var ok_import :bool= sm.import_slot(3, export_path)
 	print("  export OK =", ok_export, "  import OK =", ok_import)
 
 	sm.load_slot(3)
@@ -136,8 +136,8 @@ func _ready() -> void:
 	# ── 完成 ──────────────────────────────────────────────────────
 	print("\n【快捷 API】quick_save / quick_load...")
 	sm.current_slot = 1
-	var qs := sm.quick_save()
-	var ql := sm.quick_load()
+	var qs :bool= sm.quick_save()
+	var ql :bool= sm.quick_load()
 	print("  quick_save OK =", qs, "  quick_load OK =", ql)
 
 	print("\n═══════════════════════════════════════")

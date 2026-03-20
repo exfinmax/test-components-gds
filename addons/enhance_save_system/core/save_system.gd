@@ -7,35 +7,21 @@ extends Node
 ## ────────────
 ##  ① 纯 JSON 存储：快速、人可读、无引用解析开销
 ##  ② 模块化多态：每个 ISaveModule 子类负责自己数据域
-##     SaveWriter 通过 collect_data / apply_data 与模块交互
-##  ③ 双轨道存档：
-##     • 全局存档（global.json）：设置、统计等不依赖槽位的数据
-##     • 槽位存档（slot_01.json … slot_N.json）：关卡进度、玩家状态等
-##  ④ Writer 积累模式：先收集所有模块变更 → 一次性写盘（减少 I/O）
-##
-## 快速上手
-## ────────
-##  1. 项目设置 → AutoLoad → 添加本脚本，名称设为 "SaveSystem"
-##  2. 默认开启 auto_register，会自动从 Modules/ 目录加载并注册所有模块；
-##     如需手动注册（覆盖/追加），在场景 _ready 里调用：
-##       SaveSystem.register_module(MyCustomModule.new())
-##  3. 保存 / 加载：
-##       SaveSystem.quick_save()          # 保存全局 + 当前槽位
-##       SaveSystem.quick_load()          # 加载全局 + 当前槽位
-##       SaveSystem.save_slot(2)          # 保存到槽位 2
-##       SaveSystem.load_slot(2)          # 从槽位 2 加载
-##  4. 导出 / 导入（移植存档）：
-##       SaveSystem.export_slot(1, "user://backup/slot1.json")
-##       SaveSystem.import_slot(1, "user://backup/slot1.json")
+##  ③ 双轨道存档：全局（global.json）+ 槽位（slot_XX.json）
+##  ④ Writer 积累模式：先收集所有模块变更 → 一次性写盘
+##  ⑤ 可选加密（AES-GCM/AES-CBC/XOR）、压缩（gzip/deflate）、原子写入、版本迁移
 ##
 ## 信号列表
 ## ────────
-##  global_saved(ok)         全局存档写盘完成
-##  global_loaded(ok)        全局存档读取完成
-##  slot_saved(slot, ok)     指定槽位写盘完成
-##  slot_loaded(slot, ok)    指定槽位读取完成
-##  slot_deleted(slot)       槽位文件已删除
-##  slot_changed(slot)       当前活跃槽位切换
+##  global_saved(ok)                    全局存档写盘完成
+##  global_loaded(ok)                   全局存档读取完成
+##  slot_saved(slot, ok)                指定槽位写盘完成
+##  slot_loaded(slot, ok)               指定槽位读取完成
+##  slot_deleted(slot)                  槽位文件已删除
+##  slot_changed(slot)                  当前活跃槽位切换
+##  slot_load_failed(slot, reason)      槽位加载失败（含原因）
+##  slot_backed_up(slot, backup_path)   槽位备份完成
+##  save_migrated(slot, old_ver, new_ver) 存档迁移完成
 
 signal global_saved(ok: bool)
 signal global_loaded(ok: bool)
@@ -43,39 +29,51 @@ signal slot_saved(slot: int, ok: bool)
 signal slot_loaded(slot: int, ok: bool)
 signal slot_deleted(slot: int)
 signal slot_changed(new_slot: int)
+signal slot_load_failed(slot: int, reason: String)
+signal slot_backed_up(slot: int, backup_path: String)
+signal save_migrated(slot: int, old_version: int, new_version: int)
 
 # ──────────────────────────────────────────────
 # 配置
 # ──────────────────────────────────────────────
 
-## 最大槽位数（1-based，1 到 max_slots）
 @export var max_slots: int = 8
-
-## 启动时自动扫描 Modules/ 目录并注册所有模块（设为 false 可完全手动管理）
 @export var auto_register: bool = true
-
-## 启动时自动加载全局存档
 @export var auto_load_global: bool = true
-
-## 启动时自动加载的槽位（0 = 不自动加载）
 @export var auto_load_slot: int = 0
-
-## game_version 写入 _meta（可在 Project Settings 里改）
 @export var game_version: String = "1.0.0"
 
-## 自动存档配置
+## 自动存档
 @export var auto_save_enabled: bool = false
-@export var auto_save_interval: int = 300  # 自动存档间隔（秒）
-@export var auto_save_slot: int = 1  # 自动存档槽位
+@export var auto_save_interval: int = 300
+@export var auto_save_slot: int = 1
 
-## 存档预览图配置
-@export var save_screenshots_enabled: bool = false
+## 存档预览图
+@export var save_screenshots_enabled: bool = true
 @export var screenshot_width: int = 640
 @export var screenshot_height: int = 480
 
-## 存档加密配置
-@export var encryption_enabled: bool = false
+## 加密配置
+@export var encryption_enabled: bool = true
 @export var encryption_key: String = "your-encryption-key-here"
+## 加密模式："xor" / "aes_cbc" / "aes_gcm"
+@export var encryption_mode: String = "aes_gcm"
+
+## 原子写入配置
+@export var atomic_write_enabled: bool = true
+@export var backup_enabled: bool = false
+
+## 压缩配置
+@export var compression_enabled: bool = false
+## 压缩模式："gzip" / "deflate"
+@export var compression_mode: String = "gzip"
+
+## 分模块文件存储
+@export var split_modules_enabled: bool = false
+
+## 模块注册配置
+@export var use_module_config: bool = true
+@export var module_config_path: String = "res://addons/enhance_save_system/save_modules.cfg"
 
 # ──────────────────────────────────────────────
 # 路径常量
@@ -84,32 +82,25 @@ signal slot_changed(new_slot: int)
 const _SAVE_DIR      := "user://saves"
 const _GLOBAL_PATH   := "user://saves/global.json"
 const _SLOT_PATTERN  := "user://saves/slot_%02d.json"
-
-## 模块目录硬编码保险路径
-## 整体复制 Save/ 文件夹后路径不变，导出包也能被 ResourceLoader 正确找到
 const _MODULES_DIR_FALLBACK := "res://addons/save_system/Modules"
+const _SCREENSHOT_DIR := "user://saves/screenshots"
+const _SCREENSHOT_PATTERN := "user://saves/screenshots/slot_%02d.png"
 
 # ──────────────────────────────────────────────
 # 内部状态
 # ──────────────────────────────────────────────
 
-## 已注册的全局模块（key → ISaveModule）
-var _global_modules: Dictionary = {}   # String → ISaveModule
+## 已注册的全局模块（key → { module, priority }）
+var _global_modules: Dictionary = {}
+## 已注册的槽位模块（key → { module, priority }）
+var _slot_modules: Dictionary = {}
 
-## 已注册的槽位模块（key → ISaveModule）
-var _slot_modules: Dictionary = {}     # String → ISaveModule
-
-## 当前活跃槽位
 var current_slot: int = 1 :
 	set(v):
 		current_slot = clampi(v, 1, max_slots)
 
-## 自动存档定时器
 var _auto_save_timer: Timer
-
-## 存档预览图路径
-const _SCREENSHOT_DIR := "user://saves/screenshots"
-const _SCREENSHOT_PATTERN := "user://saves/screenshots/slot_%02d.png"
+var _migration_manager: MigrationManager
 
 # ──────────────────────────────────────────────
 # 生命周期
@@ -119,6 +110,7 @@ func _ready() -> void:
 	_ensure_save_dir()
 	if save_screenshots_enabled:
 		_ensure_screenshot_dir()
+	_migration_manager = MigrationManager.new()
 	if auto_register:
 		_auto_register_modules()
 	if auto_load_global:
@@ -127,7 +119,8 @@ func _ready() -> void:
 		load_slot(auto_load_slot)
 	if auto_save_enabled:
 		_setup_auto_save()
-
+	
+	get_tree().root.close_requested.connect(on_win_closed)
 # ──────────────────────────────────────────────
 # 自动存档
 # ──────────────────────────────────────────────
@@ -156,7 +149,7 @@ func enable_auto_save(enabled: bool) -> void:
 			_auto_save_timer.stop()
 
 func set_auto_save_interval(seconds: int) -> void:
-	auto_save_interval = max(10, seconds)  # 最小10秒
+	auto_save_interval = max(10, seconds)
 	if is_instance_valid(_auto_save_timer):
 		_auto_save_timer.wait_time = auto_save_interval
 
@@ -169,34 +162,19 @@ func _ensure_screenshot_dir() -> void:
 		DirAccess.make_dir_recursive_absolute(_SCREENSHOT_DIR)
 
 func _capture_screenshot(slot: int) -> void:
-	# 确保截图目录存在
 	_ensure_screenshot_dir()
-	
 	var screenshot_path := _screenshot_path(slot)
-	var viewport = get_viewport()
+	var viewport := get_viewport()
 	if not viewport:
-		print("[SaveSystem] 错误: 无法获取视口")
 		return
-	
-	var texture = viewport.get_texture()
+	var texture := viewport.get_texture()
 	if not texture:
-		print("[SaveSystem] 错误: 无法获取视口纹理")
 		return
-	
-	var image = texture.get_image()
+	var image := texture.get_image()
 	if not image:
-		print("[SaveSystem] 错误: 无法获取图像")
 		return
-	
-	# 调整图像大小
 	image.resize(screenshot_width, screenshot_height)
-	
-	# 保存图像
-	var err = image.save_png(screenshot_path)
-	if err != OK:
-		print("[SaveSystem] 错误: 无法保存截图到 %s" % screenshot_path)
-	else:
-		print("[SaveSystem] 截图已保存到 %s" % screenshot_path)
+	image.save_png(screenshot_path)
 
 func get_screenshot_path(slot: int) -> String:
 	return _screenshot_path(slot)
@@ -204,17 +182,19 @@ func get_screenshot_path(slot: int) -> String:
 func _screenshot_path(slot: int) -> String:
 	return _SCREENSHOT_PATTERN % slot
 
-# ══════════════════════════════════════════════
+# ──────────────────────────────────────────────
 # 模块注册
-# ══════════════════════════════════════════════
+# ──────────────────────────────────────────────
 
-# ══════════════════════════════════════════════
-# 自动注册
-# ══════════════════════════════════════════════
-
-## 扫描 Modules/ 目录，用 ResourceLoader 加载每个 .gd 文件并注册为模块子节点
-## 加载顺序由文件系统决定；若需严格顺序，请将 auto_register 设为 false 并手动调用
 func _auto_register_modules() -> void:
+	if use_module_config:
+		var registry := ModuleRegistry.new()
+		var modules := registry.load_from_config(module_config_path)
+		for m in modules:
+			register_module(m)
+		print(modules)
+		return
+
 	var modules_dir := _resolve_modules_dir()
 	var dir := DirAccess.open(modules_dir)
 	if dir == null:
@@ -228,19 +208,15 @@ func _auto_register_modules() -> void:
 		file_name = dir.get_next()
 	dir.list_dir_end()
 
-## 从本脚本路径动态推导 Modules 目录（去掉 Core/ 换 Modules/）
-## 若推导结果不存在则降级用硬编码常量路径
 func _resolve_modules_dir() -> String:
 	var script_path: String = (get_script() as GDScript).resource_path
-	var save_dir := script_path.get_base_dir().get_base_dir()  # …/Core → …/Save
+	var save_dir := script_path.get_base_dir().get_base_dir()
 	var dynamic := save_dir.path_join("Modules")
 	if DirAccess.dir_exists_absolute(dynamic):
 		return dynamic
 	push_warning("SaveSystem: 动态路径 '%s' 不存在，回退到保险路径 '%s'" % [dynamic, _MODULES_DIR_FALLBACK])
 	return _MODULES_DIR_FALLBACK
 
-## 尝试用 ResourceLoader 加载单个 .gd 文件并注册为模块
-## 非 ISaveModule 子类的脚本会被静默跳过（模板文件、工具脚本等）
 func _try_load_and_register(path: String) -> void:
 	var script := ResourceLoader.load(path, "GDScript") as GDScript
 	if script == null:
@@ -248,86 +224,208 @@ func _try_load_and_register(path: String) -> void:
 		return
 	var instance = script.new()
 	if not instance is ISaveModule:
-		# 不是模块（如模板），RefCounted 无引用自动释放，无需手动处理
 		return
-	# ISaveModule extends RefCounted：注册进字典后字典持有强引用，保证生命周期
 	register_module(instance as ISaveModule)
 
-## 注册一个存档模块
-## module.is_global() == true  → 写入全局存档
-## module.is_global() == false → 写入槽位存档
-func register_module(module: ISaveModule) -> void:
+## 注册存档模块
+## priority: 执行优先级，数值越小越先执行 collect_data / apply_data（默认 100）
+func register_module(module: ISaveModule, priority: int = 100) -> void:
 	var key := module.get_module_key()
 	if key.is_empty():
 		push_error("SaveSystem.register_module: module key is empty")
 		return
+	var entry := { "module": module, "priority": priority }
 	if module.is_global():
-		_global_modules[key] = module
+		_global_modules[key] = entry
 	else:
-		_slot_modules[key] = module
+		_slot_modules[key] = entry
 
-## 注销模块
 func unregister_module(key: String) -> void:
 	_global_modules.erase(key)
 	_slot_modules.erase(key)
 
-## 获取已注册模块（global + slot 合并）
 func get_module(key: String) -> ISaveModule:
 	if _global_modules.has(key):
-		return _global_modules[key]
-	return _slot_modules.get(key, null)
+		return _global_modules[key]["module"]
+	var entry = _slot_modules.get(key, null)
+	return entry["module"] if entry != null else null
 
-## 所有已注册模块 key（调试用）
 func get_registered_keys() -> Dictionary:
 	return {
 		"global": _global_modules.keys(),
 		"slot":   _slot_modules.keys(),
 	}
 
-# ══════════════════════════════════════════════
-# 全局存档 API
-# ══════════════════════════════════════════════
+## 注册全局迁移函数（供开发者在游戏启动时调用）
+## from_version: 旧版本号
+## migration_fn: func(payload: Dictionary) -> Dictionary
+func register_migration(from_version: int, migration_fn: Callable) -> void:
+	_migration_manager.register(from_version, migration_fn)
 
-## 保存所有全局模块到 global.json
+# ──────────────────────────────────────────────
+# 内部：构建 WriteOptions / ReadOptions
+# ──────────────────────────────────────────────
+
+func _make_write_opts() -> SaveWriter.WriteOptions:
+	var opts := SaveWriter.WriteOptions.new()
+	opts.game_version         = game_version
+	opts.encryption_enabled   = encryption_enabled
+	opts.encryption_key       = encryption_key
+	opts.encryption_mode      = encryption_mode
+	opts.compression_enabled  = compression_enabled
+	opts.compression_mode     = compression_mode
+	opts.atomic_write_enabled = atomic_write_enabled
+	opts.backup_enabled       = backup_enabled
+	opts.split_modules_enabled = split_modules_enabled
+	return opts
+
+func _make_read_opts() -> SaveWriter.ReadOptions:
+	var opts := SaveWriter.ReadOptions.new()
+	opts.encryption_key        = encryption_key if encryption_enabled else ""
+	opts.split_modules_enabled = split_modules_enabled
+	return opts
+
+## 按 priority 升序排列模块数组
+func _sorted_modules(registry: Dictionary) -> Array:
+	var entries := registry.values()
+	entries.sort_custom(func(a, b): return a["priority"] < b["priority"])
+	var result: Array = []
+	for e in entries:
+		result.append(e["module"])
+	return result
+
+# ──────────────────────────────────────────────
+# 全局存档 API
+# ──────────────────────────────────────────────
+
 func save_global() -> bool:
-	var ok :bool= SaveWriter.write(_global_modules.values(), _GLOBAL_PATH, game_version, encryption_key if encryption_enabled else "")
+	var modules := _sorted_modules(_global_modules)
+	var ok := SaveWriter.write(modules, _GLOBAL_PATH, _make_write_opts())
 	global_saved.emit(ok)
 	return ok
 
-## 从 global.json 加载所有全局模块
 func load_global() -> bool:
-	var ok :bool= SaveWriter.read(_GLOBAL_PATH, _global_modules.values(), encryption_key if encryption_enabled else "")
+	var modules := _sorted_modules(_global_modules)
+	var ok := SaveWriter.read(_GLOBAL_PATH, modules, _make_read_opts())
 	global_loaded.emit(ok)
 	return ok
 
-# ══════════════════════════════════════════════
-# 槽位存档 API
-# ══════════════════════════════════════════════
+# ──────────────────────────────────────────────
+# 单模块读写 API
+# ──────────────────────────────────────────────
 
-## 将所有槽位模块保存到指定槽（默认 current_slot）
+func save_module(module_key: String, slot: int = -1) -> bool:
+	var module := get_module(module_key)
+	if module == null:
+		push_warning("SaveSystem.save_module: module '%s' not registered" % module_key)
+		return false
+	var path: String
+	if module.is_global():
+		path = _GLOBAL_PATH
+	else:
+		var s := _resolve_slot(slot)
+		if not _valid(s):
+			return false
+		path = _slot_path(s)
+	return _write_module_to_file(module, path)
+
+func load_module(module_key: String, slot: int = -1) -> bool:
+	var module := get_module(module_key)
+	if module == null:
+		push_warning("SaveSystem.load_module: module '%s' not registered" % module_key)
+		return false
+	var path: String
+	if module.is_global():
+		path = _GLOBAL_PATH
+	else:
+		var s := _resolve_slot(slot)
+		if not _valid(s):
+			return false
+		path = _slot_path(s)
+	return _read_module_from_file(module, path)
+
+func _write_module_to_file(module: ISaveModule, path: String) -> bool:
+	var opts := _make_write_opts()
+	var payload := SaveWriter.read_json(path, _make_read_opts())
+	# 如果文件不存在或解析失败，payload 为空；此时直接创建一个新 payload
+	if payload.is_empty():
+		payload = {}
+	# 更新当前模块对应的数据
+	payload[module.get_module_key()] = module.collect_data()
+	return SaveWriter.write_json(payload, path, opts)
+
+func _read_module_from_file(module: ISaveModule, path: String) -> bool:
+	var payload := SaveWriter.read_json(path, _make_read_opts())
+	if payload.is_empty():
+		return false
+	var key := module.get_module_key()
+	if payload.has(key):
+		module.apply_data(payload[key] as Dictionary)
+		return true
+	return false
+
+# ──────────────────────────────────────────────
+# 槽位存档 API
+# ──────────────────────────────────────────────
+
 func save_slot(slot: int = -1) -> bool:
 	var s := _resolve_slot(slot)
 	if not _valid(s):
 		return false
-	var ok := SaveWriter.write(_slot_modules.values(), _slot_path(s), game_version, encryption_key if encryption_enabled else "")
-	if ok and save_screenshots_enabled:
-		_capture_screenshot(s)
+	var modules := _sorted_modules(_slot_modules)
+	var ok := SaveWriter.write(modules, _slot_path(s), _make_write_opts())
+	if ok:
+		if save_screenshots_enabled:
+			_capture_screenshot(s)
+		if backup_enabled:
+			var bak_path := AtomicWriter.get_backup_path(_slot_path(s))
+			slot_backed_up.emit(s, bak_path)
 	slot_saved.emit(s, ok)
 	return ok
 
-## 从指定槽加载所有槽位模块（默认 current_slot）
 func load_slot(slot: int = -1) -> bool:
 	var s := _resolve_slot(slot)
 	if not _valid(s):
 		return false
-	var ok := SaveWriter.read(_slot_path(s), _slot_modules.values(), encryption_key if encryption_enabled else "")
-	if ok:
-		current_slot = s
-		slot_changed.emit(s)
-	slot_loaded.emit(s, ok)
-	return ok
+	var path := _slot_path(s)
 
-## 切换到另一个槽位（自动加载）
+	# 读取原始 payload（含 _meta）
+	var payload := SaveWriter.read_json(path, _make_read_opts())
+	if payload.is_empty():
+		slot_load_failed.emit(s, "read_failed")
+		slot_loaded.emit(s, false)
+		return false
+
+	# 检查加密完整性错误（read_json 返回空时已处理，此处检查特殊标记）
+	# 注：Encryptor 在验证失败时返回空 PackedByteArray，read_json 返回 {}
+	# 若 payload 非空但 _meta 缺失，视为格式错误
+	var meta: Dictionary = payload.get("_meta", {})
+
+	# 版本迁移
+	var file_version := int(meta.get("version", 0))
+	if _migration_manager.needs_migration(payload, SaveWriter.FORMAT_VERSION):
+		# 迁移前备份原始文件
+		var pre_bak := path + ".pre_migration.bak"
+		DirAccess.copy_absolute(path, pre_bak)
+
+		var modules_arr := _sorted_modules(_slot_modules)
+		var migrated := _migration_manager.migrate(payload, file_version, SaveWriter.FORMAT_VERSION, modules_arr)
+		if not _migration_manager.last_error.is_empty():
+			push_error("SaveSystem: migration failed for slot %d: %s" % [s, _migration_manager.last_error])
+			slot_load_failed.emit(s, "migration_failed")
+			slot_loaded.emit(s, false)
+			return false
+		payload = migrated
+		save_migrated.emit(s, file_version, SaveWriter.FORMAT_VERSION)
+
+	# 应用数据
+	var modules := _sorted_modules(_slot_modules)
+	SaveWriter.apply(payload, modules)
+	current_slot = s
+	slot_changed.emit(s)
+	slot_loaded.emit(s, true)
+	return true
+
 func set_slot(slot: int) -> bool:
 	if not _valid(slot):
 		return false
@@ -337,21 +435,23 @@ func set_slot(slot: int) -> bool:
 		slot_changed.emit(slot)
 	return ok
 
-## 删除指定槽位文件
 func delete_slot(slot: int = -1) -> bool:
 	var s := _resolve_slot(slot)
 	var path := _slot_path(s)
 	if not FileAccess.file_exists(path):
 		return false
-	DirAccess.remove_absolute(path)
+	# user:// 路径需要 globalize 后才能被 DirAccess.remove_absolute 正确处理
+	var abs_path := ProjectSettings.globalize_path(path)
+	var err := DirAccess.remove_absolute(abs_path)
+	if err != OK:
+		push_error("SaveSystem.delete_slot: failed to delete '%s' (err=%d)" % [path, err])
+		return false
 	slot_deleted.emit(s)
 	return true
 
-## 槽位文件是否存在
 func slot_exists(slot: int = -1) -> bool:
 	return FileAccess.file_exists(_slot_path(_resolve_slot(slot)))
 
-## 列出所有槽位信息（用于 UI 展示）
 func list_slots() -> Array[SlotInfo]:
 	var result: Array[SlotInfo] = []
 	for i in range(1, max_slots + 1):
@@ -360,7 +460,6 @@ func list_slots() -> Array[SlotInfo]:
 		var meta: Dictionary = {}
 		if exists:
 			meta = SaveWriter.peek_meta(path)
-		# 添加预览图路径
 		if save_screenshots_enabled:
 			var screenshot_path := _screenshot_path(i)
 			if FileAccess.file_exists(screenshot_path):
@@ -368,34 +467,30 @@ func list_slots() -> Array[SlotInfo]:
 		result.append(SlotInfo.make(i, exists, meta))
 	return result
 
-# ══════════════════════════════════════════════
+# ──────────────────────────────────────────────
 # 快捷存档
-# ══════════════════════════════════════════════
+# ──────────────────────────────────────────────
 
-## 同时保存全局 + 当前槽位（一次 I/O 调用两个文件）
 func quick_save() -> bool:
 	var g := save_global()
 	var s := save_slot(current_slot)
 	return g and s
 
-## 同时加载全局 + 当前槽位
 func quick_load() -> bool:
 	var g := load_global()
 	var s := load_slot(current_slot)
-	return g or s       # 只要有一个成功就算可用
+	return g or s
 
-## 新游戏：清空所有槽位模块（调用各模块 on_new_game）
 func new_game(slot: int = -1) -> void:
 	var s := _resolve_slot(slot)
 	current_slot = s
-	for m: ISaveModule in _slot_modules.values():
-		m.on_new_game()
+	for entry in _slot_modules.values():
+		(entry["module"] as ISaveModule).on_new_game()
 
-# ══════════════════════════════════════════════
-# 导入 / 导出（槽位文件迁移）
-# ══════════════════════════════════════════════
+# ──────────────────────────────────────────────
+# 导入 / 导出
+# ──────────────────────────────────────────────
 
-## 将槽位存档导出为外部 JSON 文件
 func export_slot(slot: int, out_path: String) -> bool:
 	var src := _slot_path(_resolve_slot(slot))
 	if not FileAccess.file_exists(src):
@@ -404,37 +499,33 @@ func export_slot(slot: int, out_path: String) -> bool:
 	SaveWriter._ensure_dir(out_path)
 	return DirAccess.copy_absolute(src, out_path) == OK
 
-## 从外部 JSON 文件导入到指定槽位
-## ⚠ 会覆盖目标槽位
 func import_slot(slot: int, in_path: String) -> bool:
 	if not _valid(slot):
 		return false
 	if not FileAccess.file_exists(in_path):
 		push_warning("SaveSystem.import_slot: file not found '%s'" % in_path)
 		return false
-	# 验证格式（只要能解析 JSON 就接受）
-	var payload := SaveWriter.read_json(in_path)
+	# 传入 ReadOptions（含解密密钥），确保加密存档能正确解析
+	var payload := SaveWriter.read_json(in_path, _make_read_opts())
 	if payload.is_empty():
-		push_error("SaveSystem.import_slot: invalid JSON in '%s'" % in_path)
+		push_error("SaveSystem.import_slot: invalid or unreadable save file '%s'" % in_path)
 		return false
 	var dst := _slot_path(slot)
 	SaveWriter._ensure_dir(dst)
-	var err := DirAccess.copy_absolute(in_path, dst)
-	return err == OK
+	return DirAccess.copy_absolute(in_path, dst) == OK
 
-# ══════════════════════════════════════════════
-# Debug / Inspector
-# ══════════════════════════════════════════════
+# ──────────────────────────────────────────────
+# Debug
+# ──────────────────────────────────────────────
 
 func get_component_data() -> Dictionary:
 	return {
-		"current_slot":    current_slot,
-		"max_slots":       max_slots,
-		"global_modules":  _global_modules.keys(),
-		"slot_modules":    _slot_modules.keys(),
-		"global_exists":   FileAccess.file_exists(_GLOBAL_PATH),
-		"slot_exists":     slot_exists(current_slot),
-		"slots":           list_slots().map(func(s): return str(s)),
+		"current_slot":   current_slot,
+		"max_slots":      max_slots,
+		"global_modules": _global_modules.keys(),
+		"slot_modules":   _slot_modules.keys(),
+		"global_exists":  FileAccess.file_exists(_GLOBAL_PATH),
+		"slot_exists":    slot_exists(current_slot),
 	}
 
 # ──────────────────────────────────────────────
@@ -456,3 +547,10 @@ func _resolve_slot(slot: int) -> int:
 
 func _slot_path(slot: int) -> String:
 	return _SLOT_PATTERN % slot
+
+func on_win_closed() -> void:
+	for i:Dictionary in _global_modules.values():
+		var module = i["module"]
+		if module.has_method("on_win_closed"):
+			module.on_win_closed()
+			

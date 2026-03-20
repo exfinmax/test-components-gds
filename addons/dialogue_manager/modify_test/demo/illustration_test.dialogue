@@ -1,0 +1,48 @@
+## ════════════════════════════════════════════════════════════════
+## 立绘气球测试场景对话
+## ════════════════════════════════════════════════════════════════
+
+~ start
+Narrator: 欢迎来到立绘气球测试场景！ [#expression:hp]
+Narrator: 这个场景用于测试立绘显示和动画效果。 [#expression:ex]
+Narrator: 让我们看看不同的表情切换效果。 [#expression:hp]
+Narrator: 立绘会根据角色自动切换焦点。 [#expression:sd]
+=> END
+
+~ expression_demo
+Narrator: 现在测试所有表情类型。 [#expression:ax]
+Narrator: 普通表情 (ax) - 蓝色 [#expression:ax]
+Narrator: 开心表情 (ex) - 黄色 [#expression:ex]
+Narrator: 高兴表情 (hp) - 粉色 [#expression:hp]
+Narrator: 悲伤表情 (sd) - 灰蓝 [#expression:sd]
+Narrator: 惊讶表情 (sp) - 橙色 [#expression:sp]
+Narrator: 生气表情 (an) - 红色 [#expression:an]
+=> END
+
+~ position_demo
+Narrator: 现在测试位置标签。 [#expression:ax] [#position:left]
+Narrator: 这是左侧立绘显示。 [#expression:ex] [#position:left]
+Narrator: 现在切换到右侧。 [#expression:hp] [#position:right]
+Narrator: 这是右侧立绘显示。 [#expression:sd] [#position:right]
+=> END
+
+~ animation_demo
+Narrator: 测试入场动画效果。 [#expression:ax]
+Narrator: 你看到了淡入效果吗？ [#expression:ex]
+Narrator: 现在测试表情切换动画。 [#expression:hp]
+Narrator: 表情应该平滑过渡。 [#expression:sd]
+Narrator: 动画测试完成！ [#expression:ax]
+=> END
+
+~ feature_demo
+Narrator: 现在演示工具栏功能。[#expression:ax]
+Narrator: 点击 [color=cyan]⟳ 自动[/color] 按钮开启自动推进模式。[#expression:ax]
+Narrator: 点击 [color=blue]📜 历史[/color] 按钮查看对话历史。[#expression:ax]
+Narrator: 按住 [color=orange]PageDown[/color] 键可以快进对话。[#expression:ax]
+Narrator: 按住 [color=yellow]PageUp[/color] 键可以慢放对话。
+=> END
+
+~ end_test
+Narrator: 所有测试完成！ [#expression:ax]
+Narrator: 感谢测试立绘气球系统！ [#expression:ex]
+=> END

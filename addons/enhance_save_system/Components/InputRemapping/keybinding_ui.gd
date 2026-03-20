@@ -24,7 +24,7 @@ extends Control
 ## action_name → 本地化显示字符串
 @export var label_map: Dictionary = {}
 
-## 若非空，只显示这些 action；为空则显示全部用户 action
+## 若非空，不显示这些 action；为空则显示全部用户 action
 @export var action_filter: PackedStringArray = []
 
 ## 行的场景资源（可在 Inspector 中替换为自定义美化场景）
@@ -77,16 +77,19 @@ func _build_rows() -> void:
 		_rows.append(row)
 
 func _get_actions_to_show() -> PackedStringArray:
-	if action_filter.size() > 0:
-		return action_filter
+	var result: PackedStringArray = []
 	var km := _get_module()
 	if km:
-		return km.get_user_actions()
-	# 备用：直接读 InputMap（过滤 ui_ 前缀）
-	var result: PackedStringArray = []
-	for a in InputMap.get_actions():
-		if not a.begins_with("ui_"):
-			result.append(a)
+		result = km.get_user_actions()
+	else:
+		# 备用：直接读 InputMap（过滤 ui_ 前缀）
+		for a in InputMap.get_actions():
+			if not a.begins_with("ui_"):
+				result.append(a)
+	if action_filter.size() > 0:
+		for i in action_filter:
+			if result.has(i):
+				result.erase(i)
 	return result
 
 # ──────────────────────────────────────────────

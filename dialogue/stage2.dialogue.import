@@ -1,0 +1,16 @@
+[remap]
+
+importer="dialogue_manager"
+importer_version=15
+type="Resource"
+uid="uid://ckkompxe2hnjf"
+path="res://.godot/imported/stage2.dialogue-8e6bef9cf567e3e8d63c653d6e0ae160.tres"
+
+[deps]
+
+source_file="res://dialogue/stage2.dialogue"
+dest_files=["res://.godot/imported/stage2.dialogue-8e6bef9cf567e3e8d63c653d6e0ae160.tres"]
+
+[params]
+
+defaults=true

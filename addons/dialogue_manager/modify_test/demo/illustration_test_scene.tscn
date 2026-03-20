@@ -1,0 +1,162 @@
+[gd_scene format=3 uid="uid://c5glhtarwctb"]
+
+[ext_resource type="Script" uid="uid://dtl1olyqujciv" path="res://addons/dialogue_manager/modify_test/demo/illustration_test_scene.gd" id="1_script"]
+[ext_resource type="PackedScene" uid="uid://c84s5py4vjuoa" path="res://addons/dialogue_manager/modify_test/illustrated_balloon.tscn" id="2_balloon"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_panel"]
+bg_color = Color(0.06, 0.06, 0.1, 0.95)
+border_width_left = 2
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.4, 0.35, 0.6, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_btn"]
+bg_color = Color(0.12, 0.25, 0.35, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.3, 0.6, 0.8, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[node name="IllustrationTestScene" type="Node" unique_id=1714613171]
+script = ExtResource("1_script")
+
+[node name="Background" type="ColorRect" parent="." unique_id=1010345150]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.08, 0.06, 0.12, 1)
+
+[node name="UI" type="CanvasLayer" parent="." unique_id=687433731]
+layer = 5
+
+[node name="MainPanel" type="PanelContainer" parent="UI" unique_id=285881370]
+anchors_preset = 9
+anchor_bottom = 1.0
+offset_right = 400.0
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="UI/MainPanel" unique_id=240068005]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="TitleLabel" type="Label" parent="UI/MainPanel/VBoxContainer" unique_id=1386535352]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.9, 0.8, 0.95, 1)
+theme_override_font_sizes/font_size = 20
+text = "🎨 立绘气球测试系统"
+horizontal_alignment = 1
+
+[node name="SubtitleLabel" type="Label" parent="UI/MainPanel/VBoxContainer" unique_id=1343100753]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.6, 0.6, 0.7, 1)
+theme_override_font_sizes/font_size = 12
+text = "测试立绘显示、表情切换、动画效果等功能"
+horizontal_alignment = 1
+
+[node name="HSeparator" type="HSeparator" parent="UI/MainPanel/VBoxContainer" unique_id=74442291]
+layout_mode = 2
+
+[node name="SceneButtons" type="VBoxContainer" parent="UI/MainPanel/VBoxContainer" unique_id=865949885]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="Scene1Button" type="Button" parent="UI/MainPanel/VBoxContainer/SceneButtons" unique_id=423143975]
+custom_minimum_size = Vector2(0, 50)
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+theme_override_styles/normal = SubResource("StyleBoxFlat_btn")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_btn")
+text = "🎭 场景一：表情切换测试"
+
+[node name="Scene1Desc" type="Label" parent="UI/MainPanel/VBoxContainer/SceneButtons" unique_id=855835337]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.5, 0.7, 0.8, 1)
+theme_override_font_sizes/font_size = 11
+text = "    6种表情 | 渐变颜色 | 平滑过渡"
+
+[node name="Scene2Button" type="Button" parent="UI/MainPanel/VBoxContainer/SceneButtons" unique_id=157055472]
+custom_minimum_size = Vector2(0, 50)
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+theme_override_styles/normal = SubResource("StyleBoxFlat_btn")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_btn")
+text = "📍 场景二：位置切换测试"
+
+[node name="Scene2Desc" type="Label" parent="UI/MainPanel/VBoxContainer/SceneButtons" unique_id=1995451365]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.7, 0.5, 0.8, 1)
+theme_override_font_sizes/font_size = 11
+text = "    左侧立绘 | 右侧立绘 | 焦点切换"
+
+[node name="Scene3Button" type="Button" parent="UI/MainPanel/VBoxContainer/SceneButtons" unique_id=1000811367]
+custom_minimum_size = Vector2(0, 50)
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+theme_override_styles/normal = SubResource("StyleBoxFlat_btn")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_btn")
+text = "✨ 场景三：动画效果测试"
+
+[node name="Scene3Desc" type="Label" parent="UI/MainPanel/VBoxContainer/SceneButtons" unique_id=2006455095]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.5, 0.8, 0.6, 1)
+theme_override_font_sizes/font_size = 11
+text = "    入场动画 | 淡入淡出 | 缩放效果"
+
+[node name="Scene4Button" type="Button" parent="UI/MainPanel/VBoxContainer/SceneButtons" unique_id=1909585540]
+custom_minimum_size = Vector2(0, 50)
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+theme_override_styles/normal = SubResource("StyleBoxFlat_btn")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_btn")
+text = "🔧 场景四：功能演示"
+
+[node name="Scene4Desc" type="Label" parent="UI/MainPanel/VBoxContainer/SceneButtons" unique_id=808026717]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.8, 0.6, 0.5, 1)
+theme_override_font_sizes/font_size = 11
+text = "    自动推进 | 历史记录 | 快进慢放"
+
+[node name="HSeparator2" type="HSeparator" parent="UI/MainPanel/VBoxContainer" unique_id=1934144793]
+layout_mode = 2
+
+[node name="StatusLabel" type="Label" parent="UI/MainPanel/VBoxContainer" unique_id=2014936360]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.7, 0.9, 0.8, 1)
+theme_override_font_sizes/font_size = 13
+text = "请选择一个测试场景开始体验"
+autowrap_mode = 3
+
+[node name="ButtonRow" type="HBoxContainer" parent="UI/MainPanel/VBoxContainer" unique_id=1129839899]
+layout_mode = 2
+alignment = 1
+
+[node name="BackButton" type="Button" parent="UI/MainPanel/VBoxContainer/ButtonRow" unique_id=920502774]
+custom_minimum_size = Vector2(140, 40)
+layout_mode = 2
+theme_override_font_sizes/font_size = 15
+theme_override_styles/normal = SubResource("StyleBoxFlat_btn")
+text = "↩ 返回选择"
+
+[node name="HintLabel" type="Label" parent="UI/MainPanel/VBoxContainer" unique_id=1071459285]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.45, 0.45, 0.55, 1)
+theme_override_font_sizes/font_size = 11
+text = "提示：PageDown=快进  PageUp=慢放  H=历史记录"
+horizontal_alignment = 1
+
+[node name="IllustratedBalloon" parent="." unique_id=1950944536 instance=ExtResource("2_balloon")]
+visible = false
+animation_duration = 0.3

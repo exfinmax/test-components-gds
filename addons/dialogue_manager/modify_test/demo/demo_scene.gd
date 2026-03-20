@@ -9,7 +9,7 @@ extends Node
 ##   3. 存档槽 UI（DialogueSaveSlot）保存/读取/删除
 ##   4. 历史记录面板（DialogueHistoryLog）
 
-@onready var modify_balloon: ModifyBalloon = $ModifyBalloon
+@onready var modify_balloon: EnhancedBalloon = $EnhancedBalloon
 @onready var save_slots_container: VBoxContainer = $UI/MainPanel/VBoxContainer/SlotsContainer
 @onready var status_label: Label = $UI/MainPanel/VBoxContainer/StatusLabel
 @onready var start_button: Button = $UI/MainPanel/VBoxContainer/ButtonRow/StartButton
@@ -31,7 +31,7 @@ func _ready() -> void:
 
 
 func _setup_save_system() -> void:
-	_save_system = SaveSystem.new()
+	_save_system = SaveSystem
 	_save_system.max_slots = MAX_DEMO_SLOTS
 	_save_system.auto_register = false
 	_save_system.auto_load_global = false

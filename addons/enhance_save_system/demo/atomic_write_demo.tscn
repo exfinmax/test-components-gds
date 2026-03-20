@@ -1,0 +1,52 @@
+[gd_scene format=3 uid="uid://dbptnmewxuujk"]
+
+[ext_resource type="Script" uid="uid://c22gdp66tj71p" path="res://addons/enhance_save_system/demo/atomic_write_demo.gd" id="1_awd"]
+
+[node name="AtomicWriteDemo" type="Control" unique_id=650096368]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+script = ExtResource("1_awd")
+
+[node name="VBox" type="VBoxContainer" parent="." unique_id=900320433]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 20.0
+offset_top = 20.0
+offset_right = -20.0
+offset_bottom = -20.0
+
+[node name="Title" type="Label" parent="VBox" unique_id=2099041305]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "原子写入 Demo"
+
+[node name="Controls" type="HBoxContainer" parent="VBox" unique_id=978293915]
+layout_mode = 2
+
+[node name="WriteBtn" type="Button" parent="VBox/Controls" unique_id=616877817]
+layout_mode = 2
+text = "写入测试数据"
+
+[node name="ReadBtn" type="Button" parent="VBox/Controls" unique_id=1076048807]
+layout_mode = 2
+text = "读取文件内容"
+
+[node name="CleanupBtn" type="Button" parent="VBox/Controls" unique_id=503098483]
+layout_mode = 2
+text = "清理测试文件"
+
+[node name="BackupCheck" type="CheckBox" parent="VBox/Controls" unique_id=2091223941]
+layout_mode = 2
+text = "启用 .bak 备份"
+
+[node name="Log" type="RichTextLabel" parent="VBox" unique_id=793878470]
+layout_mode = 2
+size_flags_vertical = 3
+bbcode_enabled = true
+
+[connection signal="pressed" from="VBox/Controls/WriteBtn" to="." method="_on_write_pressed"]
+[connection signal="pressed" from="VBox/Controls/ReadBtn" to="." method="_on_read_pressed"]
+[connection signal="pressed" from="VBox/Controls/CleanupBtn" to="." method="_on_cleanup_pressed"]

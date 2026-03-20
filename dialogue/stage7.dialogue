@@ -1,0 +1,9 @@
+~ start
+if Global.load_time[Global.current_stage.to_int()] < 1 and not GameEvents.is_load_game
+	Amiya_desi: 你可以按数字2随机生成前三关Boss进行对战。
+	Amiya_desi: 按数字3生成最终Boss
+	Amiya_desi: 玩家配置为全解锁。
+	Amiya_desi: 祝您玩的愉快。
+do GameEvents.dialogue_end("1")
+=> END
+

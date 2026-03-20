@@ -1,0 +1,16 @@
+[remap]
+
+importer="dialogue_manager"
+importer_version=15
+type="Resource"
+uid="uid://c57ocbwnhnanl"
+path="res://.godot/imported/zhenyan4.dialogue-0e48fcb1c985e095ab1eea7140d2b2be.tres"
+
+[deps]
+
+source_file="res://dialogue/zhenyan4.dialogue"
+dest_files=["res://.godot/imported/zhenyan4.dialogue-0e48fcb1c985e095ab1eea7140d2b2be.tres"]
+
+[params]
+
+defaults=true

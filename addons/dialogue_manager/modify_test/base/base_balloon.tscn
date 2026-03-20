@@ -1,0 +1,192 @@
+[gd_scene format=3 uid="uid://cqsf857s1rbs7"]
+
+[ext_resource type="Script" uid="uid://cssf042qcapgv" path="res://addons/dialogue_manager/modify_test/base/base_balloon.gd" id="1_base"]
+[ext_resource type="PackedScene" uid="uid://ckvgyvclnwggo" path="res://addons/dialogue_manager/dialogue_label.tscn" id="2_dlabel"]
+[ext_resource type="Script" uid="uid://bb52rsfwhkxbn" path="res://addons/dialogue_manager/dialogue_responses_menu.gd" id="3_rmenu"]
+[ext_resource type="Script" uid="uid://daarvl64y1gt6" path="res://addons/dialogue_manager/modify_test/modules/flow_control_module.gd" id="4_flow"]
+[ext_resource type="Script" uid="uid://c25bl5fl6uqw5" path="res://addons/dialogue_manager/modify_test/modules/animation_module.gd" id="5_anim"]
+[ext_resource type="Script" uid="uid://bkhgd71mimy7h" path="res://addons/dialogue_manager/modify_test/modules/typing_sound_module.gd" id="6_sound"]
+[ext_resource type="Script" uid="uid://bi4ru1v4yq4f" path="res://addons/dialogue_manager/modify_test/modules/history_module.gd" id="7_hist"]
+[ext_resource type="Script" uid="uid://cjalp6e8ydm1k" path="res://addons/dialogue_manager/modify_test/modules/save_module.gd" id="8_save"]
+[ext_resource type="Script" uid="uid://dpngcvhig2oid" path="res://addons/dialogue_manager/modify_test/modules/illustration_module.gd" id="9_illus"]
+[ext_resource type="Script" uid="uid://d3pgq7ctx7ht3" path="res://addons/dialogue_manager/modify_test/modules/character_ui_module.gd" id="10_charui"]
+[ext_resource type="Script" uid="uid://cgq43udx02cxv" path="res://addons/dialogue_manager/modify_test/modules/response_module.gd" id="11_resp"]
+[ext_resource type="Script" uid="uid://xspkyrftn8xv" path="res://addons/dialogue_manager/modify_test/modules/indicator_module.gd" id="12_ind"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_response_focus"]
+bg_color = Color(0.15, 0.15, 0.25, 0.95)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(1, 1, 1, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_response_hover"]
+bg_color = Color(0.2, 0.2, 0.3, 0.95)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.8, 0.8, 1, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_response_normal"]
+bg_color = Color(0.1, 0.1, 0.15, 0.9)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.5, 0.5, 0.6, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_panel"]
+bg_color = Color(0.05, 0.05, 0.08, 0.92)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.4, 0.4, 0.5, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+
+[sub_resource type="Theme" id="Theme_balloon"]
+default_font_size = 20
+Button/styles/focus = SubResource("StyleBoxFlat_response_focus")
+Button/styles/hover = SubResource("StyleBoxFlat_response_hover")
+Button/styles/normal = SubResource("StyleBoxFlat_response_normal")
+Button/styles/pressed = SubResource("StyleBoxFlat_response_hover")
+MarginContainer/constants/margin_bottom = 12
+MarginContainer/constants/margin_left = 20
+MarginContainer/constants/margin_right = 20
+MarginContainer/constants/margin_top = 12
+PanelContainer/styles/panel = SubResource("StyleBoxFlat_panel")
+
+[node name="BaseBalloon" type="CanvasLayer" unique_id=1110283318]
+layer = 100
+script = ExtResource("1_base")
+
+[node name="Balloon" type="Control" parent="." unique_id=235438315]
+unique_name_in_owner = true
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = SubResource("Theme_balloon")
+
+[node name="MarginContainer" type="MarginContainer" parent="Balloon" unique_id=1000208482]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -220.0
+grow_horizontal = 2
+grow_vertical = 0
+
+[node name="PanelContainer" type="PanelContainer" parent="Balloon/MarginContainer" unique_id=1146613909]
+clip_children = 2
+layout_mode = 2
+mouse_filter = 1
+
+[node name="MarginContainer" type="MarginContainer" parent="Balloon/MarginContainer/PanelContainer" unique_id=1781247290]
+layout_mode = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Balloon/MarginContainer/PanelContainer/MarginContainer" unique_id=273694526]
+layout_mode = 2
+
+[node name="CharacterLabel" type="RichTextLabel" parent="Balloon/MarginContainer/PanelContainer/MarginContainer/VBoxContainer" unique_id=1744697654]
+unique_name_in_owner = true
+modulate = Color(1, 1, 1, 0.85)
+layout_mode = 2
+mouse_filter = 1
+bbcode_enabled = true
+fit_content = true
+scroll_active = false
+
+[node name="DialogueLabel" parent="Balloon/MarginContainer/PanelContainer/MarginContainer/VBoxContainer" unique_id=481946042 instance=ExtResource("2_dlabel")]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="IndicatorBar" type="HBoxContainer" parent="Balloon/MarginContainer/PanelContainer/MarginContainer" unique_id=325049016]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 0
+
+[node name="AutoAdvanceIndicator" type="Label" parent="Balloon/MarginContainer/PanelContainer/MarginContainer/IndicatorBar" unique_id=281191618]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="SpeedIndicator" type="Label" parent="Balloon/MarginContainer/PanelContainer/MarginContainer/IndicatorBar" unique_id=1849655103]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+horizontal_alignment = 2
+
+[node name="ResponsesMenu" type="VBoxContainer" parent="Balloon" unique_id=1726226472 node_paths=PackedStringArray("response_template")]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -300.0
+offset_top = -40.0
+offset_right = 300.0
+offset_bottom = 40.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 4
+alignment = 1
+script = ExtResource("3_rmenu")
+response_template = NodePath("ResponseTemplate")
+
+[node name="ResponseTemplate" type="Button" parent="Balloon/ResponsesMenu" unique_id=435792500]
+visible = false
+layout_mode = 2
+text = "选项示例"
+
+[node name="FlowControlModule" type="Node" parent="." unique_id=350104470]
+script = ExtResource("4_flow")
+
+[node name="AnimationModule" type="Node" parent="." unique_id=1531214510]
+script = ExtResource("5_anim")
+
+[node name="TypingSoundModule" type="Node" parent="." unique_id=997724939]
+script = ExtResource("6_sound")
+
+[node name="HistoryModule" type="Node" parent="." unique_id=1634608394]
+script = ExtResource("7_hist")
+
+[node name="SaveModule" type="Node" parent="." unique_id=1000005035]
+script = ExtResource("8_save")
+
+[node name="IllustrationModule" type="Node" parent="." unique_id=80534929]
+script = ExtResource("9_illus")
+
+[node name="CharacterUIModule" type="Node" parent="." unique_id=1964503837]
+script = ExtResource("10_charui")
+
+[node name="ResponseModule" type="Node" parent="." unique_id=835927662]
+script = ExtResource("11_resp")
+
+[node name="IndicatorModule" type="Node" parent="." unique_id=1101536785]
+script = ExtResource("12_ind")

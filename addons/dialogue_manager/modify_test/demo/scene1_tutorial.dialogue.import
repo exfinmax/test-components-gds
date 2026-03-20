@@ -1,0 +1,16 @@
+[remap]
+
+importer="dialogue_manager"
+importer_version=15
+type="Resource"
+uid="uid://drobl83jiv826"
+path="res://.godot/imported/scene1_tutorial.dialogue-4b9b64a324c555f01d530a876b30edfe.tres"
+
+[deps]
+
+source_file="res://addons/dialogue_manager/modify_test/demo/scene1_tutorial.dialogue"
+dest_files=["res://.godot/imported/scene1_tutorial.dialogue-4b9b64a324c555f01d530a876b30edfe.tres"]
+
+[params]
+
+defaults=true
