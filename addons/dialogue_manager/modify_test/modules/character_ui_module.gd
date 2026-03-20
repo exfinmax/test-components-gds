@@ -96,9 +96,12 @@ func _update_character_label(character: String) -> void:
 		character_label.modulate = color
 
 func _update_portrait(character: String) -> void:
+	var portrait_container := portrait_texture.get_parent() if is_instance_valid(portrait_texture) else null
 	if character.is_empty() or not is_instance_valid(character_manager):
 		if is_instance_valid(portrait_texture):
 			portrait_texture.texture = null
+		if portrait_container is CanvasItem:
+			portrait_container.visible = false
 		return
 	
 	# 头像纹理
@@ -120,6 +123,14 @@ func _update_portrait(character: String) -> void:
 		head_texture.texture = character_manager.get_bg_texture(character, "HEAD")
 		var head_offset := character_manager.get_head_offset(character)
 		head_texture.position = head_offset
+	
+	if portrait_container is CanvasItem:
+		portrait_container.visible = (
+			texture != null
+			or character_manager.get_bg_texture(character, "BG") != null
+			or character_manager.get_bg_texture(character, "NAME") != null
+			or character_manager.get_bg_texture(character, "HEAD") != null
+		)
 
 func _update_portrait_expression(expression: String) -> void:
 	if not is_instance_valid(character_manager) or not is_instance_valid(portrait_texture):
@@ -137,4 +148,5 @@ func _update_direction(character: String) -> void:
 		target_direction = character_manager.get_direction(character)
 	
 	if is_instance_valid(ui_renderer):
+		ui_renderer.default_direction = target_direction
 		ui_renderer.update_character(character)

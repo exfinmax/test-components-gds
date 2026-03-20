@@ -1,0 +1,5 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://addons/dialogue_manager/modify_test/modular_balloon.tscn" id="1_balloon"]
+
+[node name="DialogueBalloon" instance=ExtResource("1_balloon")]

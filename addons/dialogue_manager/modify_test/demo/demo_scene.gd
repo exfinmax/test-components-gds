@@ -4,12 +4,12 @@ extends Node
 ## ════════════════════════════════════════════════════════════════
 ##
 ## 演示内容：
-##   1. 启动增强版对话气泡框（ModifyBalloon）
+##   1. 启动模块化对话气球
 ##   2. 对话进度自动保存到 DialogueSaveModule
 ##   3. 存档槽 UI（DialogueSaveSlot）保存/读取/删除
 ##   4. 历史记录面板（DialogueHistoryLog）
 
-@onready var modify_balloon: EnhancedBalloon = $EnhancedBalloon
+@onready var balloon: ModularBalloon = $UI/DialogueBalloon
 @onready var save_slots_container: VBoxContainer = $UI/MainPanel/VBoxContainer/SlotsContainer
 @onready var status_label: Label = $UI/MainPanel/VBoxContainer/StatusLabel
 @onready var start_button: Button = $UI/MainPanel/VBoxContainer/ButtonRow/StartButton
@@ -44,8 +44,8 @@ func _setup_save_system() -> void:
 
 
 func _setup_balloon() -> void:
-	modify_balloon.auto_save_progress = false  # 由本脚本手动控制
-	modify_balloon.chapter_name = "演示章节"
+	balloon.auto_save_progress = false  # 由本脚本手动控制
+	balloon.chapter_name = "演示章节"
 
 	# 监听对话结束（DialogueManager 信号）
 	if Engine.has_singleton("DialogueManager"):
@@ -85,8 +85,8 @@ func _on_start_button_pressed() -> void:
 	if _dialogue_res == null:
 		_set_status("错误：找不到对话文件！")
 		return
-	modify_balloon.chapter_name = "第一章"
-	modify_balloon.start(_dialogue_res, "chapter1", [self])
+	balloon.chapter_name = "第一章"
+	balloon.start(_dialogue_res, "chapter1", [self])
 	_set_status("对话进行中…（工具栏可切换自动推进 / 查看历史）")
 
 
@@ -94,19 +94,19 @@ func _on_restart_button_pressed() -> void:
 	_load_dialogue_resource()
 	if _dialogue_res == null:
 		return
-	modify_balloon.chapter_name = "故事重新开始"
-	modify_balloon.start(_dialogue_res, "start", [self])
+	balloon.chapter_name = "故事重新开始"
+	balloon.start(_dialogue_res, "start", [self])
 	_set_status("从头开始对话…")
 
 
 func _on_save_requested(slot: int) -> void:
 	# 保存当前对话进度到指定槽位
-	if is_instance_valid(modify_balloon) and is_instance_valid(modify_balloon.dialogue_line):
-		var line: DialogueLine = modify_balloon.dialogue_line
+	if is_instance_valid(balloon) and is_instance_valid(balloon.dialogue_line):
+		var line: DialogueLine = balloon.dialogue_line
 		_dialogue_module.save_progress(
-			modify_balloon.dialogue_resource,
+			balloon.dialogue_resource,
 			line.id,
-			modify_balloon.chapter_name,
+			balloon.chapter_name,
 			line.character,
 			line.text
 		)
@@ -127,8 +127,8 @@ func _on_load_requested(slot: int) -> void:
 		if res == null:
 			_set_status("存档 %d 读取成功，但无法加载对话资源" % slot)
 			return
-		modify_balloon.chapter_name = _dialogue_module.chapter_name
-		modify_balloon.start(res, _dialogue_module.dialogue_title, [self])
+		balloon.chapter_name = _dialogue_module.chapter_name
+		balloon.start(res, _dialogue_module.dialogue_title, [self])
 		_set_status("存档 %d 读取成功，继续对话中…" % slot)
 	else:
 		_set_status("存档 %d 读取成功（无对话进度）" % slot)
@@ -162,3 +162,4 @@ func _set_status(msg: String) -> void:
 	if is_instance_valid(status_label):
 		status_label.text = msg
 	print("[Demo] ", msg)
+

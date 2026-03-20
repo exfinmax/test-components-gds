@@ -1,6 +1,6 @@
 extends Node
 ## ════════════════════════════════════════════════════════════════
-##  EnhancedBalloon 完整演示场景控制脚本
+##  ModularBalloon 完整演示场景控制脚本
 ## ════════════════════════════════════════════════════════════════
 ##
 ## 演示三个场景：
@@ -8,7 +8,7 @@ extends Node
 ##   2. 角色对话场景 - 展示头像系统、气泡方向、角色颜色、打字音效
 ##   3. 分支选择场景 - 展示多选项分支、URL链接、选项动画
 
-@onready var balloon: EnhancedBalloon = $EnhancedBalloon
+@onready var balloon: ModularBalloon = $DialogueBalloon
 @onready var main_panel: PanelContainer = $UI/MainPanel
 @onready var scene_buttons: VBoxContainer = $UI/MainPanel/VBoxContainer/SceneButtons
 @onready var status_label: Label = $UI/MainPanel/VBoxContainer/StatusLabel
@@ -35,7 +35,6 @@ func _setup_balloon() -> void:
 	#balloon.enter_animation_type = "pop"
 	#balloon.exit_animation_type = "scale"
 	balloon.animation_duration = 0.3
-	balloon.enable_custom_tags = true
 	balloon.dialogue_ended.connect(_on_dialogue_ended)
 
 

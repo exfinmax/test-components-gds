@@ -62,15 +62,9 @@ func _ready() -> void:
 		Engine.get_singleton("DialogueManager").mutated.connect(_on_mutated)
 
 func _unhandled_input(event: InputEvent) -> void:
-	# 依次调用模块的 on_input，返回 true 时消费事件并停止传播
-	for module in _modules:
-		if not is_instance_valid(module) or not module.is_enabled:
-			continue
-		var consumed := false
-		consumed = module.on_input(event)
-		if consumed:
-			get_viewport().set_input_as_handled()
-			return
+	if forward_input(event):
+		get_viewport().set_input_as_handled()
+		return
 
 # ════════════════════════════════════════════════════════════════
 # 公共 API
@@ -159,6 +153,19 @@ func get_current_line() -> DialogueLine:
 ## 是否正在等待输入
 func is_waiting() -> bool:
 	return _is_waiting_for_input
+
+## 将输入事件转发给模块，返回 true 表示事件已被消费
+func forward_input(event: InputEvent) -> bool:
+	for module in _modules:
+		if not is_instance_valid(module) or not module.is_enabled:
+			continue
+		if module.on_input(event):
+			return true
+	return false
+
+## 获取当前对话资源
+func get_dialogue_resource() -> DialogueResource:
+	return _dialogue_resource
 
 # ════════════════════════════════════════════════════════════════
 # 内部方法

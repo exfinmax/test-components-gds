@@ -83,20 +83,14 @@ func on_dialogue_line_changed(line: DialogueLine) -> void:
 	if is_instance_valid(dialogue_label):
 		dialogue_label.seconds_per_step = base_typing_speed / current_speed_multiplier
 	
-	# 处理 voice 标签：播放语音后自动推进
-	if line.has_tag("voice"):
-		_handle_voice_tag(line)
-		return
-	
-	# 处理 time 标签：定时自动推进
-	if line.time != "":
-		_handle_time_tag(line)
-		return
-	
 	# 等待打字完成后决定是否自动推进
-	if is_instance_valid(dialogue_label):
-		await dialogue_label.finished_typing
+	if not is_instance_valid(dialogue_label) or line.text.is_empty():
 		_on_typing_finished(line)
+		return
+	await dialogue_label.finished_typing
+	if _current_line != line:
+		return
+	_on_typing_finished(line)
 
 func on_dialogue_ended() -> void:
 	_is_auto_advancing = false
@@ -170,8 +164,19 @@ func _process(delta: float) -> void:
 
 ## 打字完成后的处理逻辑
 func _on_typing_finished(line: DialogueLine) -> void:
+	if _current_line != line:
+		return
+
 	if line.responses.size() > 0:
 		# 有响应选项，等待玩家选择
+		return
+
+	if line.has_tag("voice"):
+		_handle_voice_tag(line)
+		return
+
+	if line.time != "":
+		_handle_time_tag(line)
 		return
 	
 	if auto_advance:

@@ -1,0 +1,400 @@
+[gd_scene format=3 uid="uid://6d5hhyg0pw4k"]
+
+[ext_resource type="Script" uid="uid://mgtldmclk60c" path="res://addons/dialogue_manager/modify_test/modular_balloon.gd" id="1_script"]
+[ext_resource type="Texture2D" uid="uid://b0xng8j0pvsgi" path="res://icon.svg" id="2_icon"]
+[ext_resource type="PackedScene" uid="uid://ckvgyvclnwggo" path="res://addons/dialogue_manager/dialogue_label.tscn" id="3_dialogue_label"]
+[ext_resource type="PackedScene" uid="uid://cq1hr3d7sj0vk" path="res://addons/dialogue_manager/modify_test/historylog.tscn" id="4_history_log"]
+[ext_resource type="Script" uid="uid://bb52rsfwhkxbn" path="res://addons/dialogue_manager/dialogue_responses_menu.gd" id="5_responses_menu"]
+[ext_resource type="Script" uid="uid://bmdp0vplrdpx2" path="res://addons/dialogue_manager/modify_test/simple/human_texture.gd" id="6_human_texture"]
+[ext_resource type="Script" uid="uid://lueiihmlbsky" path="res://addons/dialogue_manager/modify_test/illustration/illustration_manager.gd" id="7_illustration_manager"]
+[ext_resource type="Script" uid="uid://daarvl64y1gt6" path="res://addons/dialogue_manager/modify_test/modules/flow_control_module.gd" id="8_flow"]
+[ext_resource type="Script" uid="uid://c25bl5fl6uqw5" path="res://addons/dialogue_manager/modify_test/modules/animation_module.gd" id="9_animation"]
+[ext_resource type="Script" uid="uid://bkhgd71mimy7h" path="res://addons/dialogue_manager/modify_test/modules/typing_sound_module.gd" id="10_typing_sound"]
+[ext_resource type="Script" uid="uid://bi4ru1v4yq4f" path="res://addons/dialogue_manager/modify_test/modules/history_module.gd" id="11_history"]
+[ext_resource type="Script" uid="uid://cjalp6e8ydm1k" path="res://addons/dialogue_manager/modify_test/modules/save_module.gd" id="12_save"]
+[ext_resource type="Script" uid="uid://dpngcvhig2oid" path="res://addons/dialogue_manager/modify_test/modules/illustration_module.gd" id="13_illustration"]
+[ext_resource type="Script" uid="uid://d3pgq7ctx7ht3" path="res://addons/dialogue_manager/modify_test/modules/character_ui_module.gd" id="14_character_ui"]
+[ext_resource type="Script" uid="uid://cgq43udx02cxv" path="res://addons/dialogue_manager/modify_test/modules/response_module.gd" id="15_response"]
+[ext_resource type="Script" uid="uid://xspkyrftn8xv" path="res://addons/dialogue_manager/modify_test/modules/indicator_module.gd" id="16_indicator"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_spyqn"]
+bg_color = Color(0, 0, 0, 1)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0.329412, 0.329412, 0.329412, 1)
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+corner_radius_bottom_right = 5
+corner_radius_bottom_left = 5
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ri4m3"]
+bg_color = Color(0.121569, 0.121569, 0.121569, 1)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(1, 1, 1, 1)
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+corner_radius_bottom_right = 5
+corner_radius_bottom_left = 5
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_e0njw"]
+bg_color = Color(0, 0, 0, 1)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0.6, 0.6, 0.6, 1)
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+corner_radius_bottom_right = 5
+corner_radius_bottom_left = 5
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_qkmqt"]
+bg_color = Color(0, 0, 0, 1)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+corner_radius_bottom_right = 5
+corner_radius_bottom_left = 5
+
+[sub_resource type="Theme" id="Theme_qq3yp"]
+default_font_size = 20
+Button/styles/disabled = SubResource("StyleBoxFlat_spyqn")
+Button/styles/focus = SubResource("StyleBoxFlat_ri4m3")
+Button/styles/hover = SubResource("StyleBoxFlat_e0njw")
+Button/styles/normal = SubResource("StyleBoxFlat_e0njw")
+MarginContainer/constants/margin_bottom = 15
+MarginContainer/constants/margin_left = 30
+MarginContainer/constants/margin_right = 30
+MarginContainer/constants/margin_top = 15
+PanelContainer/styles/panel = SubResource("StyleBoxFlat_qkmqt")
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_btn_auto"]
+bg_color = Color(0.1, 0.22, 0.12, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.3, 0.6, 0.35, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_btn_hist"]
+bg_color = Color(0.1, 0.15, 0.25, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.3, 0.45, 0.7, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+
+[node name="ModularBalloon" type="CanvasLayer" unique_id=1386033202]
+layer = 100
+script = ExtResource("1_script")
+
+[node name="TalkSound" type="AudioStreamPlayer" parent="." unique_id=467482644]
+
+[node name="VoicePlayer" type="AudioStreamPlayer" parent="." unique_id=815329956]
+unique_name_in_owner = true
+
+[node name="Illustrations" type="Control" parent="." unique_id=896035091]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="LeftIllustration" type="TextureRect" parent="Illustrations" unique_id=1419398609]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = -1
+anchor_top = 0.2
+anchor_right = 0.2
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("2_icon")
+expand_mode = 1
+stretch_mode = 5
+script = ExtResource("6_human_texture")
+
+[node name="CenterIllustration" type="TextureRect" parent="Illustrations" unique_id=413038453]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5
+anchor_top = 0.2
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -150.0
+offset_right = 150.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("2_icon")
+expand_mode = 1
+stretch_mode = 5
+script = ExtResource("6_human_texture")
+
+[node name="RightIllustration" type="TextureRect" parent="Illustrations" unique_id=611990592]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.8
+anchor_top = 0.2
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("2_icon")
+expand_mode = 1
+stretch_mode = 5
+script = ExtResource("6_human_texture")
+
+[node name="Balloon" type="Control" parent="." unique_id=806762085]
+unique_name_in_owner = true
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = SubResource("Theme_qq3yp")
+
+[node name="Margin" type="MarginContainer" parent="Balloon" unique_id=904209019]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -240.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_constants/margin_left = 40
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 40
+theme_override_constants/margin_bottom = 12
+
+[node name="BGTexture" type="TextureRect" parent="Balloon/Margin" unique_id=1263807015]
+unique_name_in_owner = true
+layout_mode = 2
+expand_mode = 1
+
+[node name="PanelContainer" type="PanelContainer" parent="Balloon/Margin" unique_id=499236850]
+layout_mode = 2
+mouse_filter = 1
+
+[node name="HBox" type="HBoxContainer" parent="Balloon/Margin/PanelContainer" unique_id=1770083554]
+layout_mode = 2
+
+[node name="PortraitContainer" type="Control" parent="Balloon/Margin/PanelContainer/HBox" unique_id=1699586831]
+visible = false
+custom_minimum_size = Vector2(150, 0)
+layout_mode = 2
+size_flags_vertical = 5
+
+[node name="HeadTexture" type="TextureRect" parent="Balloon/Margin/PanelContainer/HBox/PortraitContainer" unique_id=1194907126]
+unique_name_in_owner = true
+z_index = 9
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 4.0
+offset_top = -1.0
+offset_right = 4.0
+offset_bottom = -3.0
+grow_horizontal = 2
+grow_vertical = 2
+expand_mode = 1
+stretch_mode = 4
+
+[node name="PortraitTexture" type="TextureRect" parent="Balloon/Margin/PanelContainer/HBox/PortraitContainer" unique_id=1919854656]
+unique_name_in_owner = true
+z_index = 9
+custom_minimum_size = Vector2(150, 150)
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -75.0
+offset_top = -75.0
+offset_right = 75.0
+offset_bottom = 75.0
+grow_horizontal = 2
+grow_vertical = 2
+expand_mode = 1
+stretch_mode = 6
+
+[node name="NameTexture" type="TextureRect" parent="Balloon/Margin/PanelContainer/HBox/PortraitContainer" unique_id=2103024846]
+unique_name_in_owner = true
+layout_mode = 0
+offset_left = 155.0
+offset_top = 6.0
+offset_right = 231.0
+offset_bottom = 46.0
+scale = Vector2(1.28, 1.2)
+
+[node name="VBox" type="VBoxContainer" parent="Balloon/Margin/PanelContainer/HBox" unique_id=525732274]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 10
+
+[node name="CharacterLabel" type="RichTextLabel" parent="Balloon/Margin/PanelContainer/HBox/VBox" unique_id=2132078231]
+unique_name_in_owner = true
+self_modulate = Color(3, 3, 3, 1)
+z_index = 1
+layout_mode = 2
+mouse_filter = 1
+bbcode_enabled = true
+text = "Character"
+fit_content = true
+scroll_active = false
+
+[node name="DialogueLabel" parent="Balloon/Margin/PanelContainer/HBox/VBox" unique_id=2058309905 instance=ExtResource("3_dialogue_label")]
+unique_name_in_owner = true
+z_index = 9
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_font_sizes/normal_font_size = 35
+text = "Dialogue"
+
+[node name="Temp" type="Control" parent="Balloon/Margin/PanelContainer/HBox" unique_id=368279005]
+layout_mode = 2
+
+[node name="Control" type="Control" parent="Balloon/Margin/PanelContainer/HBox" unique_id=1078665150]
+custom_minimum_size = Vector2(18, 10)
+layout_mode = 2
+size_flags_vertical = 8
+
+[node name="Progress" type="Polygon2D" parent="Balloon/Margin/PanelContainer/HBox/Control" unique_id=463258573]
+unique_name_in_owner = true
+polygon = PackedVector2Array(0, 0, 9, 9, 18, 0)
+
+[node name="Toolbar" type="HBoxContainer" parent="Balloon/Margin/PanelContainer" unique_id=613989164]
+layout_mode = 2
+size_flags_horizontal = 8
+size_flags_vertical = 0
+theme_override_constants/separation = 6
+
+[node name="AutoAdvanceIndicator" type="Label" parent="Balloon/Margin/PanelContainer/Toolbar" unique_id=536280414]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.4, 0.9, 0.5, 1)
+theme_override_font_sizes/font_size = 12
+
+[node name="SpeedIndicator" type="Label" parent="Balloon/Margin/PanelContainer/Toolbar" unique_id=262159767]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.85, 0.3, 1)
+theme_override_font_sizes/font_size = 12
+
+[node name="AutoAdvanceButton" type="Button" parent="Balloon/Margin/PanelContainer/Toolbar" unique_id=1164686725]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(80, 24)
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+theme_override_styles/normal = SubResource("StyleBoxFlat_btn_auto")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_btn_auto")
+theme_override_styles/hover = SubResource("StyleBoxFlat_btn_auto")
+toggle_mode = true
+text = "⟳ 自动"
+
+[node name="HistoryButton" type="Button" parent="Balloon/Margin/PanelContainer/Toolbar" unique_id=1109026803]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(80, 24)
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+theme_override_styles/normal = SubResource("StyleBoxFlat_btn_hist")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_btn_hist")
+theme_override_styles/hover = SubResource("StyleBoxFlat_btn_hist")
+text = "📜 历史"
+
+[node name="HistoryLog" parent="Balloon" unique_id=1146584728 instance=ExtResource("4_history_log")]
+unique_name_in_owner = true
+layout_mode = 1
+offset_left = 20.0
+offset_top = 20.0
+offset_right = -20.0
+offset_bottom = -250.0
+
+[node name="ResponsesMenu" type="VBoxContainer" parent="Balloon" unique_id=551303760 node_paths=PackedStringArray("response_template")]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -280.0
+offset_top = -40.0
+offset_right = 280.0
+offset_bottom = 40.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_vertical = 8
+theme_override_constants/separation = 2
+alignment = 1
+script = ExtResource("5_responses_menu")
+response_template = NodePath("ResponseExample")
+
+[node name="ResponseExample" type="Button" parent="Balloon/ResponsesMenu" unique_id=2139410354]
+visible = false
+layout_mode = 2
+text = "选项示例"
+
+[node name="IllustrationManager" type="Node" parent="." unique_id=771306283]
+script = ExtResource("7_illustration_manager")
+
+[node name="FlowControlModule" type="Node" parent="." unique_id=1930675597]
+script = ExtResource("8_flow")
+
+[node name="AnimationModule" type="Node" parent="." unique_id=106604152]
+script = ExtResource("9_animation")
+
+[node name="TypingSoundModule" type="Node" parent="." unique_id=1920817707]
+script = ExtResource("10_typing_sound")
+
+[node name="HistoryModule" type="Node" parent="." unique_id=1759301537]
+script = ExtResource("11_history")
+
+[node name="SaveModule" type="Node" parent="." unique_id=743937275]
+script = ExtResource("12_save")
+
+[node name="IllustrationModule" type="Node" parent="." unique_id=1740243931]
+script = ExtResource("13_illustration")
+
+[node name="CharacterUIModule" type="Node" parent="." unique_id=294683444]
+script = ExtResource("14_character_ui")
+
+[node name="ResponseModule" type="Node" parent="." unique_id=1412576853]
+script = ExtResource("15_response")
+
+[node name="IndicatorModule" type="Node" parent="." unique_id=234042901]
+script = ExtResource("16_indicator")
+
+[connection signal="gui_input" from="Balloon" to="." method="_on_balloon_gui_input"]
+[connection signal="toggled" from="Balloon/Margin/PanelContainer/Toolbar/AutoAdvanceButton" to="." method="_on_auto_advance_button_toggled"]
+[connection signal="pressed" from="Balloon/Margin/PanelContainer/Toolbar/HistoryButton" to="." method="_on_history_button_pressed"]

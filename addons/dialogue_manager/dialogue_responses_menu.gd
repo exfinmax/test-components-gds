@@ -8,7 +8,7 @@ class_name DialogueResponsesMenu extends Container
 signal response_focused(response: Control)
 
 ## Emitted when a response is selected.
-signal response_selected(response: Control)
+signal response_selected(response: DialogueResponse)
 
 
 ## Optionally specify a control to duplicate for each response
@@ -66,6 +66,9 @@ func get_menu_items() -> Array:
 ## Prepare the menu for keyboard and mouse navigation.
 func configure_focus() -> void:
 	var items = get_menu_items()
+	if items.is_empty():
+		_previously_focused_item = null
+		return
 	for i in items.size():
 		var item: Control = items[i]
 
@@ -91,9 +94,6 @@ func configure_focus() -> void:
 			item.focus_neighbor_bottom = items[i + 1].get_path()
 			item.focus_neighbor_right = items[i + 1].get_path()
 			item.focus_next = items[i + 1].get_path()
-
-		#item.mouse_entered.connect(_on_response_mouse_entered.bind(item))
-		#item.gui_input.connect(_on_response_gui_input.bind(item, item.get_meta("response")))
 
 	_previously_focused_item = items[0]
 
@@ -137,6 +137,15 @@ func _apply_responses() -> void:
 				item.text = response.text
 
 			item.set_meta("response", response)
+			if item is BaseButton:
+				var button := item as BaseButton
+				if not button.pressed.is_connected(_on_response_pressed.bind(item, response)):
+					button.pressed.connect(_on_response_pressed.bind(item, response))
+			else:
+				if not item.gui_input.is_connected(_on_response_gui_input.bind(item, response)):
+					item.gui_input.connect(_on_response_gui_input.bind(item, response))
+			if not item.mouse_entered.is_connected(_on_response_mouse_entered.bind(item)):
+				item.mouse_entered.connect(_on_response_mouse_entered.bind(item))
 
 			add_child(item)
 
@@ -150,6 +159,8 @@ func _apply_responses() -> void:
 
 
 func _on_focus_changed(control: Control) -> void:
+	if control == null:
+		return
 	if "Disallowed" in control.name: return
 	if not control in get_menu_items(): return
 
@@ -162,6 +173,13 @@ func _on_response_mouse_entered(item: Control) -> void:
 	if "Disallowed" in item.name: return
 
 	item.grab_focus()
+
+
+func _on_response_pressed(item: Control, response) -> void:
+	if "Disallowed" in item.name:
+		return
+	get_viewport().set_input_as_handled()
+	response_selected.emit(response)
 
 
 func _on_response_gui_input(event: InputEvent, item: Control, response) -> void:

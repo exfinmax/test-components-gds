@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://c5glhtarwctb"]
 
 [ext_resource type="Script" uid="uid://dtl1olyqujciv" path="res://addons/dialogue_manager/modify_test/demo/illustration_test_scene.gd" id="1_script"]
-[ext_resource type="PackedScene" uid="uid://c84s5py4vjuoa" path="res://addons/dialogue_manager/modify_test/illustrated_balloon.tscn" id="2_balloon"]
+[ext_resource type="PackedScene" path="res://addons/dialogue_manager/modify_test/modular_balloon.tscn" id="2_balloon"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_panel"]
 bg_color = Color(0.06, 0.06, 0.1, 0.95)
@@ -157,6 +157,8 @@ theme_override_font_sizes/font_size = 11
 text = "提示：PageDown=快进  PageUp=慢放  H=历史记录"
 horizontal_alignment = 1
 
-[node name="IllustratedBalloon" parent="." unique_id=1950944536 instance=ExtResource("2_balloon")]
+[node name="DialogueBalloon" parent="." instance=ExtResource("2_balloon")]
 visible = false
 animation_duration = 0.3
+
+

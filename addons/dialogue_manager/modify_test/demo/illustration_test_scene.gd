@@ -13,7 +13,7 @@ const DIALOGUE_PATH := "res://addons/dialogue_manager/modify_test/demo/illustrat
 var _current_scene: String = ""
 var _dialogue_res: DialogueResource = null
 
-@onready var balloon: IllustratedBalloon = $IllustratedBalloon
+@onready var balloon: ModularBalloon = $DialogueBalloon
 @onready var main_panel: PanelContainer = $UI/MainPanel
 @onready var scene_buttons: VBoxContainer = $UI/MainPanel/VBoxContainer/SceneButtons
 @onready var status_label: Label = $UI/MainPanel/VBoxContainer/StatusLabel
@@ -93,7 +93,7 @@ func _setup_illustrations() -> void:
 			right_ill.lihui_resource = right_lihui
 
 func _create_test_lihui(name: String, base_color: Color) -> Resource:
-	var script_res = load("res://simple/lihui.gd")
+	var script_res = load("res://addons/dialogue_manager/modify_test/simple/lihui.gd")
 	if script_res == null:
 		return null
 	

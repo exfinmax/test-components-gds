@@ -13,6 +13,8 @@ signal response_selected(response: DialogueResponse)
 
 ## 响应菜单节点引用（由场景配置）
 var responses_menu: DialogueResponsesMenu
+## 对话标签节点引用（用于在打字结束后显示选项）
+var dialogue_label: DialogueLabel
 
 # ════════════════════════════════════════════════════════════════
 # 生命周期
@@ -37,7 +39,12 @@ func on_dialogue_line_changed(line: DialogueLine) -> void:
 		return
 	
 	if line.responses.size() > 0:
+		responses_menu.hide()
 		responses_menu.responses = line.responses
+		if is_instance_valid(dialogue_label) and not line.text.is_empty():
+			await dialogue_label.finished_typing
+		if not is_instance_valid(_balloon) or _balloon.get_current_line() != line:
+			return
 		responses_menu.show()
 		responses_menu.configure_focus()
 	else:
