@@ -203,9 +203,9 @@ func swap_illustrations(pos_a: int, pos_b: int) -> void:
 	
 	# 更新显示纹理
 	if res_b != null and res_b.sprites.has(res_b.default_expression if "default_expression" in res_b else "ax"):
-		illus_a.texture = res_b.sprites[res_b.get("default_expression", "ax")]
-	if res_a != null and res_a.sprites.has(res_a.get("default_expression", "ax")):
-		illus_b.texture = res_a.sprites[res_a.get("default_expression", "ax")]
+		illus_a.texture = res_b.sprites[res_b.get("default_expression")]
+	if res_a != null and res_a.sprites.has(res_a.get("default_expression")):
+		illus_b.texture = res_a.sprites[res_a.get("default_expression")]
 	
 	illustration_changed.emit(pos_a, illus_a.get_character_name())
 	illustration_changed.emit(pos_b, illus_b.get_character_name())

@@ -1,0 +1,134 @@
+[gd_scene load_steps=11 format=3]
+
+[ext_resource type="Script" path="res://StarterPacks/PlatformerAction/main.gd" id="1_main"]
+[ext_resource type="PackedScene" path="res://StarterPacks/PlatformerAction/Prefabs/platformer_player.tscn" id="2_player"]
+[ext_resource type="PackedScene" path="res://StarterPacks/PlatformerAction/UI/platformer_hud.tscn" id="3_hud"]
+[ext_resource type="Script" path="res://ComponentLibrary/Modules/GameLogic/Action/Components/interactable_component.gd" id="4_interact"]
+[ext_resource type="Script" path="res://ComponentLibrary/Modules/Combat/Components/hitbox_component.gd" id="5_hitbox"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_ground"]
+size = Vector2(1400, 64)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_platform"]
+size = Vector2(260, 32)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_sign"]
+size = Vector2(64, 96)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_hazard"]
+size = Vector2(180, 32)
+
+[node name="PlatformerActionMain" type="Node2D"]
+script = ExtResource("1_main")
+
+[node name="Backdrop" type="ColorRect" parent="."]
+offset_left = -400.0
+offset_top = -300.0
+offset_right = 1600.0
+offset_bottom = 900.0
+color = Color(0.152941, 0.180392, 0.239216, 1)
+
+[node name="SpawnPoint" type="Marker2D" parent="."]
+position = Vector2(150, 430)
+
+[node name="PlatformerPlayer" parent="." instance=ExtResource("2_player")]
+position = Vector2(150, 430)
+
+[node name="Camera2D" type="Camera2D" parent="."]
+position = Vector2(400, 280)
+current = true
+
+[node name="Ground" type="StaticBody2D" parent="."]
+position = Vector2(420, 620)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Ground"]
+shape = SubResource("RectangleShape2D_ground")
+
+[node name="Polygon2D" type="Polygon2D" parent="Ground"]
+color = Color(0.227451, 0.560784, 0.333333, 1)
+polygon = PackedVector2Array(-700, -32, 700, -32, 700, 32, -700, 32)
+
+[node name="MidPlatform" type="StaticBody2D" parent="."]
+position = Vector2(470, 440)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="MidPlatform"]
+shape = SubResource("RectangleShape2D_platform")
+
+[node name="Polygon2D" type="Polygon2D" parent="MidPlatform"]
+color = Color(0.329412, 0.666667, 0.8, 1)
+polygon = PackedVector2Array(-130, -16, 130, -16, 130, 16, -130, 16)
+
+[node name="SignInteraction" type="Area2D" parent="."]
+position = Vector2(620, 536)
+collision_mask = 2
+script = ExtResource("4_interact")
+prompt_text = "查看 Starter Pack 说明"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="SignInteraction"]
+shape = SubResource("RectangleShape2D_sign")
+
+[node name="Polygon2D" type="Polygon2D" parent="SignInteraction"]
+color = Color(0.862745, 0.709804, 0.298039, 1)
+polygon = PackedVector2Array(-32, -48, 32, -48, 32, 48, -32, 48)
+
+[node name="Hazard" type="Area2D" parent="."]
+position = Vector2(860, 590)
+script = ExtResource("5_hitbox")
+damage = 3.0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Hazard"]
+shape = SubResource("RectangleShape2D_hazard")
+
+[node name="Polygon2D" type="Polygon2D" parent="Hazard"]
+color = Color(0.74902, 0.239216, 0.219608, 1)
+polygon = PackedVector2Array(-90, -16, 90, -16, 90, 16, -90, 16)
+
+[node name="HUD" parent="." instance=ExtResource("3_hud")]
+
+[node name="PauseOverlay" type="CanvasLayer" parent="."]
+layer = 10
+process_mode = 3
+
+[node name="Dim" type="ColorRect" parent="PauseOverlay"]
+visible = false
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.55)
+
+[node name="Panel" type="PanelContainer" parent="PauseOverlay"]
+visible = false
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -180.0
+offset_top = -120.0
+offset_right = 180.0
+offset_bottom = 120.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBox" type="VBoxContainer" parent="PauseOverlay/Panel"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="Title" type="Label" parent="PauseOverlay/Panel/VBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 22
+text = "Pause"
+
+[node name="Hint" type="Label" parent="PauseOverlay/Panel/VBox"]
+layout_mode = 2
+text = "这是 Starter Pack 的暂停页骨架。"
+
+[node name="ResumeButton" type="Button" parent="PauseOverlay/Panel/VBox"]
+layout_mode = 2
+text = "继续"
+
+[node name="ResetButton" type="Button" parent="PauseOverlay/Panel/VBox"]
+layout_mode = 2
+text = "回到出生点"

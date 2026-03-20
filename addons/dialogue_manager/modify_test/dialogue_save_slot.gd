@@ -74,8 +74,8 @@ func _refresh_display(save_system: Node = null) -> void:
 
 	# 尝试从 SaveSystem 获取槽位信息
 	var sys: Node = save_system
-	if sys == null and Engine.has_singleton("SaveSystem"):
-		sys = Engine.get_singleton("SaveSystem")
+	if sys == null:
+		sys = get_node_or_null("/root/SaveSystem")
 
 	if sys == null:
 		_show_empty_state()

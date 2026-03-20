@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="GamePackManifest" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://ComponentLibrary/Systems/MetaFlow/Resources/game_pack_manifest.gd" id="1_manifest"]
+
+[resource]
+script = ExtResource("1_manifest")
+pack_id = &"narrative_ui"
+genre = &"narrative"
+main_scene = "res://StarterPacks/NarrativeUI/Main.tscn"
+display_name = "Narrative UI"
+supports_resume = true
+tags = PackedStringArray("dialogue", "narrative", "investigation")
+entry_transition = &"fade"
+exit_transition = &"fade"

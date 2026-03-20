@@ -1,0 +1,5 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://ComponentLibrary/Modules/Movement/Demo/Player/player_component.tscn" id="1_player"]
+
+[node name="PlatformerPlayer" instance=ExtResource("1_player")]

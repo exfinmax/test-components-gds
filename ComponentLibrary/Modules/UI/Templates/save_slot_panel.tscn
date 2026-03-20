@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://dvbpqv5neyisr"]
 
-[ext_resource type="Script" uid="uid://clf3fcejb613o" path="res://Templates/UI/save_slot_panel.gd" id="1"]
+[ext_resource type="Script" uid="uid://clf3fcejb613o" path="res://ComponentLibrary/Modules/UI/Templates/save_slot_panel.gd" id="1"]
 
 [node name="SaveSlotPanel" type="Control" unique_id=1332201658]
 layout_mode = 3

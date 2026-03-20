@@ -27,7 +27,7 @@ var _should_emit:bool = true
 @export var auto_play:bool = true  # automatically call start() in _ready when path is set
 
 
-const SHADER_PATTERNS:String = "res://Scenes/UI/UIorgan/Transition/transition_pattern/"
+const SHADER_PATTERNS:String = "res://ComponentLibrary/Modules/UI/Templates/Transition/transition_pattern/"
 
 func _enter_tree() -> void:
 	if _png_cache.is_empty():

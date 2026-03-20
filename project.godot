@@ -25,11 +25,12 @@ config/icon="res://icon.svg"
 
 [autoload]
 
-EventBus="*uid://ccyvwap4uhctk"
-ObjectPool="*uid://cpc51d7pqjdol"
-TimeController="*uid://dt27sydn77cf3"
+EventBus="*res://ComponentLibrary/Core/events/event_bus.gd"
+ObjectPool="*res://ComponentLibrary/Core/pools/object_pool.gd"
+TimeController="*res://ComponentLibrary/Core/time/time_controller.gd"
+DialogueManager="*res://addons/dialogue_manager/dialogue_manager.gd"
+GuiTransitions="*res://addons/simple-gui-transitions/singleton.gd"
 SaveSystem="*uid://bv1y5o6lgq7yi"
-DialogueManager="*uid://c3rodes2l3gxb"
 
 [display]
 
@@ -42,7 +43,7 @@ project/assembly_name="test_components"
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/assetplus/plugin.cfg", "res://addons/dialogue_manager/plugin.cfg", "res://addons/enhance_save_system/plugin.cfg", "res://addons/godot_mcp/plugin.cfg", "res://addons/polygon2d_tool/plugin.cfg", "res://addons/procedural_tex/plugin.cfg")
+enabled=PackedStringArray("res://addons/assetplus/plugin.cfg", "res://addons/dialogue_manager/plugin.cfg", "res://addons/enhance_save_system/plugin.cfg", "res://addons/godot_mcp/plugin.cfg", "res://addons/polygon2d_tool/plugin.cfg", "res://addons/procedural_tex/plugin.cfg", "res://addons/simple-gui-transitions/plugin.cfg")
 
 [godot_mcp]
 
@@ -50,6 +51,18 @@ bind_mode=0
 custom_bind_ip=""
 port_override_enabled=false
 port_override=6550
+
+[gui_transitions]
+
+config/default/auto_start=true
+config/default/fade_layout=true
+config/default/center_pivot=true
+config/default/duration=0.5
+config/default/delay=0.5
+config/default/transition_type="QUAD"
+config/default/ease_type="IN_OUT"
+config/default/animation_enter=4
+config/default/animation_leave=4
 
 [input]
 
@@ -98,7 +111,7 @@ dash={
 
 [internationalization]
 
-locale/translations_pot_files=PackedStringArray("res://addons/dialogue_manager/dialogue_file/untitled.dialogue", "res://addons/dialogue_manager/modify_test/demo/demo_dialogue.dialogue", "res://dialogue/stage2.dialogue", "res://dialogue/stage3.dialogue", "res://dialogue/stage4.dialogue", "res://dialogue/stage5.dialogue", "res://dialogue/stage7.dialogue", "res://dialogue/start.dialogue", "res://dialogue/zhenyan1.dialogue", "res://dialogue/zhenyan2.dialogue", "res://dialogue/zhenyan3.dialogue", "res://dialogue/zhenyan4.dialogue", "res://dialogue/zhenyan5.dialogue", "res://addons/dialogue_manager/modify_test/demo/scene1_tutorial.dialogue", "res://addons/dialogue_manager/modify_test/demo/scene2_characters.dialogue", "res://addons/dialogue_manager/modify_test/demo/scene3_branch.dialogue", "res://addons/dialogue_manager/modify_test/demo/scene3_branches.dialogue", "res://addons/dialogue_manager/modify_test/demo/illustration_test.dialogue")
+locale/translations_pot_files=PackedStringArray("res://addons/dialogue_manager/dialogue_file/untitled.dialogue", "res://addons/dialogue_manager/modify_test/demo/demo_dialogue.dialogue", "res://addons/dialogue_manager/modify_test/demo/scene1_tutorial.dialogue", "res://addons/dialogue_manager/modify_test/demo/scene2_characters.dialogue", "res://addons/dialogue_manager/modify_test/demo/scene3_branch.dialogue", "res://addons/dialogue_manager/modify_test/demo/scene3_branches.dialogue", "res://addons/dialogue_manager/modify_test/demo/illustration_test.dialogue", "res://dialogue/stage2.dialogue", "res://dialogue/stage3.dialogue", "res://dialogue/stage4.dialogue", "res://dialogue/stage5.dialogue", "res://dialogue/stage7.dialogue", "res://dialogue/start.dialogue", "res://dialogue/zhenyan1.dialogue", "res://dialogue/zhenyan2.dialogue", "res://dialogue/zhenyan3.dialogue", "res://dialogue/zhenyan4.dialogue", "res://dialogue/zhenyan5.dialogue")
 
 [shader_globals]
 

@@ -1,0 +1,125 @@
+[gd_scene load_steps=7 format=3]
+
+[ext_resource type="Script" path="res://StarterPacks/TopDownAction/main.gd" id="1_main"]
+[ext_resource type="Script" path="res://ComponentLibrary/Systems/Interaction2D/hotspot_component.gd" id="2_hotspot"]
+[ext_resource type="Script" path="res://ComponentLibrary/Systems/Camera2D/room_camera_component.gd" id="3_camera"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_player"]
+radius = 14.0
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_hotspot"]
+size = Vector2(34, 34)
+
+[node name="TopDownActionMain" type="Node2D"]
+script = ExtResource("1_main")
+
+[node name="Backdrop" type="Polygon2D" parent="."]
+color = Color(0.0745098, 0.12549, 0.164706, 1)
+polygon = PackedVector2Array(80, 80, 760, 80, 760, 440, 80, 440)
+
+[node name="PackCamera" type="Camera2D" parent="."]
+current = true
+script = ExtResource("3_camera")
+follow_target = NodePath("../Player")
+room_rect = Rect2(80, 80, 680, 360)
+
+[node name="Player" type="CharacterBody2D" parent="."]
+position = Vector2(140, 180)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Player"]
+shape = SubResource("CircleShape2D_player")
+
+[node name="Polygon2D" type="Polygon2D" parent="Player"]
+color = Color(0.301961, 0.8, 0.890196, 1)
+polygon = PackedVector2Array(-14, -14, 14, -14, 14, 14, -14, 14)
+
+[node name="Enemy" type="CharacterBody2D" parent="."]
+position = Vector2(600, 260)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Enemy"]
+shape = SubResource("CircleShape2D_player")
+
+[node name="Polygon2D" type="Polygon2D" parent="Enemy"]
+color = Color(0.905882, 0.317647, 0.298039, 1)
+polygon = PackedVector2Array(-14, -14, 14, -14, 14, 14, -14, 14)
+
+[node name="KeyPickup" type="Area2D" parent="."]
+position = Vector2(300, 120)
+script = ExtResource("2_hotspot")
+prompt_text = "拾取门禁卡"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="KeyPickup"]
+shape = SubResource("RectangleShape2D_hotspot")
+
+[node name="Polygon2D" type="Polygon2D" parent="KeyPickup"]
+color = Color(1, 0.831373, 0.360784, 1)
+polygon = PackedVector2Array(-16, -16, 16, -16, 16, 16, -16, 16)
+
+[node name="ExitDoor" type="Area2D" parent="."]
+position = Vector2(706, 120)
+script = ExtResource("2_hotspot")
+prompt_text = "出口锁定"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="ExitDoor"]
+shape = SubResource("RectangleShape2D_hotspot")
+
+[node name="Polygon2D" type="Polygon2D" parent="ExitDoor"]
+color = Color(0.466667, 0.92549, 0.635294, 1)
+polygon = PackedVector2Array(-18, -20, 18, -20, 18, 20, -18, 20)
+
+[node name="ProjectileLayer" type="Node2D" parent="."]
+
+[node name="HUD" type="CanvasLayer" parent="."]
+layer = 10
+
+[node name="Margin" type="MarginContainer" parent="HUD"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 16.0
+offset_top = 16.0
+offset_right = -16.0
+offset_bottom = -16.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Panel" type="PanelContainer" parent="HUD/Margin"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="VBox" type="VBoxContainer" parent="HUD/Margin/Panel"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="Title" type="Label" parent="HUD/Margin/Panel/VBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 22
+text = "TopDown Action"
+
+[node name="StatusLabel" type="Label" parent="HUD/Margin/Panel/VBox"]
+layout_mode = 2
+text = "Shift 冲刺，Enter 攻击或发射，E 交互。"
+
+[node name="ObjectiveLabel" type="Label" parent="HUD/Margin/Panel/VBox"]
+layout_mode = 2
+text = "目标：击败敌人并拿到门禁卡。"
+
+[node name="HealthLabel" type="Label" parent="HUD/Margin/Panel/VBox"]
+layout_mode = 2
+text = "HP 5"
+
+[node name="Buttons" type="HBoxContainer" parent="HUD/Margin/Panel/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="SaveButton" type="Button" parent="HUD/Margin/Panel/VBox/Buttons"]
+layout_mode = 2
+text = "保存"
+
+[node name="LoadButton" type="Button" parent="HUD/Margin/Panel/VBox/Buttons"]
+layout_mode = 2
+text = "读取"
+
+[node name="BackButton" type="Button" parent="HUD/Margin/Panel/VBox/Buttons"]
+layout_mode = 2
+text = "返回"

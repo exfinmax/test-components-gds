@@ -7,22 +7,34 @@ class_name SaveSlotPanel
 
 @onready var _slot_list: ItemList = $VBox/Slots
 @onready var _status: Label = $VBox/Status
-@onready var _save_manager: Node = get_node_or_null("/root/SaveManager")
+@onready var _save_manager: Node = _resolve_save_manager()
 
 func _ready() -> void:
+	_refresh_slots()
+
+func refresh(save_manager: Node = null) -> void:
+	if save_manager != null:
+		_save_manager = save_manager
 	_refresh_slots()
 
 func _refresh_slots() -> void:
 	_slot_list.clear()
 	if not _is_save_manager_valid():
-		_status.text = "SaveManager 未找到或接口不完整"
+		_status.text = "SaveSystem/SaveManager 未找到或接口不完整"
 		return
 
 	var exists_by_slot: Dictionary = {}
 	var slots: Array = _save_manager.call("list_slots")
 	for item in slots:
-		var slot: int = int(item.get("slot", 0))
-		exists_by_slot[slot] = bool(item.get("exists", false))
+		var slot := 0
+		var exists := false
+		if item is SlotInfo:
+			slot = item.slot
+			exists = item.exists
+		else:
+			slot = int(item.get("slot"))
+			exists = bool(item.get("exists"))
+		exists_by_slot[int(slot)] = exists
 
 	for slot in range(1, slot_count + 1):
 		var exists := bool(exists_by_slot.get(slot, false))
@@ -46,31 +58,31 @@ func _get_current_slot() -> int:
 func _is_save_manager_valid() -> bool:
 	return _save_manager != null \
 		and _save_manager.has_method("list_slots") \
-		and _save_manager.has_method("save_game_to_slot") \
-		and _save_manager.has_method("load_game_from_slot") \
+		and (_save_manager.has_method("save_slot") or _save_manager.has_method("save_game_to_slot")) \
+		and (_save_manager.has_method("load_slot") or _save_manager.has_method("load_game_from_slot")) \
 		and _save_manager.has_method("delete_slot")
 
 func _on_save_pressed() -> void:
 	if not _is_save_manager_valid():
-		_status.text = "SaveManager 不可用"
+		_status.text = "SaveSystem/SaveManager 不可用"
 		return
 	var slot := _get_selected_slot()
-	var ok := bool(_save_manager.call("save_game_to_slot", slot))
+	var ok := bool(_call_save(slot))
 	_status.text = "保存槽位 %d %s" % [slot, "成功" if ok else "失败"]
 	_refresh_slots()
 
 func _on_load_pressed() -> void:
 	if not _is_save_manager_valid():
-		_status.text = "SaveManager 不可用"
+		_status.text = "SaveSystem/SaveManager 不可用"
 		return
 	var slot := _get_selected_slot()
-	var ok := bool(_save_manager.call("load_game_from_slot", slot))
+	var ok := bool(_call_load(slot))
 	_status.text = "读取槽位 %d %s" % [slot, "成功" if ok else "失败"]
 	_refresh_slots()
 
 func _on_delete_pressed() -> void:
 	if not _is_save_manager_valid():
-		_status.text = "SaveManager 不可用"
+		_status.text = "SaveSystem/SaveManager 不可用"
 		return
 	var slot := _get_selected_slot()
 	var ok := bool(_save_manager.call("delete_slot", slot))
@@ -79,3 +91,19 @@ func _on_delete_pressed() -> void:
 
 func _on_refresh_pressed() -> void:
 	_refresh_slots()
+
+func _resolve_save_manager() -> Node:
+	var manager := get_node_or_null("/root/SaveManager")
+	if manager != null:
+		return manager
+	return get_node_or_null("/root/SaveSystem")
+
+func _call_save(slot: int) -> bool:
+	if _save_manager.has_method("save_slot"):
+		return bool(_save_manager.call("save_slot", slot))
+	return bool(_save_manager.call("save_game_to_slot", slot))
+
+func _call_load(slot: int) -> bool:
+	if _save_manager.has_method("load_slot"):
+		return bool(_save_manager.call("load_slot", slot))
+	return bool(_save_manager.call("load_game_from_slot", slot))

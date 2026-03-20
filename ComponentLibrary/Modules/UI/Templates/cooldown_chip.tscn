@@ -1,6 +1,6 @@
 [gd_scene format=3]
 
-[ext_resource type="Script" path="res://Templates/UI/cooldown_chip.gd" id="1"]
+[ext_resource type="Script" path="res://ComponentLibrary/Modules/UI/Templates/cooldown_chip.gd" id="1"]
 
 [node name="CooldownChip" type="Control"]
 custom_minimum_size = Vector2(280, 36)
@@ -36,4 +36,3 @@ value = 1.0
 [node name="State" type="Label" parent="Panel/H"]
 layout_mode = 2
 text = "就绪"
-

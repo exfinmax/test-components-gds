@@ -1,0 +1,247 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://StarterPacks/UIPuzzle/main.gd" id="1_main"]
+
+[node name="UIPuzzleMain" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_main")
+
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.0784314, 0.0901961, 0.129412, 1)
+
+[node name="Margin" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 20.0
+offset_top = 20.0
+offset_right = -20.0
+offset_bottom = -20.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Root" type="VBoxContainer" parent="Margin"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="Header" type="HBoxContainer" parent="Margin/Root"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="TitleLabel" type="Label" parent="Margin/Root/Header"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 26
+text = "UI Puzzle Pack"
+
+[node name="StatusLabel" type="Label" parent="Margin/Root/Header"]
+layout_mode = 2
+text = "解开 5 组 UI 解密模块。"
+
+[node name="Buttons" type="HBoxContainer" parent="Margin/Root/Header"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="SaveButton" type="Button" parent="Margin/Root/Header/Buttons"]
+layout_mode = 2
+text = "保存"
+
+[node name="LoadButton" type="Button" parent="Margin/Root/Header/Buttons"]
+layout_mode = 2
+text = "读取"
+
+[node name="SuccessButton" type="Button" parent="Margin/Root/Header/Buttons"]
+layout_mode = 2
+text = "成功返回"
+
+[node name="FailButton" type="Button" parent="Margin/Root/Header/Buttons"]
+layout_mode = 2
+text = "失败返回"
+
+[node name="BackButton" type="Button" parent="Margin/Root/Header/Buttons"]
+layout_mode = 2
+text = "返回"
+
+[node name="Tabs" type="TabContainer" parent="Margin/Root"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="CodePad" type="PanelContainer" parent="Margin/Root/Tabs"]
+layout_mode = 2
+
+[node name="VBox" type="VBoxContainer" parent="Margin/Root/Tabs/CodePad"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="HintLabel" type="Label" parent="Margin/Root/Tabs/CodePad/VBox"]
+layout_mode = 2
+text = "CodePadPuzzle：输入密码 3142"
+
+[node name="CodeLine" type="LineEdit" parent="Margin/Root/Tabs/CodePad/VBox"]
+layout_mode = 2
+placeholder_text = "输入四位密码"
+
+[node name="SubmitButton" type="Button" parent="Margin/Root/Tabs/CodePad/VBox"]
+layout_mode = 2
+text = "提交密码"
+
+[node name="PatternGrid" type="PanelContainer" parent="Margin/Root/Tabs"]
+layout_mode = 2
+
+[node name="VBox" type="VBoxContainer" parent="Margin/Root/Tabs/PatternGrid"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="HintLabel" type="Label" parent="Margin/Root/Tabs/PatternGrid/VBox"]
+layout_mode = 2
+text = "PatternGridPuzzle：点亮对角线"
+
+[node name="Grid" type="GridContainer" parent="Margin/Root/Tabs/PatternGrid/VBox"]
+layout_mode = 2
+columns = 3
+
+[node name="P0" type="Button" parent="Margin/Root/Tabs/PatternGrid/VBox/Grid"]
+layout_mode = 2
+toggle_mode = true
+text = "○"
+
+[node name="P1" type="Button" parent="Margin/Root/Tabs/PatternGrid/VBox/Grid"]
+layout_mode = 2
+toggle_mode = true
+text = "○"
+
+[node name="P2" type="Button" parent="Margin/Root/Tabs/PatternGrid/VBox/Grid"]
+layout_mode = 2
+toggle_mode = true
+text = "○"
+
+[node name="P3" type="Button" parent="Margin/Root/Tabs/PatternGrid/VBox/Grid"]
+layout_mode = 2
+toggle_mode = true
+text = "○"
+
+[node name="P4" type="Button" parent="Margin/Root/Tabs/PatternGrid/VBox/Grid"]
+layout_mode = 2
+toggle_mode = true
+text = "○"
+
+[node name="P5" type="Button" parent="Margin/Root/Tabs/PatternGrid/VBox/Grid"]
+layout_mode = 2
+toggle_mode = true
+text = "○"
+
+[node name="P6" type="Button" parent="Margin/Root/Tabs/PatternGrid/VBox/Grid"]
+layout_mode = 2
+toggle_mode = true
+text = "○"
+
+[node name="P7" type="Button" parent="Margin/Root/Tabs/PatternGrid/VBox/Grid"]
+layout_mode = 2
+toggle_mode = true
+text = "○"
+
+[node name="P8" type="Button" parent="Margin/Root/Tabs/PatternGrid/VBox/Grid"]
+layout_mode = 2
+toggle_mode = true
+text = "○"
+
+[node name="CircuitLink" type="PanelContainer" parent="Margin/Root/Tabs"]
+layout_mode = 2
+
+[node name="VBox" type="VBoxContainer" parent="Margin/Root/Tabs/CircuitLink"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="HintLabel" type="Label" parent="Margin/Root/Tabs/CircuitLink/VBox"]
+layout_mode = 2
+text = "CircuitLinkPuzzle：按 A -> C -> B"
+
+[node name="SequenceLabel" type="Label" parent="Margin/Root/Tabs/CircuitLink/VBox"]
+layout_mode = 2
+text = "当前连接："
+
+[node name="Buttons" type="HBoxContainer" parent="Margin/Root/Tabs/CircuitLink/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="AButton" type="Button" parent="Margin/Root/Tabs/CircuitLink/VBox/Buttons"]
+layout_mode = 2
+text = "A"
+
+[node name="BButton" type="Button" parent="Margin/Root/Tabs/CircuitLink/VBox/Buttons"]
+layout_mode = 2
+text = "B"
+
+[node name="CButton" type="Button" parent="Margin/Root/Tabs/CircuitLink/VBox/Buttons"]
+layout_mode = 2
+text = "C"
+
+[node name="Terminal" type="PanelContainer" parent="Margin/Root/Tabs"]
+layout_mode = 2
+
+[node name="VBox" type="VBoxContainer" parent="Margin/Root/Tabs/Terminal"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="HintLabel" type="Label" parent="Margin/Root/Tabs/Terminal/VBox"]
+layout_mode = 2
+text = "TerminalPuzzle：输入 unlock meta_portal"
+
+[node name="CommandLine" type="LineEdit" parent="Margin/Root/Tabs/Terminal/VBox"]
+layout_mode = 2
+placeholder_text = "输入命令"
+
+[node name="RunButton" type="Button" parent="Margin/Root/Tabs/Terminal/VBox"]
+layout_mode = 2
+text = "执行命令"
+
+[node name="DocumentInspect" type="PanelContainer" parent="Margin/Root/Tabs"]
+layout_mode = 2
+
+[node name="VBox" type="VBoxContainer" parent="Margin/Root/Tabs/DocumentInspect"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="HintLabel" type="Label" parent="Margin/Root/Tabs/DocumentInspect/VBox"]
+layout_mode = 2
+text = "DocumentInspect：找出正确证据"
+
+[node name="PreviewLabel" type="Label" parent="Margin/Root/Tabs/DocumentInspect/VBox"]
+layout_mode = 2
+text = "当前证据：未选择"
+
+[node name="Choices" type="HBoxContainer" parent="Margin/Root/Tabs/DocumentInspect/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="ArchivePhotoButton" type="Button" parent="Margin/Root/Tabs/DocumentInspect/VBox/Choices"]
+layout_mode = 2
+text = "档案照片"
+
+[node name="SecurityMemoButton" type="Button" parent="Margin/Root/Tabs/DocumentInspect/VBox/Choices"]
+layout_mode = 2
+text = "安保备忘录"
+
+[node name="VisitorBadgeButton" type="Button" parent="Margin/Root/Tabs/DocumentInspect/VBox/Choices"]
+layout_mode = 2
+text = "访客胸牌"
+
+[node name="Footer" type="HBoxContainer" parent="Margin/Root"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="SummaryLabel" type="Label" parent="Margin/Root/Footer"]
+layout_mode = 2
+text = "已完成：0 / 5"

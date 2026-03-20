@@ -1,0 +1,96 @@
+[gd_scene format=3 uid="uid://dtpbrb7y1vbo"]
+
+[ext_resource type="Script" uid="uid://bjfjx3m1oo6wg" path="res://StarterPacks/Meta2DHost/main.gd" id="1_main"]
+[ext_resource type="Script" uid="uid://dlr8jqrdhvbl2" path="res://ComponentLibrary/Systems/SceneFlow2D/scene_flow_controller.gd" id="2_flow"]
+[ext_resource type="PackedScene" uid="uid://dvbpqv5neyisr" path="res://ComponentLibrary/Modules/UI/Templates/save_slot_panel.tscn" id="3_slots"]
+
+[node name="Meta2DHostMain" type="Node" unique_id=517050920]
+script = ExtResource("1_main")
+
+[node name="PackContainer" type="Node" parent="." unique_id=703536297]
+
+[node name="SceneFlowController" type="Node" parent="." unique_id=734418396]
+script = ExtResource("2_flow")
+
+[node name="HUD" type="CanvasLayer" parent="." unique_id=959023497]
+layer = 20
+
+[node name="Margin" type="MarginContainer" parent="HUD" unique_id=1489672319]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 16.0
+offset_top = 16.0
+offset_right = -16.0
+offset_bottom = -16.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Shell" type="HBoxContainer" parent="HUD/Margin" unique_id=297916857]
+layout_mode = 2
+theme_override_constants/separation = 14
+
+[node name="HostPanel" type="PanelContainer" parent="HUD/Margin/Shell" unique_id=109306746]
+custom_minimum_size = Vector2(340, 0)
+layout_mode = 2
+
+[node name="VBox" type="VBoxContainer" parent="HUD/Margin/Shell/HostPanel" unique_id=489757035]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="TitleLabel" type="Label" parent="HUD/Margin/Shell/HostPanel/VBox" unique_id=232919603]
+layout_mode = 2
+theme_override_font_sizes/font_size = 28
+text = "Meta2D Host"
+
+[node name="StatusLabel" type="Label" parent="HUD/Margin/Shell/HostPanel/VBox" unique_id=1614504657]
+unique_name_in_owner = true
+layout_mode = 2
+text = "选择一个玩法包进入元游戏流程。"
+
+[node name="Buttons" type="HBoxContainer" parent="HUD/Margin/Shell/HostPanel/VBox" unique_id=1525654556]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="ContinueButton" type="Button" parent="HUD/Margin/Shell/HostPanel/VBox/Buttons" unique_id=1089667401]
+unique_name_in_owner = true
+layout_mode = 2
+text = "继续"
+
+[node name="SaveButton" type="Button" parent="HUD/Margin/Shell/HostPanel/VBox/Buttons" unique_id=374403967]
+unique_name_in_owner = true
+layout_mode = 2
+text = "保存"
+
+[node name="LoadButton" type="Button" parent="HUD/Margin/Shell/HostPanel/VBox/Buttons" unique_id=61492556]
+unique_name_in_owner = true
+layout_mode = 2
+text = "读取"
+
+[node name="BackButton" type="Button" parent="HUD/Margin/Shell/HostPanel/VBox/Buttons" unique_id=1701918444]
+unique_name_in_owner = true
+layout_mode = 2
+text = "返回 Launcher"
+
+[node name="Scroll" type="ScrollContainer" parent="HUD/Margin/Shell/HostPanel/VBox" unique_id=1988041157]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="PackList" type="VBoxContainer" parent="HUD/Margin/Shell/HostPanel/VBox/Scroll" unique_id=1670414580]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="SummaryLabel" type="Label" parent="HUD/Margin/Shell/HostPanel/VBox" unique_id=172952909]
+unique_name_in_owner = true
+layout_mode = 2
+text = "当前 pack: 无"
+
+[node name="SlotPanel" parent="HUD/Margin/Shell/HostPanel/VBox" unique_id=1879159997 instance=ExtResource("3_slots")]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="Spacer" type="Control" parent="HUD/Margin/Shell" unique_id=237229043]
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 2

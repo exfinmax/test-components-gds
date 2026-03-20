@@ -49,7 +49,7 @@ signal save_migrated(slot: int, old_version: int, new_version: int)
 @export var auto_save_slot: int = 1
 
 ## 存档预览图
-@export var save_screenshots_enabled: bool = true
+@export var save_screenshots_enabled: bool = false
 @export var screenshot_width: int = 640
 @export var screenshot_height: int = 480
 
@@ -82,7 +82,7 @@ signal save_migrated(slot: int, old_version: int, new_version: int)
 const _SAVE_DIR      := "user://saves"
 const _GLOBAL_PATH   := "user://saves/global.json"
 const _SLOT_PATTERN  := "user://saves/slot_%02d.json"
-const _MODULES_DIR_FALLBACK := "res://addons/save_system/Modules"
+const _MODULES_DIR_FALLBACK := "res://addons/enhance_save_system/Modules"
 const _SCREENSHOT_DIR := "user://saves/screenshots"
 const _SCREENSHOT_PATTERN := "user://saves/screenshots/slot_%02d.png"
 
@@ -467,6 +467,13 @@ func list_slots() -> Array[SlotInfo]:
 		result.append(SlotInfo.make(i, exists, meta))
 	return result
 
+# 兼容旧接口，避免旧 starter 和自定义场景在迁移期间失效。
+func save_game_to_slot(slot: int = -1) -> bool:
+	return save_slot(slot)
+
+func load_game_from_slot(slot: int = -1) -> bool:
+	return load_slot(slot)
+
 # ──────────────────────────────────────────────
 # 快捷存档
 # ──────────────────────────────────────────────
@@ -505,10 +512,9 @@ func import_slot(slot: int, in_path: String) -> bool:
 	if not FileAccess.file_exists(in_path):
 		push_warning("SaveSystem.import_slot: file not found '%s'" % in_path)
 		return false
-	# 传入 ReadOptions（含解密密钥），确保加密存档能正确解析
-	var payload := SaveWriter.read_json(in_path, _make_read_opts())
+	var payload := SaveWriter.read_json(in_path)
 	if payload.is_empty():
-		push_error("SaveSystem.import_slot: invalid or unreadable save file '%s'" % in_path)
+		push_error("SaveSystem.import_slot: invalid JSON in '%s'" % in_path)
 		return false
 	var dst := _slot_path(slot)
 	SaveWriter._ensure_dir(dst)

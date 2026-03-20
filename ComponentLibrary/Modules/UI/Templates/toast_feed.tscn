@@ -1,6 +1,6 @@
 [gd_scene format=3]
 
-[ext_resource type="Script" path="res://Templates/UI/toast_feed.gd" id="1"]
+[ext_resource type="Script" path="res://ComponentLibrary/Modules/UI/Templates/toast_feed.gd" id="1"]
 
 [node name="ToastFeed" type="Control"]
 layout_mode = 3
@@ -22,4 +22,3 @@ offset_bottom = 356.0
 [node name="VBox" type="VBoxContainer" parent="Margin"]
 layout_mode = 2
 theme_override_constants/separation = 6
-

@@ -19,7 +19,7 @@ public partial class Transition : CanvasLayer
     private float _latestProgress = 0f;
     private bool _shouldEmit = true;
 
-    private const string SHADER_PATTERNS = "res://Scenes/UI/UIorgan/Transition/transition_pattern/";
+    private const string SHADER_PATTERNS = "res://ComponentLibrary/Modules/UI/Templates/Transition/transition_pattern/";
     private static Dictionary<string, Texture2D> _pngCache = new();
 
     public override void _EnterTree()

@@ -10,7 +10,6 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_keybindui")
-action_filter = ["dev_console_toggle"]
 
 [node name="Layout" type="VBoxContainer" parent="." unique_id=1938018712]
 layout_mode = 1

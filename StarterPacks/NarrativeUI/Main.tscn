@@ -1,0 +1,27 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://StarterPacks/NarrativeUI/main.gd" id="1_main"]
+[ext_resource type="PackedScene" path="res://StarterPacks/NarrativeUI/Prefabs/dialogue_balloon.tscn" id="2_balloon"]
+[ext_resource type="PackedScene" path="res://StarterPacks/NarrativeUI/UI/narrative_panel.tscn" id="3_panel"]
+
+[node name="NarrativeUIMain" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_main")
+
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.105882, 0.105882, 0.129412, 1)
+
+[node name="NarrativePanel" parent="." instance=ExtResource("3_panel")]
+
+[node name="DialogueBalloon" parent="." instance=ExtResource("2_balloon")]

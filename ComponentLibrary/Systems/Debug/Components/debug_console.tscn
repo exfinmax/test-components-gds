@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://c5yqm8xvxh3yw"]
 
-[ext_resource type="Script" uid="uid://c8euw1ha8ramg" path="res://ComponentLibrary/Modules/GameLogic/Foundation/Components/Debug/debug_console.gd" id="1_debug"]
+[ext_resource type="Script" uid="uid://c8euw1ha8ramg" path="res://ComponentLibrary/Systems/Debug/Components/debug_console.gd" id="1_debug"]
 
 [node name="DebugConsole" type="Control"]
 layout_mode = 3

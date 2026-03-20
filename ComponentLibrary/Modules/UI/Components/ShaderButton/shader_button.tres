@@ -1,6 +1,6 @@
 [gd_resource type="ShaderMaterial" format=3 uid="uid://b3o26w6ijhf1i"]
 
-[ext_resource type="Shader" uid="uid://8c175w8ccbgh" path="res://ComponentLibrary/Packs/UI/Components/ShaderButton/shader_button.gdshader" id="1_3e8eq"]
+[ext_resource type="Shader" uid="uid://8c175w8ccbgh" path="res://ComponentLibrary/Modules/UI/Components/ShaderButton/shader_button.gdshader" id="1_3e8eq"]
 
 [resource]
 shader = ExtResource("1_3e8eq")

@@ -1,6 +1,6 @@
 [gd_scene format=3]
 
-[ext_resource type="Script" path="res://Templates/UI/time_ability_hud.gd" id="1"]
+[ext_resource type="Script" path="res://ComponentLibrary/Modules/UI/Templates/time_ability_hud.gd" id="1"]
 
 [node name="TimeAbilityHUD" type="Control"]
 layout_mode = 3
@@ -61,4 +61,3 @@ text = "回溯储能 100%"
 [node name="Hint" type="Label" parent="Margin/Panel/VBox"]
 layout_mode = 2
 text = "按 R 模拟回溯"
-

@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="GamePackManifest" format=3 uid="uid://vwdiimvyficv"]
+
+[ext_resource type="Script" uid="uid://2yk641yj1w6y" path="res://ComponentLibrary/Systems/MetaFlow/Resources/game_pack_manifest.gd" id="1_manifest"]
+
+[resource]
+script = ExtResource("1_manifest")
+pack_id = &"meta_2d_host"
+genre = &"meta_host"
+main_scene = "res://StarterPacks/Meta2DHost/Main.tscn"
+display_name = "Meta2D Host"
+tags = PackedStringArray("host", "meta", "hub")

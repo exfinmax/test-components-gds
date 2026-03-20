@@ -44,10 +44,9 @@ func on_dialogue_ended() -> void:
 
 ## 尝试保存进度（SaveSystem 不存在时静默跳过）
 func _try_save(line: DialogueLine) -> void:
-	if not Engine.has_singleton("SaveSystem"):
+	var sys := get_node_or_null("/root/SaveSystem")
+	if sys == null:
 		return
-	
-	var sys: Node = Engine.get_singleton("SaveSystem")
 	if not sys.has_method("get_module"):
 		return
 	

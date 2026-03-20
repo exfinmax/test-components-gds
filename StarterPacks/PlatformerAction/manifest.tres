@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="GamePackManifest" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://ComponentLibrary/Systems/MetaFlow/Resources/game_pack_manifest.gd" id="1_manifest"]
+
+[resource]
+script = ExtResource("1_manifest")
+pack_id = &"platformer_action"
+genre = &"platformer"
+main_scene = "res://StarterPacks/PlatformerAction/Main.tscn"
+display_name = "Platformer Action"
+supports_resume = true
+tags = PackedStringArray("platformer", "action", "combat")
+entry_transition = &"dissolve"
+exit_transition = &"fade"

@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://bqm7n8xvxh3y0"]
 
-[ext_resource type="PackedScene" uid="uid://c5yqm8xvxh3yw" path="res://ComponentLibrary/Modules/GameLogic/Foundation/Components/Debug/debug_console.tscn" id="1_console"]
+[ext_resource type="PackedScene" uid="uid://c5yqm8xvxh3yw" path="res://ComponentLibrary/Systems/Debug/Components/debug_console.tscn" id="1_console"]
 
 [node name="DebugConsoleWindow" type="Window"]
 oversampling_override = 1.0

@@ -1,0 +1,65 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="PackedScene" path="res://ComponentLibrary/Modules/UI/Templates/toast_feed.tscn" id="1_toast"]
+
+[node name="PlatformerHUD" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Header" type="VBoxContainer" parent="."]
+layout_mode = 1
+offset_left = 20.0
+offset_top = 20.0
+offset_right = 380.0
+offset_bottom = 160.0
+theme_override_constants/separation = 6
+
+[node name="Title" type="Label" parent="Header"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 28
+text = "Platformer Action"
+
+[node name="HealthLabel" type="Label" parent="Header"]
+layout_mode = 2
+text = "生命: 100%"
+
+[node name="PromptLabel" type="Label" parent="Header"]
+layout_mode = 2
+text = "靠近路牌后按 E 交互。"
+
+[node name="Buttons" type="HBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_left = 20.0
+offset_top = 20.0
+offset_right = -20.0
+offset_bottom = 64.0
+alignment = 2
+theme_override_constants/separation = 8
+
+[node name="SaveButton" type="Button" parent="Buttons"]
+layout_mode = 2
+text = "保存槽位1"
+
+[node name="LoadButton" type="Button" parent="Buttons"]
+layout_mode = 2
+text = "读取槽位1"
+
+[node name="PauseButton" type="Button" parent="Buttons"]
+layout_mode = 2
+text = "暂停页"
+
+[node name="BackButton" type="Button" parent="Buttons"]
+layout_mode = 2
+text = "返回 Launcher"
+
+[node name="ToastFeed" parent="." instance=ExtResource("1_toast")]
+offset_left = 860.0
+offset_top = 20.0
+offset_right = 1240.0
+offset_bottom = 220.0
