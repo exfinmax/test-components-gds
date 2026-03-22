@@ -1,5 +1,4 @@
-class_name Transition
-extends CanvasLayer
+﻿extends CanvasLayer
 
 # --- modes --------------------------------------------------------------
 enum Mode { SEND, MODIFY }
@@ -102,4 +101,7 @@ func _process(delta: float) -> void:
 			return
 
 		# default SEND behaviour
-		get_tree().change_scene_to_packed(packed)
+		SceneChangeBridge.change_scene_to_packed(packed)
+
+
+

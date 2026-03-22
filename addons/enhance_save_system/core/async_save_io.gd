@@ -153,7 +153,7 @@ func _do_save(data: Dictionary, path: String, encrypt: bool, key: String) -> Dic
 	
 	var file_data: PackedByteArray
 	if encrypt:
-		file_data = SaveWriter._encrypt(json_string, key)
+		file_data = Encryptor.encrypt(json_string.to_utf8_buffer(), key).get("ciphertext", PackedByteArray())
 	else:
 		file_data = json_string.to_utf8_buffer()
 	
@@ -186,7 +186,7 @@ func _do_load(path: String, decrypt: bool, key: String) -> Dictionary:
 	
 	var json_string: String
 	if decrypt:
-		json_string = SaveWriter._decrypt(file_data, key)
+		json_string = Encryptor.decrypt({"mode": "xor", "ciphertext": file_data}, key).get_string_from_utf8()
 		if json_string.is_empty():
 			return {"success": false, "error": "解密失败或数据被篡改", "data": {}}
 	else:

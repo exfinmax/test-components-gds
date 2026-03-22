@@ -17,12 +17,11 @@ extends ISaveModule
 
 signal settings_changed(key: String, value: Variant)
 
+const AudioBridge = preload("res://ComponentLibrary/Systems/Audio/audio_bridge.gd")
+
 ## 单例引用（注册后自动赋值）
 static var instance: SettingsModule
 
-# ──────────────────────────────────────────────
-# 默认值（新游戏 / 重置用）
-# ──────────────────────────────────────────────
 const DEFAULTS := {
 	"master_volume"  : 0.8,
 	"music_volume"   : 0.8,
@@ -30,6 +29,9 @@ const DEFAULTS := {
 	"screen_shake"   : 0.5,
 	"fullscreen"     : false,
 	"language"       : "zh_CN",
+	"input_device_override": "auto",
+	"input_prompt_style": "label",
+	"show_input_icons": false,
 }
 
 var _values: Dictionary = {}
@@ -37,10 +39,6 @@ var _values: Dictionary = {}
 func _init() -> void:
 	_values = DEFAULTS.duplicate(true)
 	instance = self
-
-# ──────────────────────────────────────────────
-# ISaveModule 接口
-# ──────────────────────────────────────────────
 
 func get_module_key() -> String: return "settings"
 
@@ -52,26 +50,34 @@ func collect_data() -> Dictionary:
 func apply_data(data: Dictionary) -> void:
 	for key in data:
 		_values[key] = data[key]
+		_apply_runtime_setting(key, data[key])
 
 func get_default_data() -> Dictionary:
 	return DEFAULTS.duplicate(true)
 
 func on_new_game() -> void:
 	_values = DEFAULTS.duplicate(true)
-
-# ──────────────────────────────────────────────
-# 公开 API
-# ──────────────────────────────────────────────
+	_apply_runtime_settings()
 
 func get_value(key: String, fallback: Variant = null) -> Variant:
 	return _values.get(key, fallback if fallback != null else DEFAULTS.get(key))
 
 func set_value(key: String, value: Variant) -> void:
 	_values[key] = value
+	_apply_runtime_setting(key, value)
 	settings_changed.emit(key, value)
 
 func reset_to_defaults() -> void:
 	_values = DEFAULTS.duplicate(true)
+	_apply_runtime_settings()
 
 func get_all() -> Dictionary:
 	return _values.duplicate(true)
+
+func _apply_runtime_settings() -> void:
+	for key in _values.keys():
+		_apply_runtime_setting(key, _values[key])
+
+func _apply_runtime_setting(key: String, _value: Variant) -> void:
+	if key in ["music_volume", "sfx_volume"]:
+		AudioBridge.sync_settings(self)

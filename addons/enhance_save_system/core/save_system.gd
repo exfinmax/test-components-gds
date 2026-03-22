@@ -101,6 +101,7 @@ var current_slot: int = 1 :
 
 var _auto_save_timer: Timer
 var _migration_manager: MigrationManager
+var _input_display: InputDisplayModule
 
 # ──────────────────────────────────────────────
 # 生命周期
@@ -108,6 +109,7 @@ var _migration_manager: MigrationManager
 
 func _ready() -> void:
 	_ensure_save_dir()
+	_setup_input_display()
 	if save_screenshots_enabled:
 		_ensure_screenshot_dir()
 	_migration_manager = MigrationManager.new()
@@ -121,6 +123,13 @@ func _ready() -> void:
 		_setup_auto_save()
 	
 	get_tree().root.close_requested.connect(on_win_closed)
+
+func _setup_input_display() -> void:
+	if _input_display != null:
+		return
+	_input_display = InputDisplayModule.new()
+	_input_display.name = "InputDisplayModule"
+	add_child(_input_display)
 # ──────────────────────────────────────────────
 # 自动存档
 # ──────────────────────────────────────────────
@@ -249,6 +258,18 @@ func get_module(key: String) -> ISaveModule:
 		return _global_modules[key]["module"]
 	var entry = _slot_modules.get(key, null)
 	return entry["module"] if entry != null else null
+
+func get_input_display() -> InputDisplayModule:
+	return _input_display
+
+func get_current_input_device() -> String:
+	return _input_display.get_current_input_device() if _input_display != null else "keyboard"
+
+func get_action_prompt_text(action: String, prefer_current_device: bool = true) -> String:
+	return _input_display.get_action_prompt_text(action, prefer_current_device) if _input_display != null else ""
+
+func get_input_display_preferences() -> Dictionary:
+	return _input_display.get_input_display_preferences() if _input_display != null else {}
 
 func get_registered_keys() -> Dictionary:
 	return {

@@ -60,7 +60,7 @@ static func is_registered(type_id: String) -> bool:
 static func serialize(res: SaveResource) -> Dictionary:
 	if res == null:
 		return {}
-	var d := res.to_dict()
+	var d :Dictionary= res.to_dict()
 	d["__type"] = res.get_type_id()
 	return d
 

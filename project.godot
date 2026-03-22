@@ -8,9 +8,7 @@
 
 config_version=5
 
-autoload={
-"SaveSystem": "res://addons/save_system/Core/save_system.gd"
-}
+"ï»¿config_version"=5
 
 [animation]
 
@@ -30,7 +28,10 @@ ObjectPool="*res://ComponentLibrary/Core/pools/object_pool.gd"
 TimeController="*res://ComponentLibrary/Core/time/time_controller.gd"
 DialogueManager="*res://addons/dialogue_manager/dialogue_manager.gd"
 GuiTransitions="*res://addons/simple-gui-transitions/singleton.gd"
-SaveSystem="*uid://bv1y5o6lgq7yi"
+SaveSystem="*res://addons/enhance_save_system/core/save_system.gd"
+SceneManager="*res://addons/scene_manager/autoload/scene_manager.tscn"
+SoundManager="*res://addons/sound_manager/sound_manager.gd"
+PhantomCameraManager="*res://addons/phantom_camera/scripts/managers/phantom_camera_manager.gd"
 
 [display]
 
@@ -43,7 +44,7 @@ project/assembly_name="test_components"
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/assetplus/plugin.cfg", "res://addons/dialogue_manager/plugin.cfg", "res://addons/enhance_save_system/plugin.cfg", "res://addons/godot_mcp/plugin.cfg", "res://addons/polygon2d_tool/plugin.cfg", "res://addons/procedural_tex/plugin.cfg", "res://addons/simple-gui-transitions/plugin.cfg")
+enabled=PackedStringArray("res://addons/Todo_Manager/plugin.cfg", "res://addons/assetplus/plugin.cfg", "res://addons/dialogue_manager/plugin.cfg", "res://addons/enhance_save_system/plugin.cfg", "res://addons/gdfxr/plugin.cfg", "res://addons/godot_mcp/plugin.cfg", "res://addons/godot_state_charts/plugin.cfg", "res://addons/godotsize/plugin.cfg", "res://addons/phantom_camera/plugin.cfg", "res://addons/polygon2d_tool/plugin.cfg", "res://addons/procedural_tex/plugin.cfg", "res://addons/scene_manager/plugin.cfg", "res://addons/simple-gui-transitions/plugin.cfg", "res://addons/sound_manager/plugin.cfg")
 
 [godot_mcp]
 
@@ -108,10 +109,6 @@ dash={
 "events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":0,"physical_keycode":4194325,"key_label":0,"unicode":0,"location":0,"echo":false,"script":null)
 ]
 }
-
-[internationalization]
-
-locale/translations_pot_files=PackedStringArray("res://addons/dialogue_manager/dialogue_file/untitled.dialogue", "res://addons/dialogue_manager/modify_test/demo/demo_dialogue.dialogue", "res://addons/dialogue_manager/modify_test/demo/scene1_tutorial.dialogue", "res://addons/dialogue_manager/modify_test/demo/scene2_characters.dialogue", "res://addons/dialogue_manager/modify_test/demo/scene3_branch.dialogue", "res://addons/dialogue_manager/modify_test/demo/scene3_branches.dialogue", "res://addons/dialogue_manager/modify_test/demo/illustration_test.dialogue", "res://dialogue/stage2.dialogue", "res://dialogue/stage3.dialogue", "res://dialogue/stage4.dialogue", "res://dialogue/stage5.dialogue", "res://dialogue/stage7.dialogue", "res://dialogue/start.dialogue", "res://dialogue/zhenyan1.dialogue", "res://dialogue/zhenyan2.dialogue", "res://dialogue/zhenyan3.dialogue", "res://dialogue/zhenyan4.dialogue", "res://dialogue/zhenyan5.dialogue")
 
 [shader_globals]
 

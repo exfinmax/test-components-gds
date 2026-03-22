@@ -157,7 +157,7 @@ func _on_scene_loaded(packed: PackedScene) -> void:
 	_hide_progress_bar()
 
 	# 切换场景
-	get_tree().change_scene_to_packed(packed)
+	SceneChangeBridge.change_scene_to_packed(packed)
 
 	# 播放揭幕动画（显示新场景）
 	await _play_reveal_animation()
@@ -218,3 +218,4 @@ func _preload_pngs() -> void:
 		var path := SHADER_PATTERNS + str(i) + ".png"
 		if ResourceLoader.exists(path):
 			_png_cache[str(i)] = load(path)
+

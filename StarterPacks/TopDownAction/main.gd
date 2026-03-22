@@ -105,7 +105,7 @@ func _finish_pack(result: Dictionary) -> void:
 	if _running_under_host:
 		pack_finished.emit(result)
 		return
-	get_tree().change_scene_to_file("res://Test/test_main.tscn")
+	SceneChangeBridge.change_scene("res://Test/test_main.tscn")
 
 func _connect_hotspot(hotspot: HotspotComponent) -> void:
 	hotspot.body_entered.connect(_on_hotspot_body_entered.bind(hotspot))

@@ -162,4 +162,3 @@ func _set_status(msg: String) -> void:
 	if is_instance_valid(status_label):
 		status_label.text = msg
 	print("[Demo] ", msg)
-

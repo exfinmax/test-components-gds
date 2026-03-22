@@ -55,6 +55,9 @@ func _ready() -> void:
 	var km := _get_module()
 	if km:
 		km.bindings_changed.connect(_on_bindings_changed)
+	var input_display := _get_input_display()
+	if input_display and not input_display.device_changed.is_connected(_on_input_device_changed):
+		input_display.device_changed.connect(_on_input_device_changed)
 
 # ──────────────────────────────────────────────
 # 行构建
@@ -122,6 +125,9 @@ func _on_bindings_changed() -> void:
 func _on_row_binding_changed(_action: String, _ev: InputEvent) -> void:
 	pass  # 可在子类中扩展
 
+func _on_input_device_changed(_device: String, _device_index: int) -> void:
+	refresh_all()
+
 # ──────────────────────────────────────────────
 # 内部辅助
 # ──────────────────────────────────────────────
@@ -140,3 +146,9 @@ static func _get_save_system() -> Node:
 	if not tree:
 		return null
 	return tree.root.get_node_or_null("SaveSystem")
+
+static func _get_input_display() -> InputDisplayModule:
+	var save_system := _get_save_system()
+	if save_system and save_system.has_method("get_input_display"):
+		return save_system.get_input_display() as InputDisplayModule
+	return null

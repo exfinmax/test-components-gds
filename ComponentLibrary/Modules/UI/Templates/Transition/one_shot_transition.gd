@@ -163,7 +163,7 @@ func _on_loaded(packed: PackedScene) -> void:
 		_should_emit = false
 		transition_end.emit(packed)
 	else:
-		get_tree().change_scene_to_packed(packed)
+		SceneChangeBridge.change_scene_to_packed(packed)
 
 	if auto_free_on_done:
 		queue_free()
@@ -188,3 +188,4 @@ func _preload_pngs() -> void:
 		var path := SHADER_PATTERNS + str(i) + ".png"
 		if ResourceLoader.exists(path):
 			_png_cache[str(i)] = load(path)
+

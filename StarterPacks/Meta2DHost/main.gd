@@ -153,4 +153,4 @@ func _refresh_summary() -> void:
 
 func _go_back() -> void:
 	_capture_active_pack_state()
-	get_tree().change_scene_to_file("res://Test/test_main.tscn")
+	SceneChangeBridge.change_scene("res://Test/test_main.tscn")

@@ -1,4 +1,4 @@
-extends Control
+﻿extends Control
 
 const SECTIONS := [
 	{
@@ -24,6 +24,7 @@ const SECTIONS := [
 	{
 		"title": "Shader And Test",
 		"items": [
+			{"label": "Plugin Smoke Test", "path": "res://Test/plugin_integration_smoke.tscn"},
 			{"label": "Test UI", "path": "res://Test/test_ui.tscn"},
 			{"label": "FFT Test", "path": "res://Test/快速傅里叶变换求卷积/快速傅里叶变换求卷积.tscn"},
 			{"label": "Black Hole Shader", "path": "res://Shader/黑洞/黑洞.tscn"},
@@ -82,4 +83,4 @@ func _open_scene(path: String) -> void:
 		_status.text = "Missing: %s" % path
 		return
 	_status.text = "Opening %s" % path
-	get_tree().change_scene_to_file(path)
+	SceneChangeBridge.change_scene(path)

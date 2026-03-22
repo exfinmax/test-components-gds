@@ -22,6 +22,7 @@ var display_name: String = ""
 var _capture_dialog: KeyCaptureDialog
 
 @onready var _label: Label        = %ActionLabel
+@onready var _prompt_label: Label = %PromptLabel
 @onready var _bindings_container: VBoxContainer = %BindingsContainer
 @onready var _add_button: Button  = %AddButton
 
@@ -68,6 +69,14 @@ func refresh() -> void:
 		button.pressed.connect(_create_binding_pressed_func(-1))
 		_bindings_container.add_child(button)
 		_binding_buttons.append(button)
+
+	var input_display := _get_input_display()
+	if input_display:
+		var device := input_display.get_current_input_device()
+		var prompt := input_display.get_action_prompt_text(action, true)
+		_prompt_label.text = "当前设备: %s  提示: %s" % [device, prompt if not prompt.is_empty() else "无"]
+	else:
+		_prompt_label.text = ""
 
 # ──────────────────────────────────────────────
 # 内部
@@ -135,3 +144,9 @@ static func _get_save_system() -> Node:
 	if not tree:
 		return null
 	return tree.root.get_node_or_null("SaveSystem")
+
+static func _get_input_display() -> InputDisplayModule:
+	var save_system := _get_save_system()
+	if save_system and save_system.has_method("get_input_display"):
+		return save_system.get_input_display() as InputDisplayModule
+	return null

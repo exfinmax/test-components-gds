@@ -1,0 +1,59 @@
+[gd_scene format=3 uid="uid://ryddhqhbxc2p"]
+
+[ext_resource type="Script" uid="uid://dq850m4npcg8y" path="res://Test/plugin_integration_smoke.gd" id="1_main"]
+
+[node name="PluginIntegrationSmoke" type="Control" unique_id=1730412067]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_main")
+
+[node name="Margin" type="MarginContainer" parent="." unique_id=1851403143]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 24.0
+offset_top = 24.0
+offset_right = -24.0
+offset_bottom = -24.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBox" type="VBoxContainer" parent="Margin" unique_id=1186440466]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="Title" type="Label" parent="Margin/VBox" unique_id=709156530]
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "Plugin Integration Smoke"
+
+[node name="Status" type="Label" parent="Margin/VBox" unique_id=1001]
+unique_name_in_owner = true
+layout_mode = 2
+text = "checking..."
+autowrap_mode = 3
+
+[node name="Buttons" type="HBoxContainer" parent="Margin/VBox" unique_id=126439467]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="PlayUISound" type="Button" parent="Margin/VBox/Buttons" unique_id=178850604]
+layout_mode = 2
+text = "Test SoundManager"
+
+[node name="CheckSceneManager" type="Button" parent="Margin/VBox/Buttons" unique_id=21142817]
+layout_mode = 2
+text = "Check SceneManager"
+
+[node name="CheckStateChart" type="Button" parent="Margin/VBox/Buttons" unique_id=558777622]
+layout_mode = 2
+text = "Instantiate StateChart"
+
+[connection signal="pressed" from="Margin/VBox/Buttons/PlayUISound" to="." method="_on_play_ui_sound_pressed"]
+[connection signal="pressed" from="Margin/VBox/Buttons/CheckSceneManager" to="." method="_on_scene_manager_pressed"]
+[connection signal="pressed" from="Margin/VBox/Buttons/CheckStateChart" to="." method="_on_state_chart_pressed"]
